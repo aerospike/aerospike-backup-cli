@@ -25,9 +25,8 @@ import (
 	"github.com/aerospike/aerospike-backup-cli/internal/logging"
 	"github.com/aerospike/aerospike-backup-cli/internal/storage"
 	"github.com/aerospike/backup-go"
+	"github.com/aerospike/backup-go/models"
 	"github.com/aerospike/backup-go/pkg/asinfo"
-
-	bModels "github.com/aerospike/backup-go/models"
 )
 
 const (
@@ -220,7 +219,7 @@ func (s *Service) Run(ctx context.Context) error {
 			return fmt.Errorf("failed to backup indexes and udfs: %w", err)
 		}
 
-		stats := bModels.SumBackupStats(h.GetStats(), hXdr.GetStats())
+		stats := models.SumBackupStats(h.GetStats(), hXdr.GetStats())
 		logging.ReportBackup(stats, true, s.isLogJSON, s.logger)
 	default:
 		s.logger.Info("starting scan backup")

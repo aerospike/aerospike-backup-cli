@@ -17,7 +17,7 @@ package config
 import (
 	"fmt"
 	"os"
-	
+
 	"github.com/aerospike/aerospike-backup-cli/internal/config/dto"
 	"gopkg.in/yaml.v3"
 )

@@ -36,19 +36,12 @@ Binaries for various platforms are released alongside the library and can be fou
 ```bash
 # Simple namespace backup
 asbackup -h 127.0.0.1:3000 -n test -d /backup/test-namespace
-
-# Backup with compression and encryption
-asbackup -h 127.0.0.1:3000 -n test -d /backup/test \
-  --compress zstd --encrypt aes256 --encryption-key-file /path/to/key.pem
 ```
 
 ### Basic Restore
 ```bash
 # Restore from backup directory
 asrestore -h 127.0.0.1:3000 -n test -d /backup/test-namespace
-
-# Restore with parallel workers
-asrestore -h 127.0.0.1:3000 -n test -d /backup/test --parallel 8
 ```
 
 ## 📦 Installation
