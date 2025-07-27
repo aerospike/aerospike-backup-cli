@@ -93,7 +93,7 @@ func (a *AzureBlob) LoadSecrets(cfg *backup.SecretAgentConfig) error {
 }
 
 // Validate internal validation for struct params.
-func (a *AzureBlob) Validate() error {
+func (a *AzureBlob) Validate(isBackup bool) error {
 	if a.ContainerName == "" {
 		return fmt.Errorf("container name is required")
 	}
@@ -118,8 +118,10 @@ func (a *AzureBlob) Validate() error {
 		return fmt.Errorf("block size must be non-negative")
 	}
 
-	if a.RestorePollDuration < 1 {
-		return fmt.Errorf("rehydrate poll duration can't be less than 1")
+	if !isBackup {
+		if a.RestorePollDuration < 1 {
+			return fmt.Errorf("rehydrate poll duration can't be less than 1")
+		}
 	}
 
 	return nil

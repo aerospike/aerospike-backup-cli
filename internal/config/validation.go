@@ -24,6 +24,7 @@ import (
 
 //nolint:gocyclo // It is a long validation function.
 func ValidateStorages(
+	isBackup bool,
 	awsS3 *models.AwsS3,
 	gcpStorage *models.GcpStorage,
 	azureBlob *models.AzureBlob,
@@ -32,7 +33,7 @@ func ValidateStorages(
 	var count int
 
 	if awsS3 != nil && (awsS3.BucketName != "" || awsS3.Region != "" || awsS3.Profile != "" || awsS3.Endpoint != "") {
-		if err := awsS3.Validate(); err != nil {
+		if err := awsS3.Validate(isBackup); err != nil {
 			return fmt.Errorf("failed to validate aws s3: %w", err)
 		}
 
@@ -50,7 +51,7 @@ func ValidateStorages(
 	if azureBlob != nil && (azureBlob.ContainerName != "" || azureBlob.AccountName != "" || azureBlob.AccountKey != "" ||
 		azureBlob.Endpoint != "" || azureBlob.TenantID != "" || azureBlob.ClientID != "" ||
 		azureBlob.ClientSecret != "") {
-		if err := azureBlob.Validate(); err != nil {
+		if err := azureBlob.Validate(isBackup); err != nil {
 			return fmt.Errorf("failed to validate azure blob: %w", err)
 		}
 
