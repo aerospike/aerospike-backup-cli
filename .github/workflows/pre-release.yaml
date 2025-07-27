@@ -132,7 +132,7 @@ jobs:
       - name: Get Metadata
         id: metadata
         run: |
-          PACKAGE_VERSION=$(cat VERSION)
+          PACKAGE_VERSION=$(shell git describe --tags --exact-match 2>/dev/null || git rev-parse --abbrev-ref HEAD)
           echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
           echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_OUTPUT
           echo "PACKAGE_NAME=aerospike-backup-tools" >> $GITHUB_ENV
@@ -302,7 +302,7 @@ jobs:
           echo "IMAGE_VERSION=$IMAGE_VERSION" >> $GITHUB_ENV
           echo "IMAGE_VERSION=$IMAGE_VERSION" >> $GITHUB_OUTPUT
           echo "GO_VERSION=$GO_VERSION" >> "$GITHUB_ENV"
-          echo "VERSION=$(cat VERSION)" >> $GITHUB_ENV
+          echo "VERSION=$(shell git describe --tags --exact-match 2>/dev/null || git rev-parse --abbrev-ref HEAD)" >> $GITHUB_ENV
           echo "ISO8601=$(LC_TIME=en_US.UTF-8 date "+%Y-%m-%dT%H:%M:%S%z")" >> $GITHUB_ENV
           echo "IMAGE_NAME=aerospike-backup-tools" >> $GITHUB_ENV
 
