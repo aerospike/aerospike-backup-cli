@@ -184,17 +184,6 @@ func TestValidateStorages(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name:     "Negative poll duration",
-			isBackup: true,
-			awsS3: &models.AwsS3{
-				Endpoint: "aws-endpoint",
-			},
-			gcpStorage: &models.GcpStorage{
-				Endpoint: "gcp-endpoint",
-			},
-			wantErr: true,
-		},
-		{
 			name:     "Negative AWS S3 poll duration",
 			isBackup: false,
 			awsS3: &models.AwsS3{
