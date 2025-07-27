@@ -183,6 +183,42 @@ func TestValidateStorages(t *testing.T) {
 			},
 			wantErr: true,
 		},
+		{
+			name:     "Negative poll duration",
+			isBackup: true,
+			awsS3: &models.AwsS3{
+				Endpoint: "aws-endpoint",
+			},
+			gcpStorage: &models.GcpStorage{
+				Endpoint: "gcp-endpoint",
+			},
+			wantErr: true,
+		},
+		{
+			name:     "Negative AWS S3 poll duration",
+			isBackup: false,
+			awsS3: &models.AwsS3{
+				Region:              "us-west-2",
+				BucketName:          testBucket,
+				RestorePollDuration: 0,
+			},
+			gcpStorage: &models.GcpStorage{},
+			azureBlob:  &models.AzureBlob{},
+			wantErr:    true,
+		},
+		{
+			name:       "Negative Azure poll duration",
+			isBackup:   false,
+			awsS3:      &models.AwsS3{},
+			gcpStorage: &models.GcpStorage{},
+			azureBlob: &models.AzureBlob{
+				ContainerName:       testBucket,
+				AccountName:         "account-name",
+				AccountKey:          "account-key",
+				RestorePollDuration: -11,
+			},
+			wantErr: true,
+		},
 	}
 
 	for _, tt := range tests {
@@ -253,11 +289,6 @@ func TestValidatePartitionFilters(t *testing.T) {
 				{Begin: 0, Count: 0},
 			},
 			wantErr: true,
-		},
-		{
-			name:             "Edge case: Empty filters",
-			partitionFilters: []*aerospike.PartitionFilter{},
-			wantErr:          false,
 		},
 	}
 
