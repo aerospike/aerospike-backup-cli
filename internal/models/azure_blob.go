@@ -122,7 +122,6 @@ func (a *AzureBlob) Validate(isBackup bool) error {
 		if a.RestorePollDuration < 1 {
 			return fmt.Errorf("rehydrate poll duration can't be less than 1")
 		}
-
 	}
 
 	return nil

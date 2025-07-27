@@ -175,7 +175,7 @@ func TestValidateStorages(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			err := ValidateStorages(tt.awsS3, tt.gcpStorage, tt.azureBlob)
+			err := ValidateStorages(false, tt.awsS3, tt.gcpStorage, tt.azureBlob)
 			if tt.wantErr {
 				assert.Error(t, err, "Expected error but got none")
 			} else {
