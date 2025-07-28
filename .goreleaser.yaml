@@ -6,7 +6,7 @@ before:
 
 builds:
   - id: "asbackup"
-    main: asbackup/main.go
+    main: cmd/asbackup/main.go
     binary: "asbackup"
     goos:
       - linux
@@ -20,7 +20,7 @@ builds:
     ldflags:
       - -s -w -X 'main.appVersion={{.Version}}' -X 'main.commitHash={{.Commit}}' -X 'main.buildTime={{.Date}}'
   - id: "asrestore"
-    main: asrestore/main.go
+    main: cmd/asrestore/main.go
     binary: "asrestore"
     goos:
       - linux

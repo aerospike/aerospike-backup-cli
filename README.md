@@ -1,8 +1,8 @@
-# aerospike-backup-cli
+# Aerospike Backup CLI
 [![Tests](https://github.com/aerospike/aerospike-backup-cli/actions/workflows/tests.yml/badge.svg)](https://github.com/aerospike/aerospike-backup-cli/actions/workflows/tests.yml/badge.svg)
 [![codecov](https://codecov.io/gh/aerospike/backup-go/graph/badge.svg?token=S0gfl2zCcZ)](https://codecov.io/gh/aerospike/aerospike-backup-cli)
 
-The repository includes the [asbackup](./asbackup) and [asrestore](./asrestore) CLI tools,
+The repository includes the [asbackup](cmd/asbackup) and [asrestore](cmd/asrestore) CLI tools,
 built using [backup-go](https://github.com/aerospike/backup-go) library.
 Refer to their respective README files for usage instructions.
 Binaries for various platforms are released alongside the library and can be found under
@@ -44,7 +44,7 @@ asbackup -h 127.0.0.1:3000 -n test -d /backup/test-namespace
 asrestore -h 127.0.0.1:3000 -n test -d /backup/test-namespace
 ```
 
-## 📦 Installation
+## Installation
 
 ### From Releases
 Download pre-built binaries from [GitHub Releases](https://github.com/aerospike/aerospike-backup-cli/releases):
@@ -103,7 +103,7 @@ The generated packages and their `sha256` checksum files will be located in the 
 
 ## Configuration Reference
 
-Please look at [asbackup](./asbackup/readme.md) and [asrestore](./asrestore/readme.md) readme files for details.
+Please look at [asbackup](cmd/asbackup/readme.md) and [asrestore](cmd/asrestore/readme.md) readme files for details.
 
 ## License
 
