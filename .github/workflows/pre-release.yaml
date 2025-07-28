@@ -298,7 +298,7 @@ jobs:
             cut -c3- | \
             tr -d '\n')"
           
-          IMAGE_VERSION=$(cat VERSION | cut -c 2-)
+          IMAGE_VERSION=$(shell git describe --tags --exact-match 2>/dev/null | cut -c 2- || git rev-parse --abbrev-ref HEAD)
           echo "IMAGE_VERSION=$IMAGE_VERSION" >> $GITHUB_ENV
           echo "IMAGE_VERSION=$IMAGE_VERSION" >> $GITHUB_OUTPUT
           echo "GO_VERSION=$GO_VERSION" >> "$GITHUB_ENV"

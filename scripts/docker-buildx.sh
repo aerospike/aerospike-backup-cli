@@ -88,7 +88,7 @@ RH_REGISTRY="$RH_REGISTRY" \
 LATEST="$TAG_LATEST" \
 GIT_BRANCH="$(git rev-parse --abbrev-ref HEAD)" \
 GIT_COMMIT_SHA="$(git rev-parse HEAD)" \
-VERSION="$(cat "$WORKSPACE/VERSION")" \
+VERSION="$(shell git describe --tags --exact-match 2>/dev/null || git rev-parse --abbrev-ref HEAD)" \
 GO_VERSION="$GO_VERSION" \
 ISO8601="$(LC_TIME=en_US.UTF-8 date "+%Y-%m-%dT%H:%M:%S%z")" \
 CONTEXT="$WORKSPACE" \
