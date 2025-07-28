@@ -1,0 +1,95 @@
+version: "2"
+run:
+  issues-exit-code: 1
+linters:
+  default: none
+  enable:
+    - bodyclose
+    - dogsled
+    - dupl
+    - errcheck
+    - goconst
+    - gocritic
+    - gocyclo
+    - gosec
+    - govet
+    - ineffassign
+    - lll
+    - misspell
+    - nakedret
+    - nolintlint
+    - prealloc
+    - predeclared
+    - revive
+    - staticcheck
+    - thelper
+    - tparallel
+    - unconvert
+    - unparam
+    - unused
+    - whitespace
+    - wsl
+  settings:
+    goconst:
+      min-len: 2
+      min-occurrences: 3
+    gocritic:
+      enabled-tags:
+        - diagnostic
+        - experimental
+        - opinionated
+        - performance
+        - style
+    gocyclo:
+      min-complexity: 21
+    gosec:
+      excludes:
+        - G115
+    govet:
+      enable:
+        - shadow
+    nolintlint:
+      require-explanation: true
+      require-specific: true
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    rules:
+      - linters:
+          - govet
+        text: 'shadow: declaration of "(err|ctx)" shadows declaration at'
+      - linters:
+          - revive
+        text: 'exported: type name will be used as backup.(BackupStats|BackupHandler|BackupConfig|BackupToDirectoryConfig|BackupToDirectoryStats|BackupToDirectoryHandler) by other packages, and that stutters'
+      - linters:
+          - dupl
+          - goconst
+          - govet
+          - lll
+          - wsl
+        path: (.+)test\.go
+      - path: (.+)test\.go
+        text: importShadow
+      - path: (.+)test\.go
+        text: 'G404: Use of weak random number generator'
+    paths:
+      - main
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - gci
+    - gofmt
+    - goimports
+  exclusions:
+    generated: lax
+    paths:
+      - main
+      - third_party$
+      - builtin$
+      - examples$

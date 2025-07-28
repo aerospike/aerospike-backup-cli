@@ -1,5 +1,5 @@
 # aerospike-backup-cli
-[![Tests](https://github.com/aerospike/backup-go/actions/workflows/tests.yml/badge.svg)](https://github.com/aerospike/aerospike-backup-cli/actions/workflows/tests.yml)
+[![Tests](https://github.com/aerospike/aerospike-backup-cli/actions/workflows/tests.yml/badge.svg)](https://github.com/aerospike/aerospike-backup-cli/actions/workflows/tests.yml/badge.svg)
 [![codecov](https://codecov.io/gh/aerospike/backup-go/graph/badge.svg?token=S0gfl2zCcZ)](https://codecov.io/gh/aerospike/aerospike-backup-cli)
 
 The repository includes the [asbackup](./asbackup) and [asrestore](./asrestore) CLI tools,
@@ -8,7 +8,7 @@ Refer to their respective README files for usage instructions.
 Binaries for various platforms are released alongside the library and can be found under
 [releases](https://github.com/aerospike/aerospike-backup-cli/releases).
 
-## 🔧 Core Features
+## Core Features
 
 ### Standard Operations
 - **Full backups**: Complete namespace or set backups
@@ -30,25 +30,18 @@ Binaries for various platforms are released alongside the library and can be fou
 - **Secret management**: Integration with Aerospike Secret Agent
 - **Rate limiting**: Bandwidth and RPS controls
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Basic Backup
 ```bash
 # Simple namespace backup
 asbackup -h 127.0.0.1:3000 -n test -d /backup/test-namespace
-
-# Backup with compression and encryption
-asbackup -h 127.0.0.1:3000 -n test -d /backup/test \
-  --compress zstd --encrypt aes256 --encryption-key-file /path/to/key.pem
 ```
 
 ### Basic Restore
 ```bash
 # Restore from backup directory
 asrestore -h 127.0.0.1:3000 -n test -d /backup/test-namespace
-
-# Restore with parallel workers
-asrestore -h 127.0.0.1:3000 -n test -d /backup/test --parallel 8
 ```
 
 ## 📦 Installation
@@ -108,15 +101,15 @@ make packages
 ```
 The generated packages and their `sha256` checksum files will be located in the `/target` directory.
 
-## 📋 Configuration Reference
+## Configuration Reference
 
 Please look at [asbackup](./asbackup/readme.md) and [asrestore](./asrestore/readme.md) readme files for details.
 
-## 📄 License
+## License
 
 Apache License, Version 2.0. See [LICENSE](LICENSE) file for details.
 
-## 📞 Support
+## Support
 
 - **Documentation**: [Aerospike Documentation](https://aerospike.com/docs/tools/backup/)
 - **Issues**: [GitHub Issues](https://github.com/aerospike/aerospike-backup-cli/issues)

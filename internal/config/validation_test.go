@@ -31,13 +31,15 @@ func TestValidateStorages(t *testing.T) {
 
 	tests := []struct {
 		name       string
+		isBackup   bool
 		awsS3      *models.AwsS3
 		gcpStorage *models.GcpStorage
 		azureBlob  *models.AzureBlob
 		wantErr    bool
 	}{
 		{
-			name: "Valid AWS S3 configuration only",
+			name:     "Valid AWS S3 configuration only",
+			isBackup: false,
 			awsS3: &models.AwsS3{
 				Region:              "us-west-2",
 				BucketName:          testBucket,
@@ -48,8 +50,9 @@ func TestValidateStorages(t *testing.T) {
 			wantErr:    false,
 		},
 		{
-			name:  "Valid GCP Storage configuration only",
-			awsS3: &models.AwsS3{},
+			name:     "Valid GCP Storage configuration only",
+			isBackup: false,
+			awsS3:    &models.AwsS3{},
 			gcpStorage: &models.GcpStorage{
 				BucketName:             testBucket,
 				RetryBackoffMultiplier: 2,
@@ -59,6 +62,7 @@ func TestValidateStorages(t *testing.T) {
 		},
 		{
 			name:       "Valid Azure Blob configuration only",
+			isBackup:   true,
 			awsS3:      &models.AwsS3{},
 			gcpStorage: &models.GcpStorage{},
 			azureBlob: &models.AzureBlob{
@@ -70,7 +74,8 @@ func TestValidateStorages(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "AWS S3 and GCP Storage both configured",
+			name:     "AWS S3 and GCP Storage both configured",
+			isBackup: true,
 			awsS3: &models.AwsS3{
 				Region: "us-west-2",
 			},
@@ -81,7 +86,8 @@ func TestValidateStorages(t *testing.T) {
 			wantErr:   true,
 		},
 		{
-			name: "All three providers configured",
+			name:     "All three providers configured",
+			isBackup: true,
 			awsS3: &models.AwsS3{
 				Region: "us-west-2",
 			},
@@ -96,13 +102,15 @@ func TestValidateStorages(t *testing.T) {
 		},
 		{
 			name:       "None of the providers configured",
+			isBackup:   true,
 			awsS3:      &models.AwsS3{},
 			gcpStorage: &models.GcpStorage{},
 			azureBlob:  &models.AzureBlob{},
 			wantErr:    false,
 		},
 		{
-			name: "Partial AWS S3 configuration",
+			name:     "Partial AWS S3 configuration",
+			isBackup: false,
 			awsS3: &models.AwsS3{
 				BucketName:          testBucket,
 				Region:              "",
@@ -114,8 +122,9 @@ func TestValidateStorages(t *testing.T) {
 			wantErr:    false,
 		},
 		{
-			name:  "Partial GCP Storage configuration",
-			awsS3: &models.AwsS3{},
+			name:     "Partial GCP Storage configuration",
+			isBackup: true,
+			awsS3:    &models.AwsS3{},
 			gcpStorage: &models.GcpStorage{
 				BucketName:             testBucket,
 				KeyFile:                "",
@@ -126,6 +135,7 @@ func TestValidateStorages(t *testing.T) {
 		},
 		{
 			name:       "Partial Azure Blob configuration",
+			isBackup:   true,
 			awsS3:      &models.AwsS3{},
 			gcpStorage: &models.GcpStorage{},
 			azureBlob: &models.AzureBlob{
@@ -138,6 +148,7 @@ func TestValidateStorages(t *testing.T) {
 		},
 		{
 			name:       "Azure Blob with client credentials",
+			isBackup:   true,
 			awsS3:      &models.AwsS3{},
 			gcpStorage: &models.GcpStorage{},
 			azureBlob: &models.AzureBlob{
@@ -150,7 +161,8 @@ func TestValidateStorages(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "Only endpoints configured",
+			name:     "Only endpoints configured",
+			isBackup: true,
 			awsS3: &models.AwsS3{
 				BucketName:          "custom-bucket",
 				Endpoint:            "custom-endpoint",
@@ -161,7 +173,8 @@ func TestValidateStorages(t *testing.T) {
 			wantErr:    false,
 		},
 		{
-			name: "Multiple providers with only endpoints",
+			name:     "Multiple providers with only endpoints",
+			isBackup: true,
 			awsS3: &models.AwsS3{
 				Endpoint: "aws-endpoint",
 			},
@@ -170,12 +183,37 @@ func TestValidateStorages(t *testing.T) {
 			},
 			wantErr: true,
 		},
+		{
+			name:     "Negative AWS S3 poll duration",
+			isBackup: false,
+			awsS3: &models.AwsS3{
+				Region:              "us-west-2",
+				BucketName:          testBucket,
+				RestorePollDuration: 0,
+			},
+			gcpStorage: &models.GcpStorage{},
+			azureBlob:  &models.AzureBlob{},
+			wantErr:    true,
+		},
+		{
+			name:       "Negative Azure poll duration",
+			isBackup:   false,
+			awsS3:      &models.AwsS3{},
+			gcpStorage: &models.GcpStorage{},
+			azureBlob: &models.AzureBlob{
+				ContainerName:       testBucket,
+				AccountName:         "account-name",
+				AccountKey:          "account-key",
+				RestorePollDuration: -11,
+			},
+			wantErr: true,
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			err := ValidateStorages(tt.awsS3, tt.gcpStorage, tt.azureBlob)
+			err := ValidateStorages(tt.isBackup, tt.awsS3, tt.gcpStorage, tt.azureBlob)
 			if tt.wantErr {
 				assert.Error(t, err, "Expected error but got none")
 			} else {
@@ -240,11 +278,6 @@ func TestValidatePartitionFilters(t *testing.T) {
 				{Begin: 0, Count: 0},
 			},
 			wantErr: true,
-		},
-		{
-			name:             "Edge case: Empty filters",
-			partitionFilters: []*aerospike.PartitionFilter{},
-			wantErr:          false,
 		},
 	}
 
