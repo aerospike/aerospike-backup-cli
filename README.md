@@ -8,7 +8,7 @@ Refer to their respective README files for usage instructions.
 Binaries for various platforms are released alongside the library and can be found under
 [releases](https://github.com/aerospike/aerospike-backup-cli/releases).
 
-## 🔧 Core Features
+## Core Features
 
 ### Standard Operations
 - **Full backups**: Complete namespace or set backups
@@ -30,7 +30,7 @@ Binaries for various platforms are released alongside the library and can be fou
 - **Secret management**: Integration with Aerospike Secret Agent
 - **Rate limiting**: Bandwidth and RPS controls
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Basic Backup
 ```bash
@@ -101,15 +101,15 @@ make packages
 ```
 The generated packages and their `sha256` checksum files will be located in the `/target` directory.
 
-## 📋 Configuration Reference
+## Configuration Reference
 
 Please look at [asbackup](./asbackup/readme.md) and [asrestore](./asrestore/readme.md) readme files for details.
 
-## 📄 License
+## License
 
 Apache License, Version 2.0. See [LICENSE](LICENSE) file for details.
 
-## 📞 Support
+## Support
 
 - **Documentation**: [Aerospike Documentation](https://aerospike.com/docs/tools/backup/)
 - **Issues**: [GitHub Issues](https://github.com/aerospike/aerospike-backup-cli/issues)
