@@ -57,7 +57,9 @@ func NewService(
 		aerospikeClient *a.Client
 		err             error
 	)
-
+	// Set default restore mode to asb.
+	// This should be removed once asbx is released.
+	params.Restore.Mode = models.RestoreModeASB
 	// Validations.
 	if err := params.Restore.Validate(); err != nil {
 		return nil, err
