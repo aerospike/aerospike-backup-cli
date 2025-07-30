@@ -1,6 +1,7 @@
 # Aerospike Backup CLI
 [![Tests](https://github.com/aerospike/aerospike-backup-cli/actions/workflows/tests.yml/badge.svg)](https://github.com/aerospike/aerospike-backup-cli/actions/workflows/tests.yml/badge.svg)
-[![codecov](https://codecov.io/gh/aerospike/backup-go/graph/badge.svg?token=S0gfl2zCcZ)](https://codecov.io/gh/aerospike/aerospike-backup-cli)
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/aerospike/aerospike-backup-cli)](https://pkg.go.dev/github.com/aerospike/aerospike-backup-cli)
+[![codecov](https://codecov.io/gh/aerospike/aerospike-backup-cli/graph/badge.svg?token=29G65BU7QX)](https://codecov.io/gh/aerospike/aerospike-backup-cli)
 
 The repository includes the [asbackup](cmd/asbackup) and [asrestore](cmd/asrestore) CLI tools,
 built using [backup-go](https://github.com/aerospike/backup-go) library.
