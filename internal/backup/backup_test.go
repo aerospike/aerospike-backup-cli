@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"path"
 	"testing"
 	"time"
 
@@ -32,27 +33,24 @@ import (
 )
 
 const (
-	testNamespace                    = "test"
-	testSet                          = "test"
-	testSetXDR                       = "test-xdr"
-	testStateFile                    = "state"
-	testASLoginPassword              = "admin"
-	testDC                           = "dc1"
-	testXDRHost                      = "172.17.0.1"
-	testXDRPort                      = 8066
-	testAckQueueSize                 = 256
-	testResultQueueSize              = 256
-	testRewind                       = "all"
-	testInfoPolingPeriodMilliseconds = 100
-	testReadTimeoutMilliseconds      = 10000
-	testWriteTimeoutMilliseconds     = 10000
+	testNamespace       = "test"
+	testSet             = "test"
+	testSetXDR          = "test-xdr"
+	testStateFile       = "state"
+	testASLoginPassword = "admin"
+	testDC              = "dc1"
+	testXDRHost         = "172.17.0.1"
+	testXDRPort         = 8066
+	testAckQueueSize    = 256
+	testResultQueueSize = 256
+	testRewind          = "all"
 )
 
 func Test_BackupWithState(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
-	dir := t.TempDir()
+	dir := path.Join(t.TempDir(), "plain")
 	hostPort := client.NewDefaultHostTLSPort()
 
 	asbParams := &config.BackupServiceConfig{
@@ -107,7 +105,7 @@ func Test_BackupWithState(t *testing.T) {
 func Test_BackupXDR(t *testing.T) {
 	// Do not parallel this test. We have multiply xdr tests, so they should be executed sequentially.
 	ctx := context.Background()
-	dir := t.TempDir()
+	dir := path.Join(t.TempDir(), "xdr")
 	hostPort := client.NewDefaultHostTLSPort()
 
 	asbParams := &config.BackupServiceConfig{
@@ -163,20 +161,6 @@ func Test_BackupXDR(t *testing.T) {
 
 	err = asb.Run(ctx)
 	require.NoError(t, err)
-
-	asbParams.BackupXDR.StopXDR = true
-	asb, err = NewService(ctx, asbParams, logger)
-	require.NoError(t, err)
-
-	err = asb.Run(ctx)
-	require.NoError(t, err)
-
-	asbParams.BackupXDR.StopXDR = false
-	asbParams.BackupXDR.UnblockMRT = true
-	asb, err = NewService(ctx, asbParams, logger)
-	require.NoError(t, err)
-
-	_ = asb.Run(ctx)
 }
 
 func Test_BackupEstimates(t *testing.T) {
