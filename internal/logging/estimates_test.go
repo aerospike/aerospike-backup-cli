@@ -462,6 +462,35 @@ func TestPrintRestoreEstimateExtended(t *testing.T) {
 	}
 }
 
+func TestPrintFilesNumberContextCancellation(t *testing.T) {
+	t.Parallel()
+
+	ctx, cancel := context.WithCancel(context.Background())
+
+	getNumber := func() int64 {
+		return 0 // Always return 0 to keep looping
+	}
+
+	logger := slog.New(slog.NewTextHandler(io.Discard, &slog.HandlerOptions{Level: slog.LevelInfo}))
+
+	done := make(chan struct{})
+	go func() {
+		PrintFilesNumber(ctx, getNumber, "test", logger)
+		close(done)
+	}()
+
+	// Cancel context after a short delay
+	time.Sleep(50 * time.Millisecond)
+	cancel()
+
+	select {
+	case <-done:
+		// Function should exit due to context cancellation
+	case <-time.After(200 * time.Millisecond):
+		t.Fatal("PrintFilesNumber did not exit after context cancellation")
+	}
+}
+
 func TestPrintFilesNumber(t *testing.T) {
 	t.Parallel()
 	tests := []struct {
@@ -549,34 +578,5 @@ func TestPrintFilesNumber(t *testing.T) {
 				assert.NotContains(t, buf.String(), "found "+tt.fileTypes+" files")
 			}
 		})
-	}
-}
-
-func TestPrintFilesNumberContextCancellation(t *testing.T) {
-	t.Parallel()
-
-	ctx, cancel := context.WithCancel(context.Background())
-
-	getNumber := func() int64 {
-		return 0 // Always return 0 to keep looping
-	}
-
-	logger := slog.New(slog.NewTextHandler(io.Discard, &slog.HandlerOptions{Level: slog.LevelInfo}))
-
-	done := make(chan struct{})
-	go func() {
-		PrintFilesNumber(ctx, getNumber, "test", logger)
-		close(done)
-	}()
-
-	// Cancel context after a short delay
-	time.Sleep(50 * time.Millisecond)
-	cancel()
-
-	select {
-	case <-done:
-		// Function should exit due to context cancellation
-	case <-time.After(200 * time.Millisecond):
-		t.Fatal("PrintFilesNumber did not exit after context cancellation")
 	}
 }
