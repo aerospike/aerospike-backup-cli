@@ -39,6 +39,10 @@ func decodeBackupServiceConfig(filename string) (*BackupServiceConfig, error) {
 }
 
 func dtoToBackupServiceConfig(dtoBackup *dto.Backup) (*BackupServiceConfig, error) {
+	if dtoBackup == nil {
+		return nil, fmt.Errorf("dto is nil")
+	}
+
 	asConfig, err := dtoBackup.Cluster.ToAerospikeConfig()
 	if err != nil {
 		return nil, fmt.Errorf("failed to map to aerospike config: %w", err)
@@ -75,6 +79,10 @@ func decodeRestoreServiceConfig(filename string) (*RestoreServiceConfig, error) 
 }
 
 func dtoToRestoreServiceConfig(dtoRestore *dto.Restore) (*RestoreServiceConfig, error) {
+	if dtoRestore == nil {
+		return nil, fmt.Errorf("dto is nil")
+	}
+
 	asConfig, err := dtoRestore.Cluster.ToAerospikeConfig()
 	if err != nil {
 		return nil, fmt.Errorf("failed to map to aerospike config: %w", err)
@@ -117,9 +125,7 @@ func decodeFromFile(filename string, params any) error {
 }
 
 // DumpFile used for tests.
-func DumpFile(params any) error {
-	filename := "dump.yaml"
-
+func DumpFile(filename string, params any) error {
 	file, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0o666)
 	if err != nil {
 		return fmt.Errorf("failed to open config file %s: %w", filename, err)
