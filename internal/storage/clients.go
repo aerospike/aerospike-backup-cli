@@ -174,6 +174,7 @@ func newGcpClient(ctx context.Context, g *models.GcpStorage) (*gcpStorage.Client
 		DisableCompression:  true,
 		WriteBufferSize:     64 * 1024,
 		ReadBufferSize:      64 * 1024,
+		MaxConnsPerHost:     24,
 	}
 
 	httpClient := &http.Client{
@@ -205,7 +206,7 @@ func newGcpClient(ctx context.Context, g *models.GcpStorage) (*gcpStorage.Client
 	return gcpClient, nil
 }
 
-func newGcpRpcClient(ctx context.Context, g *models.GcpStorage) (*gcpStorage.Client, error) {
+func newGcpClientNew(ctx context.Context, g *models.GcpStorage) (*gcpStorage.Client, error) {
 	opts := make([]option.ClientOption, 0)
 
 	if g.KeyFile != "" {
@@ -216,7 +217,7 @@ func newGcpRpcClient(ctx context.Context, g *models.GcpStorage) (*gcpStorage.Cli
 		opts = append(opts, option.WithEndpoint(g.Endpoint), option.WithoutAuthentication())
 	}
 
-	gcpClient, err := gcpStorage.NewGRPCClient(ctx, opts...)
+	gcpClient, err := gcpStorage.NewClient(ctx, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create GCP client: %w", err)
 	}
