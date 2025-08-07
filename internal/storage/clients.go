@@ -146,7 +146,7 @@ func newS3Client(ctx context.Context, a *models.AwsS3) (*s3.Client, error) {
 	return s3Client, nil
 }
 
-func newGcpClientOld(ctx context.Context, g *models.GcpStorage) (*gcpStorage.Client, error) {
+func newGcpClient(ctx context.Context, g *models.GcpStorage) (*gcpStorage.Client, error) {
 	opts := make([]option.ClientOption, 0)
 
 	if g.KeyFile != "" {
@@ -186,7 +186,7 @@ func newGcpClientOld(ctx context.Context, g *models.GcpStorage) (*gcpStorage.Cli
 
 	opts = append(opts, option.WithHTTPClient(httpClient))
 
-	gcpClient, err := gcpStorage.NewClient(ctx, opts...)
+	gcpClient, err := gcpStorage.NewGRPCClient(ctx, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create GCP client: %w", err)
 	}
@@ -205,7 +205,7 @@ func newGcpClientOld(ctx context.Context, g *models.GcpStorage) (*gcpStorage.Cli
 	return gcpClient, nil
 }
 
-func newGcpClient(ctx context.Context, g *models.GcpStorage) (*gcpStorage.Client, error) {
+func newGcpClientR(ctx context.Context, g *models.GcpStorage) (*gcpStorage.Client, error) {
 	opts := make([]option.ClientOption, 0)
 
 	if g.KeyFile != "" {
