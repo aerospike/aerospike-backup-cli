@@ -146,7 +146,7 @@ func newS3Client(ctx context.Context, a *models.AwsS3) (*s3.Client, error) {
 	return s3Client, nil
 }
 
-func newGcpClient(ctx context.Context, g *models.GcpStorage) (*gcpStorage.Client, error) {
+func newGcpClientOld(ctx context.Context, g *models.GcpStorage) (*gcpStorage.Client, error) {
 	opts := make([]option.ClientOption, 0)
 
 	if g.KeyFile != "" {
@@ -205,7 +205,7 @@ func newGcpClient(ctx context.Context, g *models.GcpStorage) (*gcpStorage.Client
 	return gcpClient, nil
 }
 
-func newGcpRpcClient(ctx context.Context, g *models.GcpStorage) (*gcpStorage.Client, error) {
+func newGcpClient(ctx context.Context, g *models.GcpStorage) (*gcpStorage.Client, error) {
 	opts := make([]option.ClientOption, 0)
 
 	if g.KeyFile != "" {
