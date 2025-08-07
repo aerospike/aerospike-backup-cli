@@ -20,6 +20,7 @@ import (
 	"log/slog"
 	"os"
 	"os/signal"
+	"runtime"
 	"syscall"
 
 	"github.com/aerospike/aerospike-backup-cli/cmd/asbackup/cmd"
@@ -32,6 +33,9 @@ var (
 )
 
 func main() {
+
+	runtime.GOMAXPROCS(runtime.NumCPU() * 2)
+
 	// Initializing context with cancel for graceful shutdown.
 	ctx, cancel := context.WithCancel(context.Background())
 	sigChan := make(chan os.Signal, 1)
