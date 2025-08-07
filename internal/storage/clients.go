@@ -154,6 +154,22 @@ func newGcpClient(ctx context.Context, g *models.GcpStorage) (*gcpStorage.Client
 		opts = append(opts, option.WithEndpoint(g.Endpoint), option.WithoutAuthentication())
 	}
 
+	transport := &http.Transport{
+		MaxIdleConns:        24,
+		MaxIdleConnsPerHost: 24,
+		IdleConnTimeout:     90 * time.Second,
+		DisableCompression:  true, // Отключаем сжатие для скорости
+		WriteBufferSize:     64 * 1024,
+		ReadBufferSize:      64 * 1024,
+	}
+
+	httpClient := &http.Client{
+		Transport: transport,
+		Timeout:   time.Duration(1000) * time.Second,
+	}
+
+	opts = append(opts, option.WithHTTPClient(httpClient))
+
 	gcpClient, err := gcpStorage.NewClient(ctx, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create GCP client: %w", err)
@@ -169,6 +185,37 @@ func newGcpClient(ctx context.Context, g *models.GcpStorage) (*gcpStorage.Client
 		gcpStorage.WithPolicy(gcpStorage.RetryAlways),
 		gcpStorage.WithBackoff(backoff),
 		gcpStorage.WithMaxAttempts(g.RetryMaxAttempts))
+
+	return gcpClient, nil
+}
+
+func newGcpRpcClient(ctx context.Context, g *models.GcpStorage) (*gcpStorage.Client, error) {
+	opts := make([]option.ClientOption, 0)
+
+	if g.KeyFile != "" {
+		opts = append(opts, option.WithCredentialsFile(g.KeyFile))
+	}
+
+	if g.Endpoint != "" {
+		opts = append(opts, option.WithEndpoint(g.Endpoint), option.WithoutAuthentication())
+	}
+
+	gcpClient, err := gcpStorage.NewGRPCClient(ctx, opts...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create GCP client: %w", err)
+	}
+
+	backoff := gax.Backoff{
+		Initial:    time.Duration(g.RetryBackoffInitSeconds) * time.Second,
+		Max:        time.Duration(g.RetryBackoffMaxSeconds) * time.Second,
+		Multiplier: g.RetryBackoffMultiplier,
+	}
+
+	gcpClient.SetRetry(
+		gcpStorage.WithPolicy(gcpStorage.RetryAlways),
+		gcpStorage.WithBackoff(backoff),
+		gcpStorage.WithMaxAttempts(g.RetryMaxAttempts),
+	)
 
 	return gcpClient, nil
 }
