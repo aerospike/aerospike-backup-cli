@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"os"
 	"time"
 
 	gcpStorage "cloud.google.com/go/storage"
@@ -36,6 +37,8 @@ import (
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/googleapis/gax-go/v2"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
 	"google.golang.org/api/option"
 )
 
@@ -154,21 +157,34 @@ func newGcpClient(ctx context.Context, g *models.GcpStorage) (*gcpStorage.Client
 		opts = append(opts, option.WithEndpoint(g.Endpoint), option.WithoutAuthentication())
 	}
 
+	credentialsJSON, err := os.ReadFile(g.KeyFile)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read key file: %w", err)
+	}
+	
+	creds, err := google.CredentialsFromJSON(ctx, credentialsJSON, gcpStorage.ScopeFullControl)
+	if err != nil {
+		return nil, fmt.Errorf("faild to crete creds: %w", err)
+	}
+
 	transport := &http.Transport{
 		MaxIdleConns:        24,
 		MaxIdleConnsPerHost: 24,
 		IdleConnTimeout:     90 * time.Second,
-		DisableCompression:  true, // Отключаем сжатие для скорости
+		DisableCompression:  true,
 		WriteBufferSize:     64 * 1024,
 		ReadBufferSize:      64 * 1024,
 	}
 
 	httpClient := &http.Client{
-		Transport: transport,
-		Timeout:   time.Duration(1000) * time.Second,
+		Transport: &oauth2.Transport{
+			Source: creds.TokenSource,
+			Base:   transport,
+		},
+		Timeout: time.Duration(100) * time.Second,
 	}
 
-	opts = append(opts, option.WithHTTPClient(httpClient))
+	opts = append(opts, option.WithHTTPClient(httpClient), option.WithCredentials(creds))
 
 	gcpClient, err := gcpStorage.NewClient(ctx, opts...)
 	if err != nil {
