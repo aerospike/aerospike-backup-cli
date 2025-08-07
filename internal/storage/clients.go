@@ -161,7 +161,7 @@ func newGcpClient(ctx context.Context, g *models.GcpStorage) (*gcpStorage.Client
 	if err != nil {
 		return nil, fmt.Errorf("failed to read key file: %w", err)
 	}
-	
+
 	creds, err := google.CredentialsFromJSON(ctx, credentialsJSON, gcpStorage.ScopeFullControl)
 	if err != nil {
 		return nil, fmt.Errorf("faild to crete creds: %w", err)
@@ -184,7 +184,7 @@ func newGcpClient(ctx context.Context, g *models.GcpStorage) (*gcpStorage.Client
 		Timeout: time.Duration(100) * time.Second,
 	}
 
-	opts = append(opts, option.WithHTTPClient(httpClient), option.WithCredentials(creds))
+	opts = append(opts, option.WithHTTPClient(httpClient))
 
 	gcpClient, err := gcpStorage.NewClient(ctx, opts...)
 	if err != nil {
