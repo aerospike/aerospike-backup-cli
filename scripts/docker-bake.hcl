@@ -1,6 +1,6 @@
 group default {
   targets = [
-    "aerospike-backup-tools"
+    "aerospike-backup-cli"
   ]
 }
 
@@ -32,8 +32,8 @@ variable ISO8601 {
   default = null
 }
 
-variable HUB {
-  default = "aerospike.jfrog.io/ecosystem-container-dev-local"
+variable REPO {
+  default = "aerospike/aerospike-backup-cli"
 }
 
 variable PLATFORMS {
@@ -48,28 +48,42 @@ variable GO_VERSION {
   default = "1.23.10"
 }
 
-variable RH_REGISTRY {
-  default = "registry.access.redhat.com"
+variable CACHE_FROM {
+  default = ""
+}
+
+variable CACHE_TO {
+  default = ""
+}
+
+variable OUTPUT {
+  default = "type=image,push=true"
+}
+
+function norm {
+  params = [value]
+
+  result = value == null || value == "" ? [] : length(regexall(" ", value)) > 0 ? split(" ", value) : [value]
 }
 
 function tags {
   params = [service]
   result = LATEST == true ? [
-    "${HUB}/${service}:${TAG}",
-    "${HUB}/${service}:latest"
-  ] : ["${HUB}/${service}:${TAG}"]
+    "${REPO}/${service}:${TAG}",
+    "${REPO}/${service}:latest"
+  ] : ["${REPO}/${service}:${TAG}"]
 }
 
-target aerospike-backup-tools {
+target aerospike-backup-cli {
   labels = {
-    "org.opencontainers.image.title"         = "Aerospike Backup Tools"
-    "org.opencontainers.image.description"   = "Tools for backing up and restoring Aerospike data"
-    "org.opencontainers.image.documentation" = "https://github.com/aerospike/backup-go?tab=readme-ov-file#backup-go"
+    "org.opencontainers.image.title"         = "Aerospike Backup CLI"
+    "org.opencontainers.image.description"   = "Command-line tools for backing up and restoring Aerospike data"
+    "org.opencontainers.image.documentation" = "https://github.com/aerospike/aerospike-backup-cli?tab=readme-ov-file#aerospike-backup-cli"
     "org.opencontainers.image.base.name"     = "registry.access.redhat.com/ubi9/ubi-minimal"
-    "org.opencontainers.image.source"        = "https://github.com/aerospike/backup-go/tree/${GIT_BRANCH}"
+    "org.opencontainers.image.source"        = "https://github.com/aerospike/aerospike-backup-cli/tree/${GIT_BRANCH}"
     "org.opencontainers.image.vendor"        = "Aerospike"
     "org.opencontainers.image.version"       = "${VERSION}"
-    "org.opencontainers.image.url"           = "https://github.com/aerospike/backup-go"
+    "org.opencontainers.image.url"           = "https://github.com/aerospike/aerospike-backup-cli"
     "org.opencontainers.image.licenses"      = "Apache-2.0"
     "org.opencontainers.image.revision"      = "${GIT_COMMIT_SHA}"
     "org.opencontainers.image.created"       = "${ISO8601}"
@@ -77,15 +91,16 @@ target aerospike-backup-tools {
 
   args = {
     GO_VERSION = "${GO_VERSION}"
-    REGISTRY = "${REGISTRY}"
-    RH_REGISTRY = "${RH_REGISTRY}"
+    REGISTRY   = "${REGISTRY}"
   }
 
+  secret     = ["id=GOPROXY,env=GOPROXY"]
   context    = "${CONTEXT}"
   dockerfile = "Dockerfile"
-  platforms  = split(",", "${PLATFORMS}")
+  platforms  = split(",", replace("${PLATFORMS}", " ", ","))
+  cache-to   = norm("${CACHE_TO}")
+  cache-from = norm("${CACHE_FROM}")
 
-  tags   = tags("aerospike-backup-tools")
-  output = ["type=image,push=true"]
+  tags   = tags("aerospike-backup-cli")
+  output = norm("${OUTPUT}")
 }
-

@@ -140,15 +140,12 @@ jobs:
 
       - name: Get Metadata
         id: metadata
+        env:
+          GIT_TAG: ${{ github.ref }}
         run: |
           echo "Starting metadata extraction..."
           
-          if [ ! -f VERSION ]; then
-            echo "VERSION file not found. Exiting." >&2
-            exit 1
-          fi
-          
-          PACKAGE_VERSION=$(cat VERSION)
+          PACKAGE_VERSION="$GIT_TAG"
           PACKAGE_NAME="${GITHUB_REPOSITORY##*/}"
           
           echo "Read VERSION: $PACKAGE_VERSION"
