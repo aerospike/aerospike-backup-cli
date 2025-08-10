@@ -1,0 +1,4 @@
+ignore:
+  - "cmd"
+  - "internal/backup"
+  - "internal/restore"
