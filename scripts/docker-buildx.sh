@@ -4,6 +4,7 @@ REGISTRY="docker.io"
 REPO="aerospike/aerospike-backup-cli"
 TAG_LATEST=false
 TAG=""
+VERSION=""
 CACHE_TO=""
 CACHE_FROM=""
 OUTPUT="type=image,push=true"
@@ -25,6 +26,11 @@ while [[ $# -gt 0 ]]; do
 		;;
 	--tag-latest)
 		TAG_LATEST="$2"
+		shift
+		;;
+	--version)
+		TAG="$2"
+		shift
 		shift
 		;;
 	--platforms)
@@ -86,7 +92,7 @@ PLATFORMS="$PLATFORMS" \
 	LATEST="$TAG_LATEST" \
 	GIT_BRANCH="$(git rev-parse --abbrev-ref HEAD)" \
 	GIT_COMMIT_SHA="$(git rev-parse HEAD)" \
-	VERSION="$(cat "$WORKSPACE/VERSION")" \
+	VERSION="$VERSION" \
 	GO_VERSION="$GO_VERSION" \
 	ISO8601="$(LC_TIME=en_US.UTF-8 date "+%Y-%m-%dT%H:%M:%S%z")" \
 	CONTEXT="$WORKSPACE" \

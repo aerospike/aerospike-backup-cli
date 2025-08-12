@@ -65,7 +65,15 @@ docker-build:
 
 .PHONY: docker-buildx
 docker-buildx:
-	./scripts/docker-buildx.sh --tag $(IMAGE_TAG) --registry $(REGISTRY) --platforms "$(ARCHS)"
+		cd ./build/scripts && ./docker-buildx.sh \
+    	--repo $(IMAGE_REPO) \
+    	--tag $(IMAGE_TAG) \
+    	--registry $(REGISTRY) \
+    	--version $(VERSION) \
+    	--platforms "$(ARCHS)" \
+    	--cache-to "$(IMAGE_CACHE_TO)" \
+    	--cache-from "$(IMAGE_CACHE_FROM)" \
+    	--output "$(IMAGE_OUTPUT)"
 
 .PHONY: build
 build:
