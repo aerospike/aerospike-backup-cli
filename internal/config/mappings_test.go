@@ -669,7 +669,6 @@ func TestMapBackupXDRConfig(t *testing.T) {
 				assert.Nil(t, cfg.CompressionPolicy)
 				assert.Nil(t, cfg.EncryptionPolicy)
 				assert.Nil(t, cfg.SecretAgentConfig)
-				assert.NotNil(t, cfg.InfoPolicy)
 			},
 		},
 		{

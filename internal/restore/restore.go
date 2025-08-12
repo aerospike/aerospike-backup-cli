@@ -96,7 +96,20 @@ func NewService(
 
 	logger.Info("initializing restore client", slog.String("id", idRestore))
 
-	backupClient, err := backup.NewClient(aerospikeClient, backup.WithLogger(logger), backup.WithID(idRestore))
+	infoRetryPolicy := config.NewRetryPolicy(
+		params.Restore.InfoRetryIntervalMilliseconds,
+		params.Restore.InfoRetriesMultiplier,
+		params.Restore.InfoMaxRetries,
+	)
+
+	infoPolicy := config.NewInfoPolicy(params.Restore.InfoTimeOut)
+
+	backupClient, err := backup.NewClient(
+		aerospikeClient,
+		backup.WithLogger(logger),
+		backup.WithID(idRestore),
+		backup.WithInfoPolicies(infoPolicy, infoRetryPolicy),
+	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create restore client: %w", err)
 	}

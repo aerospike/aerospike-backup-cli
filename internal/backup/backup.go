@@ -24,15 +24,17 @@ import (
 	"github.com/aerospike/aerospike-backup-cli/internal/config"
 	"github.com/aerospike/aerospike-backup-cli/internal/logging"
 	"github.com/aerospike/aerospike-backup-cli/internal/storage"
+	"github.com/aerospike/aerospike-client-go/v8"
 	"github.com/aerospike/backup-go"
 	"github.com/aerospike/backup-go/models"
 	"github.com/aerospike/backup-go/pkg/asinfo"
 )
 
 const (
-	idBackup            = "asbackup-cli"
-	xdrSupportedVersion = 8
+	idBackup = "asbackup-cli"
 )
+
+var xdrSupportedVersion = asinfo.AerospikeVersion{Major: 8}
 
 // Service represents a struct that encapsulates components for backup and logging functionalities.
 // It is responsible for managing backup clients, configurations,
@@ -112,19 +114,33 @@ func NewService(
 		return nil, fmt.Errorf("failed to create aerospike client: %w", err)
 	}
 
+	infoRetryPolicy := config.NewRetryPolicy(
+		params.Backup.InfoRetryIntervalMilliseconds,
+		params.Backup.InfoRetriesMultiplier,
+		params.Backup.InfoMaxRetries,
+	)
+
+	infoPolicy := config.NewInfoPolicy(params.Backup.InfoTimeOut)
+
 	if params.BackupXDR != nil {
-		infoClient := asinfo.NewInfoClientFromAerospike(
-			aerospikeClient,
-			backupXDRConfig.InfoPolicy,
-			backupXDRConfig.InfoRetryPolicy,
+		infoPolicy = config.NewInfoPolicy(params.BackupXDR.InfoTimeOut)
+
+		infoClient, err := asinfo.NewClient(
+			aerospikeClient.Cluster(),
+			aerospike.NewInfoPolicy(),
+			infoRetryPolicy,
 		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create info client: %w", err)
+		}
 
 		version, err := infoClient.GetVersion()
 		if err != nil {
 			return nil, fmt.Errorf("failed to get version: %w", err)
 		}
 
-		if version.Major < xdrSupportedVersion {
+		// TODO: move this logic to XDR handler.
+		if xdrSupportedVersion.IsGreater(version) {
 			return nil, fmt.Errorf("version %s is unsupported, only databse version %d+ is supproted",
 				version.String(), xdrSupportedVersion)
 		}
@@ -154,7 +170,12 @@ func NewService(
 
 	logger.Info("initializing backup client", slog.String("id", idBackup))
 
-	backupClient, err := backup.NewClient(aerospikeClient, backup.WithLogger(logger), backup.WithID(idBackup))
+	backupClient, err := backup.NewClient(
+		aerospikeClient,
+		backup.WithLogger(logger),
+		backup.WithID(idBackup),
+		backup.WithInfoPolicies(infoPolicy, infoRetryPolicy),
+	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create backup client: %w", err)
 	}
@@ -241,7 +262,7 @@ func (s *Service) Run(ctx context.Context) error {
 	return nil
 }
 
-func stopXDR(infoClient *asinfo.InfoClient, dc, namespace string) error {
+func stopXDR(infoClient *asinfo.Client, dc, namespace string) error {
 	nodes := infoClient.GetNodesNames()
 
 	var errs []error
@@ -265,7 +286,7 @@ func stopXDR(infoClient *asinfo.InfoClient, dc, namespace string) error {
 	return nil
 }
 
-func unblockMrt(infoClient *asinfo.InfoClient, namespace string) error {
+func unblockMrt(infoClient *asinfo.Client, namespace string) error {
 	nodes := infoClient.GetNodesNames()
 
 	var errs []error

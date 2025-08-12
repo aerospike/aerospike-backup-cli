@@ -37,6 +37,7 @@ type BackupXDR struct {
 	MaxConnections               int
 	InfoPolingPeriodMilliseconds int64
 	StartTimeoutMilliseconds     int64
+	InfoTimeOut                  int64
 
 	StopXDR    bool
 	UnblockMRT bool
