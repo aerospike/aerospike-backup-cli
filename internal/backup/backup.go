@@ -114,21 +114,15 @@ func NewService(
 		return nil, fmt.Errorf("failed to create aerospike client: %w", err)
 	}
 
-	infoRetryPolicy := config.NewRetryPolicy(
-		params.Backup.InfoRetryIntervalMilliseconds,
-		params.Backup.InfoRetriesMultiplier,
-		params.Backup.InfoMaxRetries,
-	)
-
-	infoPolicy := config.NewInfoPolicy(params.Backup.InfoTimeOut)
+	infoPolicy, retryInfoPolicy := getInfoPolicies(params)
 
 	if params.BackupXDR != nil {
 		infoPolicy = config.NewInfoPolicy(params.BackupXDR.InfoTimeOut)
 
 		infoClient, err := asinfo.NewClient(
 			aerospikeClient.Cluster(),
-			aerospike.NewInfoPolicy(),
-			infoRetryPolicy,
+			infoPolicy,
+			retryInfoPolicy,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("failed to create info client: %w", err)
@@ -174,7 +168,7 @@ func NewService(
 		aerospikeClient,
 		backup.WithLogger(logger),
 		backup.WithID(idBackup),
-		backup.WithInfoPolicies(infoPolicy, infoRetryPolicy),
+		backup.WithInfoPolicies(infoPolicy, retryInfoPolicy),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create backup client: %w", err)
@@ -302,4 +296,23 @@ func unblockMrt(infoClient *asinfo.Client, namespace string) error {
 	}
 
 	return nil
+}
+
+func getInfoPolicies(params *config.BackupServiceConfig) (*aerospike.InfoPolicy, *models.RetryPolicy) {
+	switch {
+	case params.BackupXDR != nil:
+		return config.NewInfoPolicy(params.BackupXDR.InfoTimeOut), config.NewRetryPolicy(
+			params.BackupXDR.InfoRetryIntervalMilliseconds,
+			params.BackupXDR.InfoRetriesMultiplier,
+			params.BackupXDR.InfoMaxRetries,
+		)
+	case params.Backup != nil:
+		return config.NewInfoPolicy(params.Backup.InfoTimeOut), config.NewRetryPolicy(
+			params.Backup.InfoRetryIntervalMilliseconds,
+			params.Backup.InfoRetriesMultiplier,
+			params.Backup.InfoMaxRetries,
+		)
+	default:
+		return nil, nil
+	}
 }
