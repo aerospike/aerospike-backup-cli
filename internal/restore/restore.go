@@ -71,6 +71,7 @@ func NewService(
 
 	// Initializations.
 	restoreConfig := config.NewRestoreConfig(params, logger)
+	aerospikeClient = nil
 
 	// Skip this part on validation.
 	if !restoreConfig.ValidateOnly {
@@ -104,12 +105,17 @@ func NewService(
 
 	infoPolicy := config.NewInfoPolicy(params.Restore.InfoTimeOut)
 
-	backupClient, err := backup.NewClient(
-		aerospikeClient,
+	opts := []backup.ClientOpt{
 		backup.WithLogger(logger),
 		backup.WithID(idRestore),
 		backup.WithInfoPolicies(infoPolicy, infoRetryPolicy),
-	)
+	}
+
+	if restoreConfig.ValidateOnly {
+		opts = append(opts, backup.WithValidateOnly())
+	}
+
+	backupClient, err := backup.NewClient(aerospikeClient, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create restore client: %w", err)
 	}
