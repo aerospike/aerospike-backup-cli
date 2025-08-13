@@ -30,7 +30,10 @@ TARGET_DIR = $(WORKSPACE)/target
 PACKAGE_DIR= $(WORKSPACE)/scripts/package
 CMD_BACKUP_DIR = $(WORKSPACE)/cmd/$(BACKUP_BINARY_NAME)
 CMD_RESTORE_DIR = $(WORKSPACE)/cmd/$(RESTORE_BINARY_NAME)
-INSTALL_DIR ?= /usr/bin
+
+PREFIX ?= /usr
+BINDIR ?= $(PREFIX)/bin
+DESTDIR ?=
 
 
 .PHONY: test
@@ -83,6 +86,17 @@ buildx:
   		OS=$$OS ARCH=$$ARCH $(MAKE) build; \
   	done
 
+.PHONY: install
+install: build
+	install -d $(DESTDIR)$(BINDIR)
+	install -m 755 $(TARGET_DIR)/$(BACKUP_BINARY_NAME)_$(OS)_$(ARCH) $(DESTDIR)$(BINDIR)/$(BACKUP_BINARY_NAME)
+	install -m 755 $(TARGET_DIR)/$(RESTORE_BINARY_NAME)_$(OS)_$(ARCH) $(DESTDIR)$(BINDIR)/$(RESTORE_BINARY_NAME)
+
+.PHONY: uninstall
+uninstall:
+	rm -f $(DESTDIR)$(BINDIR)/$(BACKUP_BINARY_NAME)
+	rm -f $(DESTDIR)$(BINDIR)/$(RESTORE_BINARY_NAME)
+
 .PHONY: packages
 packages: buildx
 	@for arch in $(ARCHS); do \
@@ -114,16 +128,6 @@ checksums:
 	@find . -type f \
 		\( -name '*.deb' -o -name '*.rpm' \) \
 		-exec sh -c 'sha256sum "$$1" | cut -d" " -f1 > "$$1.sha256"' _ {} \;
-
-.PHONY: install
-install:
-	install -m 0755 $(TARGET_DIR)/$(BACKUP_BINARY_NAME)_$(OS)_$(ARCH) $(INSTALL_DIR)/$(BACKUP_BINARY_NAME)
-	install -m 0755 $(TARGET_DIR)/$(RESTORE_BINARY_NAME)_$(OS)_$(ARCH) $(INSTALL_DIR)/$(RESTORE_BINARY_NAME)
-
-.PHONY: uninstall
-uninstall:
-	@rm -f $(INSTALL_DIR)/$(BACKUP_BINARY_NAME)
-	@rm -f $(INSTALL_DIR)/$(RESTORE_BINARY_NAME)
 
 .PHONY: vulnerability-scan
 vulnerability-scan:
