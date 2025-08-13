@@ -117,8 +117,8 @@ func NewService(
 	infoPolicy, retryInfoPolicy := getInfoPolicies(params)
 
 	if params.BackupXDR != nil {
-		infoPolicy = config.NewInfoPolicy(params.BackupXDR.InfoTimeOut)
-
+		// To pass version check and stop XDR and unblock MRT we need asinfo client without backup client.
+		// So we init it separately in old fashion way.
 		infoClient, err := asinfo.NewClient(
 			aerospikeClient.Cluster(),
 			infoPolicy,
