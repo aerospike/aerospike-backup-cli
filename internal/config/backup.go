@@ -22,7 +22,6 @@ import (
 	"time"
 
 	"github.com/aerospike/aerospike-backup-cli/internal/models"
-	"github.com/aerospike/aerospike-client-go/v8"
 	"github.com/aerospike/backup-go"
 	"github.com/aerospike/tools-common-go/client"
 )
@@ -247,12 +246,6 @@ func newBackupConfig(params *BackupServiceConfig) (*backup.ConfigBackup, error) 
 		c.ModAfter = &modAfterTime
 	}
 
-	c.InfoRetryPolicy = newRetryPolicy(
-		params.Backup.InfoRetryIntervalMilliseconds,
-		params.Backup.InfoRetriesMultiplier,
-		params.Backup.InfoMaxRetries,
-	)
-
 	return c, nil
 }
 
@@ -264,7 +257,6 @@ func newBackupXDRConfig(params *BackupServiceConfig) *backup.ConfigBackupXDR {
 	}
 
 	c := &backup.ConfigBackupXDR{
-		InfoPolicy:        aerospike.NewInfoPolicy(),
 		EncryptionPolicy:  newEncryptionPolicy(params.Encryption),
 		CompressionPolicy: newCompressionPolicy(params.Compression),
 		SecretAgentConfig: newSecretAgentConfig(params.SecretAgent),
@@ -284,14 +276,9 @@ func newBackupXDRConfig(params *BackupServiceConfig) *backup.ConfigBackupXDR {
 		MaxConnections:    params.BackupXDR.MaxConnections,
 		InfoPolingPeriod:  time.Duration(params.BackupXDR.InfoPolingPeriodMilliseconds) * time.Millisecond,
 		StartTimeout:      time.Duration(params.BackupXDR.StartTimeoutMilliseconds) * time.Millisecond,
-		InfoRetryPolicy: newRetryPolicy(
-			params.BackupXDR.InfoRetryIntervalMilliseconds,
-			params.BackupXDR.InfoRetriesMultiplier,
-			params.BackupXDR.InfoMaxRetries,
-		),
-		MaxThroughput:  params.BackupXDR.MaxThroughput,
-		Forward:        params.BackupXDR.Forward,
-		MetricsEnabled: true,
+		MaxThroughput:     params.BackupXDR.MaxThroughput,
+		Forward:           params.BackupXDR.Forward,
+		MetricsEnabled:    true,
 	}
 
 	return c

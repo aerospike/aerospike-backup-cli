@@ -40,7 +40,6 @@ type Restore struct {
 	Uniq              bool
 	Replace           bool
 	NoGeneration      bool
-	TimeOut           int64
 
 	RetryBaseTimeout int64
 	RetryMultiplier  float64

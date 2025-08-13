@@ -229,14 +229,14 @@ func recordExistsAction(replace, unique bool) aerospike.RecordExistsAction {
 	}
 }
 
-func newInfoPolicy(timeOut int64) *aerospike.InfoPolicy {
+func NewInfoPolicy(timeOut int64) *aerospike.InfoPolicy {
 	p := aerospike.NewInfoPolicy()
 	p.Timeout = time.Duration(timeOut) * time.Millisecond
 
 	return p
 }
 
-func newRetryPolicy(retryBaseTimeout int64, retryMultiplier float64, retryMaxRetries uint) *bModels.RetryPolicy {
+func NewRetryPolicy(retryBaseTimeout int64, retryMultiplier float64, retryMaxRetries uint) *bModels.RetryPolicy {
 	return bModels.NewRetryPolicy(
 		time.Duration(retryBaseTimeout)*time.Millisecond,
 		retryMultiplier,

@@ -97,7 +97,6 @@ func NewRestoreConfig(serviceConfig *RestoreServiceConfig, logger *slog.Logger) 
 	c.RecordsPerSecond = serviceConfig.Restore.RecordsPerSecond
 	c.Parallel = parallel
 	c.WritePolicy = newWritePolicy(serviceConfig.Restore)
-	c.InfoPolicy = newInfoPolicy(serviceConfig.Restore.TimeOut)
 	// As we set --bandwidth in MiB we must convert it to bytes
 	c.Bandwidth = serviceConfig.Restore.Bandwidth * 1024 * 1024
 	c.ExtraTTL = serviceConfig.Restore.ExtraTTL
@@ -110,7 +109,7 @@ func NewRestoreConfig(serviceConfig *RestoreServiceConfig, logger *slog.Logger) 
 	c.CompressionPolicy = newCompressionPolicy(serviceConfig.Compression)
 	c.EncryptionPolicy = newEncryptionPolicy(serviceConfig.Encryption)
 	c.SecretAgentConfig = newSecretAgentConfig(serviceConfig.SecretAgent)
-	c.RetryPolicy = newRetryPolicy(
+	c.RetryPolicy = NewRetryPolicy(
 		serviceConfig.Restore.RetryBaseTimeout,
 		serviceConfig.Restore.RetryMultiplier,
 		serviceConfig.Restore.RetryMaxRetries,

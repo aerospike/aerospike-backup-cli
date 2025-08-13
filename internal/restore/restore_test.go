@@ -62,13 +62,13 @@ func Test_BackupRestore(t *testing.T) {
 			LoginTimeout: 1000,
 		},
 		Backup: &models.Backup{
-			InfoMaxRetries:                3,
-			InfoRetriesMultiplier:         1,
-			InfoRetryIntervalMilliseconds: 1000,
 			Common: models.Common{
-				Directory: dir,
-				Namespace: testNamespace,
-				Parallel:  1,
+				Directory:                     dir,
+				Namespace:                     testNamespace,
+				Parallel:                      1,
+				InfoMaxRetries:                3,
+				InfoRetriesMultiplier:         1,
+				InfoRetryIntervalMilliseconds: 1000,
 			},
 		},
 		Compression: &models.Compression{
@@ -111,9 +111,12 @@ func Test_BackupRestore(t *testing.T) {
 			MaxAsyncBatches: 1,
 			Mode:            models.RestoreModeASB,
 			Common: models.Common{
-				Directory: dir,
-				Namespace: testNamespace,
-				Parallel:  1,
+				Directory:                     dir,
+				Namespace:                     testNamespace,
+				Parallel:                      1,
+				InfoMaxRetries:                3,
+				InfoRetriesMultiplier:         1,
+				InfoRetryIntervalMilliseconds: 1000,
 			},
 		},
 		Compression: &models.Compression{

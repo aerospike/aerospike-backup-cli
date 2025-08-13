@@ -98,10 +98,6 @@ func (f *Restore) NewFlagSet() *pflag.FlagSet {
 		0,
 		"For records with expirable void-times, add N seconds of extra-ttl to the\n"+
 			"recorded void-time.\n")
-	flagSet.Int64VarP(&f.TimeOut, "timeout", "T",
-		10000,
-		"Set the timeout (ms) for asinfo commands sent from asrestore to the database.\n"+
-			"The info commands are to check version, get indexes, get udfs, count records, and check batch write support.")
 	flagSet.Int64Var(&f.RetryBaseTimeout, "retry-base-timeout",
 		1000,
 		"Set the initial timeout for a retry in milliseconds when data is sent to the Aerospike database\n"+

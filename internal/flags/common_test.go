@@ -42,6 +42,10 @@ func TestCommon_NewFlagSet(t *testing.T) {
 		"--max-retries", "3",
 		"--total-timeout", "30000",
 		"--socket-timeout", "15000",
+		"--timeout", "1000",
+		"--info-retry-timeout", "1",
+		"--info-retry-multiplier", "1",
+		"--info-max-retries", "1",
 	}
 
 	err := flagSet.Parse(args)
@@ -61,6 +65,10 @@ func TestCommon_NewFlagSet(t *testing.T) {
 	assert.Equal(t, 3, result.MaxRetries, "The max-retries flag should be parsed correctly")
 	assert.Equal(t, int64(30000), result.TotalTimeout, "The total-timeout flag should be parsed correctly")
 	assert.Equal(t, int64(15000), result.SocketTimeout, "The socket-timeout flag should be parsed correctly")
+	assert.Equal(t, int64(1000), result.InfoTimeOut, "The timeout flag should be parsed correctly")
+	assert.Equal(t, int64(1), result.InfoRetryIntervalMilliseconds, "The info-retry-timeout flag should be parsed correctly")
+	assert.Equal(t, float64(1), result.InfoRetriesMultiplier, "The info-retry-multiplier flag should be parsed correctly")
+	assert.Equal(t, uint(1), result.InfoMaxRetries, "The info-max-retries flag should be parsed correctly")
 }
 
 func TestCommon_NewFlagSet_DefaultValues(t *testing.T) {
@@ -89,4 +97,8 @@ func TestCommon_NewFlagSet_DefaultValues(t *testing.T) {
 	assert.Equal(t, 5, result.MaxRetries, "The default value for max-retries should be 5")
 	assert.Equal(t, int64(10000), result.TotalTimeout, "The default value for total-timeout should be 0")
 	assert.Equal(t, int64(10000), result.SocketTimeout, "The default value for socket-timeout should be 10000")
+	assert.Equal(t, int64(10000), result.InfoTimeOut, "The default value for timeout should be 10000")
+	assert.Equal(t, int64(1000), result.InfoRetryIntervalMilliseconds, "The default value for info-retry-timeout should be 1000")
+	assert.Equal(t, float64(1), result.InfoRetriesMultiplier, "The default value for info-retry-multiplier should be 1")
+	assert.Equal(t, uint(3), result.InfoMaxRetries, "The default value for info-max-retries should be 3")
 }
