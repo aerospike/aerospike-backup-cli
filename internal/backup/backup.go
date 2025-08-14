@@ -28,6 +28,7 @@ import (
 	"github.com/aerospike/backup-go"
 	"github.com/aerospike/backup-go/models"
 	"github.com/aerospike/backup-go/pkg/asinfo"
+	"golang.org/x/sync/semaphore"
 )
 
 const (
@@ -164,11 +165,14 @@ func NewService(
 
 	logger.Info("initializing backup client", slog.String("id", idBackup))
 
+	sem := semaphore.NewWeighted(16)
+
 	backupClient, err := backup.NewClient(
 		aerospikeClient,
 		backup.WithLogger(logger),
 		backup.WithID(idBackup),
 		backup.WithInfoPolicies(infoPolicy, retryInfoPolicy),
+		backup.WithScanLimiter(sem),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create backup client: %w", err)
