@@ -10,7 +10,7 @@ require (
 	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.10.1
 	github.com/Azure/azure-sdk-for-go/sdk/storage/azblob v1.6.1
 	github.com/aerospike/aerospike-client-go/v8 v8.2.2
-	github.com/aerospike/backup-go v0.5.2-0.20250814105717-bf1e112b388d
+	github.com/aerospike/backup-go v0.5.2-0.20250814112833-8163196136b5
 	github.com/aerospike/tools-common-go v0.2.1-0.20250130070321-acda09110e14
 	github.com/aws/aws-sdk-go-v2 v1.36.6
 	github.com/aws/aws-sdk-go-v2/config v1.29.18
@@ -20,6 +20,7 @@ require (
 	github.com/spf13/cobra v1.9.1
 	github.com/spf13/pflag v1.0.7
 	github.com/stretchr/testify v1.10.0
+	golang.org/x/sync v0.16.0
 	google.golang.org/api v0.243.0
 	gopkg.in/yaml.v3 v3.0.1
 )
@@ -101,7 +102,6 @@ require (
 	golang.org/x/exp v0.0.0-20240416160154-fe59bbe5cc7f // indirect
 	golang.org/x/net v0.42.0 // indirect
 	golang.org/x/oauth2 v0.30.0 // indirect
-	golang.org/x/sync v0.16.0 // indirect
 	golang.org/x/sys v0.34.0 // indirect
 	golang.org/x/text v0.27.0 // indirect
 	golang.org/x/time v0.12.0 // indirect
