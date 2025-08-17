@@ -84,27 +84,33 @@ Aerospike Client Flags:
       --client-login-timeout int   Specifies the login operation timeout for external authentication methods such as LDAP. (default 10000)
 
 Restore Flags:
-  -d, --directory string         The directory that holds the backup files. Required, unless --input-file is used.
-  -n, --namespace string         Used to restore to a different namespace. Example: source-ns,destination-ns
-  -s, --set string               Only restore the given sets from the backup.
-                                 Default: restore all sets.
-  -B, --bin-list string          Only restore the given bins in the backup.
-                                 If empty, include all bins.
-  -R, --no-records               Don't restore any records.
-  -I, --no-indexes               Don't restore any secondary indexes.
-      --no-udfs                  Don't restore any UDFs.
-  -w, --parallel int             The number of restore threads. Accepts values from 1-1024 inclusive.
-                                 If not set, the default value is automatically calculated and appears as the number of CPUs on your machine.
-  -L, --records-per-second int   Limit total returned records per second (rps).
-                                 Do not apply rps limit if records-per-second is zero.
-      --max-retries int          Maximum number of retries before aborting the current transaction. (default 5)
-      --total-timeout int        Total transaction timeout in milliseconds. 0 - no timeout. (default 10000)
-      --socket-timeout int       Socket timeout in milliseconds. If this value is 0, it's set to --total-timeout.
-                                 If both this and --total-timeout are 0, there is no socket idle time limit. (default 10000)
-      --nice int                 The limits for read/write storage bandwidth in MiB/s.
-                                 Default is 0 (no limit). (DEPRECATED: use --bandwidth instead)
-  -N, --bandwidth int            The limits for read/write storage bandwidth in MiB/s.
-                                 Default is 0 (no limit).
+  -d, --directory string              The directory that holds the backup files. Required, unless --input-file is used.
+  -n, --namespace string              Used to restore to a different namespace. Example: source-ns,destination-ns
+  -s, --set string                    Only restore the given sets from the backup.
+                                      Default: restore all sets.
+  -B, --bin-list string               Only restore the given bins in the backup.
+                                      If empty, include all bins.
+  -R, --no-records                    Don't restore any records.
+  -I, --no-indexes                    Don't restore any secondary indexes.
+      --no-udfs                       Don't restore any UDFs.
+  -w, --parallel int                  The number of restore threads. Accepts values from 1-1024 inclusive.
+                                      If not set, the default value is automatically calculated and appears as the number of CPUs on your machine.
+  -L, --records-per-second int        Limit total returned records per second (rps).
+                                      Do not apply rps limit if records-per-second is zero.
+      --max-retries int               Maximum number of retries before aborting the current transaction. (default 5)
+      --total-timeout int             Total transaction timeout in milliseconds. 0 - no timeout. (default 10000)
+      --socket-timeout int            Socket timeout in milliseconds. If this value is 0, it's set to --total-timeout.
+                                      If both this and --total-timeout are 0, there is no socket idle time limit. (default 10000)
+      --nice int                      The limits for read/write storage bandwidth in MiB/s.
+                                      Default is 0 (no limit). (DEPRECATED: use --bandwidth instead)
+  -N, --bandwidth int                 The limits for read/write storage bandwidth in MiB/s.
+                                      Default is 0 (no limit).
+  -T, --info-timeout int              Set the timeout (ms) for asinfo commands sent from asrestore to the database.
+                                      The info commands are to check version, get indexes, get udfs, count records, and check batch write support. (default 10000)
+      --info-retry-interval int       Set the initial interval for a retry in milliseconds when info commands are sent. (default 1000)
+      --info-retry-multiplier float   Increases the delay between subsequent retry attempts.
+                                      The actual delay is calculated as: info-retry-interval * (info-retry-multiplier ^ attemptNumber) (default 1)
+      --info-max-retries uint         How many times to retry to send info commands before failing.  (default 3)
   -i, --input-file string         Restore from a single backup file. Use - for stdin.
                                   Required, unless --directory or --directory-list is used.
                                   
@@ -158,9 +164,7 @@ Restore Flags:
       --extra-ttl int             For records with expirable void-times, add N seconds of extra-ttl to the
                                   recorded void-time.
                                   
-  -T, --timeout int               Set the timeout (ms) for asinfo commands sent from asrestore to the database.
-                                  The info commands are to check version, get indexes, get udfs, count records, and check batch write support. (default 10000)
-      --retry-base-timeout int    Set the initial timeout for a retry in milliseconds when data is sent to the Aerospike database
+      --retry-base-interval int   Set the initial interval for a retry in milliseconds when data is sent to the Aerospike database
                                   during a restore. This retry sequence is triggered by the following non-critical errors:
                                   AEROSPIKE_NO_AVAILABLE_CONNECTIONS_TO_NODE,
                                   AEROSPIKE_TIMEOUT,
@@ -171,9 +175,9 @@ Restore Flags:
                                   AEROSPIKE_MAX_ERROR_RATE.
                                   This base timeout value is also used as the interval multiplied by --retry-multiplier to increase
                                   the timeout value between retry attempts. (default 1000)
-      --retry-multiplier float    Increases the delay between subsequent retry attempts for the errors listed under --retry-base-timeout.
-                                  The actual delay is calculated as: retry-base-timeout * (retry-multiplier ^ attemptNumber) (default 1)
-      --retry-max-retries uint    Set the maximum number of retry attempts for the errors listed under --retry-base-timeout.
+      --retry-multiplier float    Increases the delay between subsequent retry attempts for the errors listed under --retry-base-interval.
+                                  The actual delay is calculated as: retry-base-interval * (retry-multiplier ^ attemptNumber) (default 1)
+      --retry-max-retries uint    Set the maximum number of retry attempts for the errors listed under --retry-base-interval.
                                   The default is 0, indicating no retries will be performed
       --validate                  Validate backup files without restoring.
 
@@ -281,7 +285,7 @@ Any Azure parameter can be retrieved from Secret Agent.
                 Wait for restored UDFs to be distributed across the cluster.
 
 // Replaced with:
-//  --retry-base-timeout
+//  --retry-base-interval
 //  --retry-multiplier
 //  --retry-max-retries
 --retry-scale-factor        The scale factor to use in the exponential backoff retry
@@ -456,8 +460,15 @@ restore:
   no-generation: false
   # Set the timeout (ms) for asinfo commands sent from asrestore to the database.
   # The info commands are to check version, get indexes, get udfs, count records, and check batch write support.
-  timeout: 10000
-  # Set the initial timeout for a retry in milliseconds when data is sent to the Aerospike database
+  info-timeout: 10000
+  # How many times to retry to send info commands before failing.
+  info-max-retries: 3
+  # Increases the delay between subsequent retry attempts.
+  # The actual delay is calculated as: info-retry-interval * (info-retry-multiplier ^ attemptNumber)
+  info-retries-multiplier: 1
+  # Set the initial interval for a retry in milliseconds when info commands are sent.
+  info-retry-interval: 1000
+  # Set the initial interval for a retry in milliseconds when data is sent to the Aerospike database
   # during a restore. This retry sequence is triggered by the following non-critical errors:
   # AEROSPIKE_NO_AVAILABLE_CONNECTIONS_TO_NODE,
   # AEROSPIKE_TIMEOUT,
@@ -468,11 +479,11 @@ restore:
   # AEROSPIKE_MAX_ERROR_RATE.
   # This base timeout value is also used as the interval multiplied by retry-multiplier to increase
   # the timeout value between retry attempts.
-  retry-base-timeout: 1000
-  # Increases the delay between subsequent retry attempts for the errors listed under retry-base-timeout.
-  # The actual delay is calculated as: retry-base-timeout * (retry-multiplier ^ attemptNumber)
+  retry-base-interval: 1000
+  # Increases the delay between subsequent retry attempts for the errors listed under retry-base-interval.
+  # The actual delay is calculated as: retry-base-interval * (retry-multiplier ^ attemptNumber)
   retry-multiplier: 1
-  # Set the maximum number of retry attempts for the errors listed under retry-base-timeout.
+  # Set the maximum number of retry attempts for the errors listed under retry-base-interval.
   # The default is 0, indicating no retries will be performed
   retry-max-retries: 1
   # Validate backup files without restoring.

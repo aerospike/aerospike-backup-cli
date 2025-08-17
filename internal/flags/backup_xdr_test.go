@@ -43,6 +43,7 @@ func TestBackupXDR_NewFlagSet(t *testing.T) {
 		"--info-poling-period", "2000",
 		"--stop-xdr",
 		"--max-throughput", "1000",
+		"--info-timeout", "1000",
 	}
 
 	err := flagSet.Parse(args)
@@ -66,6 +67,7 @@ func TestBackupXDR_NewFlagSet(t *testing.T) {
 	assert.Equal(t, int64(2000), result.InfoPolingPeriodMilliseconds, "The info-poling-period flag should be parsed correctly")
 	assert.Equal(t, true, result.StopXDR, "The stop flag should be parsed correctly")
 	assert.Equal(t, 1000, result.MaxThroughput, "The max-throughput flag should be parsed correctly")
+	assert.Equal(t, int64(1000), result.InfoTimeout, "The info-timeout flag should be parsed correctly")
 }
 
 func TestBackupXDR_NewFlagSet_DefaultValues(t *testing.T) {
@@ -94,6 +96,7 @@ func TestBackupXDR_NewFlagSet_DefaultValues(t *testing.T) {
 	assert.Equal(t, 4096, result.MaxConnections, "The default value for max-connections should be 256")
 	assert.Equal(t, int64(1000), result.InfoPolingPeriodMilliseconds, "The default value for info-poling-period should be 1000")
 	assert.Equal(t, 0, result.MaxThroughput, "The default value for max-throughput should be 0")
+	assert.Equal(t, int64(10000), result.InfoTimeout, "The default value for info-timeout should be 0")
 }
 
 func TestBackupXDR_NewFlagSet_ShortFlags(t *testing.T) {
