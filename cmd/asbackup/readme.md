@@ -537,11 +537,11 @@ backup:
   # Increases the delay between subsequent retry attempts.
   # The actual delay is calculated as: info-retry-interval * (info-retry-multiplier ^ attemptNumber)
   info-retries-multiplier: 1
-  # Set the initial timeout for a retry in milliseconds when info commands are sent.
+  # Set the initial interval for a retry in milliseconds when info commands are sent.
   info-retry-interval: 1000
   # Set the timeout (ms) for asinfo commands sent from asrestore to the database.
   # The info commands are to check version, get indexes, get udfs, count records, and check batch write support.
-  timeout: 10000
+  info-timeout: 10000
 compression:
   # Enables compressing of backup files using the specified compression algorithm.
   # Supported compression algorithms are: zstd, none\n"+

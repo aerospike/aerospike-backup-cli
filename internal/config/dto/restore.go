@@ -55,7 +55,7 @@ type Restore struct {
 		RetryMaxRetries               uint     `yaml:"retry-max-retries"`
 		Mode                          string   `yaml:"mode"`
 		ValidateOnly                  bool     `yaml:"validate-only"`
-		TimeOut                       int64    `yaml:"timeout"`
+		InfoTimeOut                   int64    `yaml:"info-timeout"`
 		InfoMaxRetries                uint     `yaml:"info-max-retries"`
 		InfoRetriesMultiplier         float64  `yaml:"info-retries-multiplier"`
 		InfoRetryIntervalMilliseconds int64    `yaml:"info-retry-interval"`
@@ -90,7 +90,7 @@ func (r *Restore) ToModelRestore() *models.Restore {
 			TotalTimeout:                  r.Restore.TotalTimeout,
 			SocketTimeout:                 r.Restore.SocketTimeout,
 			Bandwidth:                     r.Restore.Bandwidth,
-			InfoTimeOut:                   r.Restore.TimeOut,
+			InfoTimeOut:                   r.Restore.InfoTimeOut,
 			InfoMaxRetries:                r.Restore.InfoMaxRetries,
 			InfoRetriesMultiplier:         r.Restore.InfoRetriesMultiplier,
 			InfoRetryIntervalMilliseconds: r.Restore.InfoRetryIntervalMilliseconds,

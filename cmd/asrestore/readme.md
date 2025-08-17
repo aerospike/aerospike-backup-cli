@@ -460,13 +460,13 @@ restore:
   no-generation: false
   # Set the timeout (ms) for asinfo commands sent from asrestore to the database.
   # The info commands are to check version, get indexes, get udfs, count records, and check batch write support.
-  timeout: 10000
+  info-timeout: 10000
   # How many times to retry to send info commands before failing.
   info-max-retries: 3
   # Increases the delay between subsequent retry attempts.
   # The actual delay is calculated as: info-retry-interval * (info-retry-multiplier ^ attemptNumber)
   info-retries-multiplier: 1
-  # Set the initial timeout for a retry in milliseconds when info commands are sent.
+  # Set the initial interval for a retry in milliseconds when info commands are sent.
   info-retry-interval: 1000
   # Set the initial timeout for a retry in milliseconds when data is sent to the Aerospike database
   # during a restore. This retry sequence is triggered by the following non-critical errors:
