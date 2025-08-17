@@ -301,13 +301,13 @@ func unblockMrt(infoClient *asinfo.Client, namespace string) error {
 func getInfoPolicies(params *config.BackupServiceConfig) (*aerospike.InfoPolicy, *models.RetryPolicy) {
 	switch {
 	case params.BackupXDR != nil:
-		return config.NewInfoPolicy(params.BackupXDR.InfoTimeOut), config.NewRetryPolicy(
+		return config.NewInfoPolicy(params.BackupXDR.InfoTimeout), config.NewRetryPolicy(
 			params.BackupXDR.InfoRetryIntervalMilliseconds,
 			params.BackupXDR.InfoRetriesMultiplier,
 			params.BackupXDR.InfoMaxRetries,
 		)
 	case params.Backup != nil:
-		return config.NewInfoPolicy(params.Backup.InfoTimeOut), config.NewRetryPolicy(
+		return config.NewInfoPolicy(params.Backup.InfoTimeout), config.NewRetryPolicy(
 			params.Backup.InfoRetryIntervalMilliseconds,
 			params.Backup.InfoRetriesMultiplier,
 			params.Backup.InfoMaxRetries,

@@ -62,7 +62,7 @@ type Backup struct {
 		ScanPageSize                  int64    `yaml:"scan-page-size"`
 		OutputFilePrefix              string   `yaml:"output-file-prefix"`
 		RackList                      []string `yaml:"rack-list"`
-		InfoTimeOut                   int64    `yaml:"info-timeout"`
+		InfoTimeout                   int64    `yaml:"info-timeout"`
 		InfoMaxRetries                uint     `yaml:"info-max-retries"`
 		InfoRetriesMultiplier         float64  `yaml:"info-retries-multiplier"`
 		InfoRetryIntervalMilliseconds int64    `yaml:"info-retry-interval"`
@@ -97,7 +97,7 @@ func (b *Backup) ToModelBackup() *models.Backup {
 			TotalTimeout:                  b.Backup.TotalTimeout,
 			SocketTimeout:                 b.Backup.SocketTimeout,
 			Bandwidth:                     b.Backup.Bandwidth,
-			InfoTimeOut:                   b.Backup.InfoTimeOut,
+			InfoTimeout:                   b.Backup.InfoTimeout,
 			InfoMaxRetries:                b.Backup.InfoMaxRetries,
 			InfoRetriesMultiplier:         b.Backup.InfoRetriesMultiplier,
 			InfoRetryIntervalMilliseconds: b.Backup.InfoRetryIntervalMilliseconds,

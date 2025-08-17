@@ -164,7 +164,7 @@ Restore Flags:
       --extra-ttl int             For records with expirable void-times, add N seconds of extra-ttl to the
                                   recorded void-time.
                                   
-      --retry-base-timeout int    Set the initial interval for a retry in milliseconds when data is sent to the Aerospike database
+      --retry-base-interval int    Set the initial interval for a retry in milliseconds when data is sent to the Aerospike database
                                   during a restore. This retry sequence is triggered by the following non-critical errors:
                                   AEROSPIKE_NO_AVAILABLE_CONNECTIONS_TO_NODE,
                                   AEROSPIKE_TIMEOUT,
@@ -175,9 +175,9 @@ Restore Flags:
                                   AEROSPIKE_MAX_ERROR_RATE.
                                   This base timeout value is also used as the interval multiplied by --retry-multiplier to increase
                                   the timeout value between retry attempts. (default 1000)
-      --retry-multiplier float    Increases the delay between subsequent retry attempts for the errors listed under --retry-base-timeout.
-                                  The actual delay is calculated as: retry-base-timeout * (retry-multiplier ^ attemptNumber) (default 1)
-      --retry-max-retries uint    Set the maximum number of retry attempts for the errors listed under --retry-base-timeout.
+      --retry-multiplier float    Increases the delay between subsequent retry attempts for the errors listed under --retry-base-interval.
+                                  The actual delay is calculated as: retry-base-interval * (retry-multiplier ^ attemptNumber) (default 1)
+      --retry-max-retries uint    Set the maximum number of retry attempts for the errors listed under --retry-base-interval.
                                   The default is 0, indicating no retries will be performed
       --validate                  Validate backup files without restoring.
 
@@ -285,7 +285,7 @@ Any Azure parameter can be retrieved from Secret Agent.
                 Wait for restored UDFs to be distributed across the cluster.
 
 // Replaced with:
-//  --retry-base-timeout
+//  --retry-base-interval
 //  --retry-multiplier
 //  --retry-max-retries
 --retry-scale-factor        The scale factor to use in the exponential backoff retry
@@ -479,11 +479,11 @@ restore:
   # AEROSPIKE_MAX_ERROR_RATE.
   # This base timeout value is also used as the interval multiplied by retry-multiplier to increase
   # the timeout value between retry attempts.
-  retry-base-timeout: 1000
-  # Increases the delay between subsequent retry attempts for the errors listed under retry-base-timeout.
-  # The actual delay is calculated as: retry-base-timeout * (retry-multiplier ^ attemptNumber)
+  retry-base-interval: 1000
+  # Increases the delay between subsequent retry attempts for the errors listed under retry-base-interval.
+  # The actual delay is calculated as: retry-base-interval * (retry-multiplier ^ attemptNumber)
   retry-multiplier: 1
-  # Set the maximum number of retry attempts for the errors listed under retry-base-timeout.
+  # Set the maximum number of retry attempts for the errors listed under retry-base-interval.
   # The default is 0, indicating no retries will be performed
   retry-max-retries: 1
   # Validate backup files without restoring.

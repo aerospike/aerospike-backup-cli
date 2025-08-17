@@ -32,7 +32,7 @@ type Common struct {
 	MaxRetries       int
 	TotalTimeout     int64
 	SocketTimeout    int64
-	InfoTimeOut      int64
+	InfoTimeout      int64
 
 	InfoMaxRetries                uint
 	InfoRetriesMultiplier         float64

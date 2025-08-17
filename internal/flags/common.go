@@ -158,7 +158,7 @@ func (f *Common) NewFlagSet() *pflag.FlagSet {
 		0,
 		"The limits for read/write storage bandwidth in MiB/s.\n"+
 			"Default is 0 (no limit).")
-	flagSet.Int64VarP(&f.fields.InfoTimeOut, "info-timeout", "T",
+	flagSet.Int64VarP(&f.fields.InfoTimeout, "info-timeout", "T",
 		10000,
 		"Set the timeout (ms) for asinfo commands sent from asrestore to the database.\n"+
 			"The info commands are to check version, get indexes, get udfs, count records, and check batch write support.")

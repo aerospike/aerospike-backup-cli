@@ -103,7 +103,7 @@ func NewService(
 		params.Restore.InfoMaxRetries,
 	)
 
-	infoPolicy := config.NewInfoPolicy(params.Restore.InfoTimeOut)
+	infoPolicy := config.NewInfoPolicy(params.Restore.InfoTimeout)
 
 	backupClient, err := backup.NewClient(
 		aerospikeClient,

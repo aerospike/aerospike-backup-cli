@@ -110,7 +110,7 @@ func NewRestoreConfig(serviceConfig *RestoreServiceConfig, logger *slog.Logger) 
 	c.EncryptionPolicy = newEncryptionPolicy(serviceConfig.Encryption)
 	c.SecretAgentConfig = newSecretAgentConfig(serviceConfig.SecretAgent)
 	c.RetryPolicy = NewRetryPolicy(
-		serviceConfig.Restore.RetryBaseTimeout,
+		serviceConfig.Restore.RetryBaseInterval,
 		serviceConfig.Restore.RetryMultiplier,
 		serviceConfig.Restore.RetryMaxRetries,
 	)

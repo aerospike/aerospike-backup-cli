@@ -118,7 +118,7 @@ func (f *BackupXDR) NewFlagSet() *pflag.FlagSet {
 		false,
 		"Unblock MRT writes on the database.\n"+
 			"Use this functionality to unblock MRT writes after an interrupted backup.")
-	flagSet.Int64VarP(&f.InfoTimeOut, "info-timeout", "T",
+	flagSet.Int64VarP(&f.InfoTimeout, "info-timeout", "T",
 		10000,
 		"Set the timeout (ms) for asinfo commands sent from asrestore to the database.\n"+
 			"The info commands are to check version, get indexes, get udfs, count records, and check batch write support.")

@@ -41,9 +41,9 @@ type Restore struct {
 	Replace           bool
 	NoGeneration      bool
 
-	RetryBaseTimeout int64
-	RetryMultiplier  float64
-	RetryMaxRetries  uint
+	RetryBaseInterval int64
+	RetryMultiplier   float64
+	RetryMaxRetries   uint
 
 	Mode string
 
