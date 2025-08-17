@@ -100,7 +100,7 @@ func (f *Restore) NewFlagSet() *pflag.FlagSet {
 			"recorded void-time.\n")
 	flagSet.Int64Var(&f.RetryBaseTimeout, "retry-base-timeout",
 		1000,
-		"Set the initial timeout for a retry in milliseconds when data is sent to the Aerospike database\n"+
+		"Set the initial interval for a retry in milliseconds when data is sent to the Aerospike database\n"+
 			"during a restore. This retry sequence is triggered by the following non-critical errors:\n"+
 			"AEROSPIKE_NO_AVAILABLE_CONNECTIONS_TO_NODE,\n"+
 			"AEROSPIKE_TIMEOUT,\n"+

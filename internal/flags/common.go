@@ -163,7 +163,7 @@ func (f *Common) NewFlagSet() *pflag.FlagSet {
 		"Set the timeout (ms) for asinfo commands sent from asrestore to the database.\n"+
 			"The info commands are to check version, get indexes, get udfs, count records, and check batch write support.")
 	flagSet.Int64Var(&f.fields.InfoRetryIntervalMilliseconds, "info-retry-interval", 1000,
-		"Set the initial timeout for a retry in milliseconds when info commands are sent.")
+		"Set the initial interval for a retry in milliseconds when info commands are sent.")
 	flagSet.Float64Var(&f.fields.InfoRetriesMultiplier, "info-retry-multiplier",
 		1,
 		"Increases the delay between subsequent retry attempts.\n"+
