@@ -58,7 +58,7 @@ type Restore struct {
 		TimeOut                       int64    `yaml:"timeout"`
 		InfoMaxRetries                uint     `yaml:"info-max-retries"`
 		InfoRetriesMultiplier         float64  `yaml:"info-retries-multiplier"`
-		InfoRetryIntervalMilliseconds int64    `yaml:"info-retry-timeout"`
+		InfoRetryIntervalMilliseconds int64    `yaml:"info-retry-interval"`
 	} `yaml:"restore"`
 	Compression Compression `yaml:"compression"`
 	Encryption  Encryption  `yaml:"encryption"`

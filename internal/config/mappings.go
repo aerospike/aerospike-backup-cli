@@ -229,6 +229,7 @@ func recordExistsAction(replace, unique bool) aerospike.RecordExistsAction {
 	}
 }
 
+// NewInfoPolicy creates and returns a new InfoPolicy with the specified timeout.
 func NewInfoPolicy(timeOut int64) *aerospike.InfoPolicy {
 	p := aerospike.NewInfoPolicy()
 	p.Timeout = time.Duration(timeOut) * time.Millisecond
@@ -236,6 +237,7 @@ func NewInfoPolicy(timeOut int64) *aerospike.InfoPolicy {
 	return p
 }
 
+// NewRetryPolicy creates and returns a new RetryPolicy with the specified interval, max retries and multiplier.
 func NewRetryPolicy(retryBaseTimeout int64, retryMultiplier float64, retryMaxRetries uint) *bModels.RetryPolicy {
 	return bModels.NewRetryPolicy(
 		time.Duration(retryBaseTimeout)*time.Millisecond,

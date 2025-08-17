@@ -53,7 +53,8 @@ func NewService(
 	logger *slog.Logger,
 ) (*Service, error) {
 	var (
-		// Important! To describe variable as interface, to allow backup files validation with nil *a.CLient.
+		// Important! To describe variable as interface not exact *a.Client.
+		// So we can run backup files validation with the 'nil' aerospike client.
 		aerospikeClient backup.AerospikeClient
 		err             error
 	)

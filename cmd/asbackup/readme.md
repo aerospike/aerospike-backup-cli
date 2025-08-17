@@ -122,9 +122,9 @@ Backup Flags:
                                       Default is 0 (no limit).
   -T, --timeout int                   Set the timeout (ms) for asinfo commands sent from asrestore to the database.
                                       The info commands are to check version, get indexes, get udfs, count records, and check batch write support. (default 10000)
-      --info-retry-timeout int        Set the initial timeout for a retry in milliseconds when info commands are sent. (default 1000)
+      --info-retry-interval int        Set the initial timeout for a retry in milliseconds when info commands are sent. (default 1000)
       --info-retry-multiplier float   Increases the delay between subsequent retry attempts.
-                                      The actual delay is calculated as: info-retry-timeout * (info-retry-multiplier ^ attemptNumber) (default 1)
+                                      The actual delay is calculated as: info-retry-interval * (info-retry-multiplier ^ attemptNumber) (default 1)
       --info-max-retries uint         How many times to retry to send info commands before failing.  (default 3)
   -r, --remove-files                Remove an existing backup file (-o) or entire directory (-d) and replace with the new backup.
       --remove-artifacts            Remove existing backup file (-o) or files (-d) without performing a backup.
@@ -535,10 +535,10 @@ backup:
   # How many times to retry to send info commands before failing.
   info-max-retries: 3
   # Increases the delay between subsequent retry attempts.
-  # The actual delay is calculated as: info-retry-timeout * (info-retry-multiplier ^ attemptNumber)
+  # The actual delay is calculated as: info-retry-interval * (info-retry-multiplier ^ attemptNumber)
   info-retries-multiplier: 1
   # Set the initial timeout for a retry in milliseconds when info commands are sent.
-  info-retry-timeout: 1000
+  info-retry-interval: 1000
   # Set the timeout (ms) for asinfo commands sent from asrestore to the database.
   # The info commands are to check version, get indexes, get udfs, count records, and check batch write support.
   timeout: 10000
