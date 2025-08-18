@@ -24,7 +24,6 @@ import (
 	"github.com/aerospike/aerospike-backup-cli/internal/logging"
 	"github.com/aerospike/aerospike-backup-cli/internal/models"
 	"github.com/aerospike/aerospike-backup-cli/internal/storage"
-	a "github.com/aerospike/aerospike-client-go/v8"
 	"github.com/aerospike/backup-go"
 	bModels "github.com/aerospike/backup-go/models"
 )
@@ -54,7 +53,9 @@ func NewService(
 	logger *slog.Logger,
 ) (*Service, error) {
 	var (
-		aerospikeClient *a.Client
+		// Important! To describe variable as interface not exact *a.Client.
+		// So we can run backup files validation with the 'nil' aerospike client.
+		aerospikeClient backup.AerospikeClient
 		err             error
 	)
 	// Set default restore mode to asb.
@@ -96,7 +97,19 @@ func NewService(
 
 	logger.Info("initializing restore client", slog.String("id", idRestore))
 
-	backupClient, err := backup.NewClient(aerospikeClient, backup.WithLogger(logger), backup.WithID(idRestore))
+	infoRetryPolicy := config.NewRetryPolicy(
+		params.Restore.InfoRetryIntervalMilliseconds,
+		params.Restore.InfoRetriesMultiplier,
+		params.Restore.InfoMaxRetries,
+	)
+
+	infoPolicy := config.NewInfoPolicy(params.Restore.InfoTimeout)
+
+	backupClient, err := backup.NewClient(
+		aerospikeClient,
+		backup.WithLogger(logger),
+		backup.WithID(idRestore),
+		backup.WithInfoPolicies(infoPolicy, infoRetryPolicy))
 	if err != nil {
 		return nil, fmt.Errorf("failed to create restore client: %w", err)
 	}

@@ -94,119 +94,121 @@ Aerospike Client Flags:
       --client-login-timeout int   Specifies the login operation timeout for external authentication methods such as LDAP. (default 10000)
 
 Backup Flags:
-  -d, --directory string         The directory that holds the backup files. Required, unless -o or -e is used.
-  -n, --namespace string         The namespace to be backed up. Required.
-  -s, --set string               The set(s) to be backed up. Accepts comma-separated values with no spaces: 'set1,set2,set3'
-                                 If multiple sets are being backed up, filter-exp cannot be used.
-                                 If empty, include all sets.
-  -B, --bin-list string          Only include the given bins in the backup.
-                                 Accepts comma-separated values with no spaces: 'bin1,bin2,bin3'
-                                 If empty include all bins.
-  -R, --no-records               Don't back up any records.
-  -I, --no-indexes               Don't back up any indexes.
-      --no-udfs                  Don't back up any UDFs.
-  -w, --parallel int             Maximum number of scan calls to run in parallel.
-                                 If only one partition range is given, or the entire namespace is being backed up, the range
-                                 of partitions will be evenly divided by this number to be processed in parallel. Otherwise, each
-                                 filter cannot be parallelized individually, so you may only achieve as much parallelism as there are
-                                 partition filters. Accepts values from 1-1024 inclusive. (default 1)
-  -L, --records-per-second int   Limit total returned records per second (rps).
-                                 Do not apply rps limit if records-per-second is zero.
-      --max-retries int          Maximum number of retries before aborting the current transaction. (default 5)
-      --total-timeout int        Total transaction timeout in milliseconds. 0 - no timeout.
-      --socket-timeout int       Socket timeout in milliseconds. If this value is 0, it's set to --total-timeout.
-                                 If both this and --total-timeout are 0, there is no socket idle time limit. (default 10000)
-      --nice int                 The limits for read/write storage bandwidth in MiB/s.
-                                 Default is 0 (no limit). (DEPRECATED: use --bandwidth instead)
-  -N, --bandwidth int            The limits for read/write storage bandwidth in MiB/s.
-                                 Default is 0 (no limit).
-  -r, --remove-files                  Remove an existing backup file (-o) or entire directory (-d) and replace with the new backup.
-      --remove-artifacts              Remove existing backup file (-o) or files (-d) without performing a backup.
-  -o, --output-file string            Backup to a single backup file. Use - for stdout. Required, unless -d or -e is used.
-  -q, --output-file-prefix string     When using directory parameter, prepend a prefix to the names of the generated files.
-  -F, --file-limit uint               Rotate backup files when their size crosses the given
-                                      value (in bytes). Only used when backing up to a directory.
-                                       (default 262144000)
-  -x, --no-bins                       Do not include bin data in the backup. Use this flag for data sampling or troubleshooting.
-                                      On restore all records, that don't contain bin data will be skipped.
-      --no-ttl-only                   Only include records that have no ttl set (persistent records).
-  -D, --after-digest string           Backup records after record digest in record's partition plus all succeeding
-                                      partitions. Used to resume backup with last record received from previous
-                                      incomplete backup.
-                                      This argument is mutually exclusive with partition-list.
-                                      Format: Base64 encoded string
-                                      Example: EjRWeJq83vEjRRI0VniavN7xI0U=
-                                      
-  -a, --modified-after string         <YYYY-MM-DD_HH:MM:SS>
-                                      Perform an incremental backup; only include records 
-                                      that changed after the given date and time. The system's 
-                                      local timezone applies. If only HH:MM:SS is specified, then
-                                      today's date is assumed as the date. If only YYYY-MM-DD is 
-                                      specified, then 00:00:00 (midnight) is assumed as the time.
-                                      
-  -b, --modified-before string        <YYYY-MM-DD_HH:MM:SS>
-                                      Only include records that last changed before the given
-                                      date and time. May combined with --modified-after to specify a range.
-  -f, --filter-exp string             Base64 encoded expression. Use the encoded filter expression in each scan call,
-                                      which can be used to do a partial backup. The expression to be used can be Base64 
-                                      encoded through any client. This argument is mutually exclusive with multi-set backup.
-                                      
-      --parallel-nodes                Specifies how to perform the query of the database run for each backup.
-                                      By default, asbackup runs parallel workers for partitions.
-                                      If this flag is set to true, asbackup launches parallel workers for nodes.
-                                      The number of parallel workers is set by the --parallel flag.
-                                      This option is mutually exclusive with --continue and --estimate.
-  -l, --node-list string              <addr 1>:<port 1>[,<addr 2>:<port 2>[,...]]
-                                      <node name 1>[,<node name 2>[,...]]
-                                      To get the correct node address, use 'service-tls-std' if a database configured to use TLS
-                                      and 'service-clear-std' info command if no TLS is configured.
-                                      To get the node name, use the 'node:' info command.
-                                      Back up the given cluster nodes only.
-                                      The job is parallelized by number of nodes unless --parallel is set less than nodes number.
-                                      This argument is mutually exclusive with --partition-list, --after-digest, --rack-list, --prefer-racks arguments.
-                                      Default: backup all nodes in the cluster
-  -X, --partition-list string         List of partitions <filter[,<filter>[...]]> to back up. Partition filters can be ranges,
-                                      individual partitions, or records after a specific digest within a single partition.
-                                      This argument is mutually exclusive with after-digest.
-                                      Filter: <begin partition>[-<partition count>]|<digest>
-                                      begin partition: 0-4095
-                                      partition count: 1-4096 Default: 1
-                                      digest: Base64 encoded string
-                                      Examples: 0-1000, 1000-1000, 2222, EjRWeJq83vEjRRI0VniavN7xI0U=
-                                      Default: 0-4096 (all partitions)
-                                      
-      --prefer-racks string           <rack id 1>[,<rack id 2>[,...]]
-                                      A list of Aerospike Database rack IDs to prefer when reading records for a backup.
-                                      This argument is mutually exclusive with --rack-list and --node-list.
-      --rack-list string              <rack id 1>[,<rack id 2>[,...]]
-                                      A list of Aerospike Database rack IDs to backup.
-                                      Unlike --prefer-racks, only specified racks will be backed up.
-                                      This argument is mutually exclusive with --prefer-racks and --node-list.
-  -M, --max-records int               The number of records approximately to back up. 0 - all records
-      --sleep-between-retries int     The amount of milliseconds to sleep between retries after an error.
-                                      This field is ignored when --max-retries is zero. (default 5)
-  -C, --compact                       If true, do not apply base-64 encoding to BLOBs and instead write raw binary data,
-                                      resulting in smaller backup files.
-                                      Deprecated.
-  -e, --estimate                      Estimate the backed-up record size from a random sample of 
-                                      10,000 (default) records at 99.9999% confidence to estimate the full backup size.
-                                      It ignores any filter:  --filter-exp, --node-list, --modified-after, --modified-before, --no-ttl-only,
-                                      --after-digest, --partition-list.
-      --estimate-samples int          The number of samples to take when running a backup estimate. (default 10000)
-      --state-file-dst string         Name of a state file that will be saved in backup --directory.
-                                      Works only with --file-limit parameter. As --file-limit is reached and the file is closed,
-                                      the current state will be saved. Works only for default and/or partition backup.
-                                      Not work with --parallel-nodes or --node--list.
-  -c, --continue string               Resumes an interrupted/failed backup from where it was left off, given the .state file
-                                      that was generated from the interrupted/failed run.
-                                      --continue and --state-file-dst are mutually exclusive.
-      --scan-page-size int            Number of records will be read on one iteration for continuation backup.
-                                      Affects size if overlap on resuming backup after an error.
-                                      Used only with --state-file-dst or --continue. (default 10000)
-      --info-retry-timeout int        Set the initial timeout for a retry in milliseconds when info commands are sent. (default 1000)
+  -d, --directory string              The directory that holds the backup files. Required, unless -o or -e is used.
+  -n, --namespace string              The namespace to be backed up. Required.
+  -s, --set string                    The set(s) to be backed up. Accepts comma-separated values with no spaces: 'set1,set2,set3'
+                                      If multiple sets are being backed up, filter-exp cannot be used.
+                                      If empty, include all sets.
+  -B, --bin-list string               Only include the given bins in the backup.
+                                      Accepts comma-separated values with no spaces: 'bin1,bin2,bin3'
+                                      If empty include all bins.
+  -R, --no-records                    Don't back up any records.
+  -I, --no-indexes                    Don't back up any indexes.
+      --no-udfs                       Don't back up any UDFs.
+  -w, --parallel int                  Maximum number of scan calls to run in parallel.
+                                      If only one partition range is given, or the entire namespace is being backed up, the range
+                                      of partitions will be evenly divided by this number to be processed in parallel. Otherwise, each
+                                      filter cannot be parallelized individually, so you may only achieve as much parallelism as there are
+                                      partition filters. Accepts values from 1-1024 inclusive. (default 1)
+  -L, --records-per-second int        Limit total returned records per second (rps).
+                                      Do not apply rps limit if records-per-second is zero.
+      --max-retries int               Maximum number of retries before aborting the current transaction. (default 5)
+      --total-timeout int             Total transaction timeout in milliseconds. 0 - no timeout.
+      --socket-timeout int            Socket timeout in milliseconds. If this value is 0, it's set to --total-timeout.
+                                      If both this and --total-timeout are 0, there is no socket idle time limit. (default 10000)
+      --nice int                      The limits for read/write storage bandwidth in MiB/s.
+                                      Default is 0 (no limit). (DEPRECATED: use --bandwidth instead)
+  -N, --bandwidth int                 The limits for read/write storage bandwidth in MiB/s.
+                                      Default is 0 (no limit).
+  -T, --info-timeout int              Set the timeout (ms) for asinfo commands sent from asrestore to the database.
+                                      The info commands are to check version, get indexes, get udfs, count records, and check batch write support. (default 10000)
+      --info-retry-interval int       Set the initial interval for a retry in milliseconds when info commands are sent. (default 1000)
       --info-retry-multiplier float   Increases the delay between subsequent retry attempts.
-                                      The actual delay is calculated as: info-retry-timeout * (info-retry-multiplier ^ attemptNumber) (default 1)
+                                      The actual delay is calculated as: info-retry-interval * (info-retry-multiplier ^ attemptNumber) (default 1)
       --info-max-retries uint         How many times to retry to send info commands before failing.  (default 3)
+  -r, --remove-files                Remove an existing backup file (-o) or entire directory (-d) and replace with the new backup.
+      --remove-artifacts            Remove existing backup file (-o) or files (-d) without performing a backup.
+  -o, --output-file string          Backup to a single backup file. Use - for stdout. Required, unless -d or -e is used.
+  -q, --output-file-prefix string   When using directory parameter, prepend a prefix to the names of the generated files.
+  -F, --file-limit uint             Rotate backup files when their size crosses the given
+                                    value (in bytes). Only used when backing up to a directory.
+                                     (default 262144000)
+  -x, --no-bins                     Do not include bin data in the backup. Use this flag for data sampling or troubleshooting.
+                                    On restore all records, that don't contain bin data will be skipped.
+      --no-ttl-only                 Only include records that have no ttl set (persistent records).
+  -D, --after-digest string         Backup records after record digest in record's partition plus all succeeding
+                                    partitions. Used to resume backup with last record received from previous
+                                    incomplete backup.
+                                    This argument is mutually exclusive with partition-list.
+                                    Format: Base64 encoded string
+                                    Example: EjRWeJq83vEjRRI0VniavN7xI0U=
+                                    
+  -a, --modified-after string       <YYYY-MM-DD_HH:MM:SS>
+                                    Perform an incremental backup; only include records 
+                                    that changed after the given date and time. The system's 
+                                    local timezone applies. If only HH:MM:SS is specified, then
+                                    today's date is assumed as the date. If only YYYY-MM-DD is 
+                                    specified, then 00:00:00 (midnight) is assumed as the time.
+                                    
+  -b, --modified-before string      <YYYY-MM-DD_HH:MM:SS>
+                                    Only include records that last changed before the given
+                                    date and time. May combined with --modified-after to specify a range.
+  -f, --filter-exp string           Base64 encoded expression. Use the encoded filter expression in each scan call,
+                                    which can be used to do a partial backup. The expression to be used can be Base64 
+                                    encoded through any client. This argument is mutually exclusive with multi-set backup.
+                                    
+      --parallel-nodes              Specifies how to perform the query of the database run for each backup.
+                                    By default, asbackup runs parallel workers for partitions.
+                                    If this flag is set to true, asbackup launches parallel workers for nodes.
+                                    The number of parallel workers is set by the --parallel flag.
+                                    This option is mutually exclusive with --continue and --estimate.
+  -l, --node-list string            <addr 1>:<port 1>[,<addr 2>:<port 2>[,...]]
+                                    <node name 1>[,<node name 2>[,...]]
+                                    To get the correct node address, use 'service-tls-std' if a database configured to use TLS
+                                    and 'service-clear-std' info command if no TLS is configured.
+                                    To get the node name, use the 'node:' info command.
+                                    Back up the given cluster nodes only.
+                                    The job is parallelized by number of nodes unless --parallel is set less than nodes number.
+                                    This argument is mutually exclusive with --partition-list, --after-digest, --rack-list, --prefer-racks arguments.
+                                    Default: backup all nodes in the cluster
+  -X, --partition-list string       List of partitions <filter[,<filter>[...]]> to back up. Partition filters can be ranges,
+                                    individual partitions, or records after a specific digest within a single partition.
+                                    This argument is mutually exclusive with after-digest.
+                                    Filter: <begin partition>[-<partition count>]|<digest>
+                                    begin partition: 0-4095
+                                    partition count: 1-4096 Default: 1
+                                    digest: Base64 encoded string
+                                    Examples: 0-1000, 1000-1000, 2222, EjRWeJq83vEjRRI0VniavN7xI0U=
+                                    Default: 0-4096 (all partitions)
+                                    
+      --prefer-racks string         <rack id 1>[,<rack id 2>[,...]]
+                                    A list of Aerospike Database rack IDs to prefer when reading records for a backup.
+                                    This argument is mutually exclusive with --rack-list and --node-list.
+      --rack-list string            <rack id 1>[,<rack id 2>[,...]]
+                                    A list of Aerospike Database rack IDs to backup.
+                                    Unlike --prefer-racks, only specified racks will be backed up.
+                                    This argument is mutually exclusive with --prefer-racks and --node-list.
+  -M, --max-records int             The number of records approximately to back up. 0 - all records
+      --sleep-between-retries int   The amount of milliseconds to sleep between retries after an error.
+                                    This field is ignored when --max-retries is zero. (default 5)
+  -C, --compact                     If true, do not apply base-64 encoding to BLOBs and instead write raw binary data,
+                                    resulting in smaller backup files.
+                                    Deprecated.
+  -e, --estimate                    Estimate the backed-up record size from a random sample of 
+                                    10,000 (default) records at 99.9999% confidence to estimate the full backup size.
+                                    It ignores any filter:  --filter-exp, --node-list, --modified-after, --modified-before, --no-ttl-only,
+                                    --after-digest, --partition-list.
+      --estimate-samples int        The number of samples to take when running a backup estimate. (default 10000)
+      --state-file-dst string       Name of a state file that will be saved in backup --directory.
+                                    Works only with --file-limit parameter. As --file-limit is reached and the file is closed,
+                                    the current state will be saved. Works only for default and/or partition backup.
+                                    Not work with --parallel-nodes or --node--list.
+  -c, --continue string             Resumes an interrupted/failed backup from where it was left off, given the .state file
+                                    that was generated from the interrupted/failed run.
+                                    --continue and --state-file-dst are mutually exclusive.
+      --scan-page-size int          Number of records will be read on one iteration for continuation backup.
+                                    Affects size if overlap on resuming backup after an error.
+                                    Used only with --state-file-dst or --continue. (default 10000)
 
 Compression Flags:
   -z, --compress string         Enables compressing of backup files using the specified compression algorithm.
@@ -533,10 +535,13 @@ backup:
   # How many times to retry to send info commands before failing.
   info-max-retries: 3
   # Increases the delay between subsequent retry attempts.
-  # The actual delay is calculated as: info-retry-timeout * (info-retry-multiplier ^ attemptNumber)
+  # The actual delay is calculated as: info-retry-interval * (info-retry-multiplier ^ attemptNumber)
   info-retries-multiplier: 1
-  # Set the initial timeout for a retry in milliseconds when info commands are sent.
-  info-retry-timeout: 1000
+  # Set the initial interval for a retry in milliseconds when info commands are sent.
+  info-retry-interval: 1000
+  # Set the timeout (ms) for asinfo commands sent from asrestore to the database.
+  # The info commands are to check version, get indexes, get udfs, count records, and check batch write support.
+  info-timeout: 10000
 compression:
   # Enables compressing of backup files using the specified compression algorithm.
   # Supported compression algorithms are: zstd, none\n"+

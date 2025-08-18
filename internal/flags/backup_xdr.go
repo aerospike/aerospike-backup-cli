@@ -94,13 +94,13 @@ func (f *BackupXDR) NewFlagSet() *pflag.FlagSet {
 		1000,
 		"How often (in milliseconds) a backup client sends info commands\n"+
 			"to check Aerospike cluster statistics on recovery rate and lag.")
-	flagSet.Int64Var(&f.InfoRetryIntervalMilliseconds, "info-retry-timeout", 1000,
-		"Set the initial timeout for a retry in milliseconds when info commands are sent.\n"+
+	flagSet.Int64Var(&f.InfoRetryIntervalMilliseconds, "info-retry-interval", 1000,
+		"Set the initial interval for a retry in milliseconds when info commands are sent.\n"+
 			"This parameter is applied to stop-xdr and unblock-mrt requests.")
 	flagSet.Float64Var(&f.InfoRetriesMultiplier, "info-retry-multiplier",
 		1,
 		"Increases the delay between subsequent retry attempts.\n"+
-			"The actual delay is calculated as: info-retry-timeout * (info-retry-multiplier ^ attemptNumber)")
+			"The actual delay is calculated as: info-retry-interval * (info-retry-multiplier ^ attemptNumber)")
 	flagSet.UintVar(&f.InfoMaxRetries, "info-max-retries", 3,
 		"How many times to retry sending info commands before failing.\n"+
 			" This parameter is applied to stop-xdr and unblock-mrt requests.")
@@ -118,6 +118,10 @@ func (f *BackupXDR) NewFlagSet() *pflag.FlagSet {
 		false,
 		"Unblock MRT writes on the database.\n"+
 			"Use this functionality to unblock MRT writes after an interrupted backup.")
+	flagSet.Int64VarP(&f.InfoTimeout, "info-timeout", "T",
+		10000,
+		"Set the timeout (ms) for asinfo commands sent from asrestore to the database.\n"+
+			"The info commands are to check version, get indexes, get udfs, count records, and check batch write support.")
 
 	return flagSet
 }

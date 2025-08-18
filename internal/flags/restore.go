@@ -98,13 +98,9 @@ func (f *Restore) NewFlagSet() *pflag.FlagSet {
 		0,
 		"For records with expirable void-times, add N seconds of extra-ttl to the\n"+
 			"recorded void-time.\n")
-	flagSet.Int64VarP(&f.TimeOut, "timeout", "T",
-		10000,
-		"Set the timeout (ms) for asinfo commands sent from asrestore to the database.\n"+
-			"The info commands are to check version, get indexes, get udfs, count records, and check batch write support.")
-	flagSet.Int64Var(&f.RetryBaseTimeout, "retry-base-timeout",
+	flagSet.Int64Var(&f.RetryBaseInterval, "retry-base-interval",
 		1000,
-		"Set the initial timeout for a retry in milliseconds when data is sent to the Aerospike database\n"+
+		"Set the initial interval for a retry in milliseconds when data is sent to the Aerospike database\n"+
 			"during a restore. This retry sequence is triggered by the following non-critical errors:\n"+
 			"AEROSPIKE_NO_AVAILABLE_CONNECTIONS_TO_NODE,\n"+
 			"AEROSPIKE_TIMEOUT,\n"+
@@ -117,11 +113,11 @@ func (f *Restore) NewFlagSet() *pflag.FlagSet {
 			"the timeout value between retry attempts.")
 	flagSet.Float64Var(&f.RetryMultiplier, "retry-multiplier",
 		1,
-		"Increases the delay between subsequent retry attempts for the errors listed under --retry-base-timeout.\n"+
-			"The actual delay is calculated as: retry-base-timeout * (retry-multiplier ^ attemptNumber)")
+		"Increases the delay between subsequent retry attempts for the errors listed under --retry-base-interval.\n"+
+			"The actual delay is calculated as: retry-base-interval * (retry-multiplier ^ attemptNumber)")
 	flagSet.UintVar(&f.RetryMaxRetries, "retry-max-retries",
 		0,
-		"Set the maximum number of retry attempts for the errors listed under --retry-base-timeout.\n"+
+		"Set the maximum number of retry attempts for the errors listed under --retry-base-interval.\n"+
 			"The default is 0, indicating no retries will be performed")
 
 	// Disabled mode flag until .asbx support will be added.

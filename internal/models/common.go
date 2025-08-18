@@ -32,6 +32,11 @@ type Common struct {
 	MaxRetries       int
 	TotalTimeout     int64
 	SocketTimeout    int64
+	InfoTimeout      int64
+
+	InfoMaxRetries                uint
+	InfoRetriesMultiplier         float64
+	InfoRetryIntervalMilliseconds int64
 
 	// Bandwidth is mapped to config.Bandwidth
 	// Is set in MiB then converted to bytes.
