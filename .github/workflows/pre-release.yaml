@@ -145,7 +145,7 @@ jobs:
       - name: Get Metadata
         id: metadata
         env:
-          GIT_TAG: ${{ github.ref }}
+          GIT_TAG: ${{ github.ref_name }}
         run: |
           echo "Starting metadata extraction..."
           
