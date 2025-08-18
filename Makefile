@@ -22,6 +22,9 @@ ARCHS ?= linux/amd64 linux/arm64
 PACKAGERS ?= deb rpm
 IMAGE_TAG ?= test
 IMAGE_REPO ?= aerospike/aerospike-backup-tools
+IMAGE_CACHE_FROM ?=
+IMAGE_CACHE_TO ?=
+IMAGE_OUTPUT ?= type=image,push=true
 BACKUP_BINARY_NAME = asbackup
 RESTORE_BINARY_NAME = asrestore
 TARGET_DIR = $(WORKSPACE)/target
