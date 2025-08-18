@@ -1,4 +1,4 @@
-#!/bin/bash -ex
+#!/bin/bash -e
 WORKSPACE="$(git rev-parse --show-toplevel)"
 REGISTRY="docker.io"
 REPO="aerospike/aerospike-backup-cli"
