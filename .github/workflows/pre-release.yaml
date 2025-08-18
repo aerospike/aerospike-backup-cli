@@ -568,7 +568,7 @@ jobs:
           
           echo "Building Docker image with buildx bake."
           jfrog docker buildx bake \
-            --file ${{ github.workspace }}/build/docker-build/docker-bake.hcl \
+            --file ${{ github.workspace }}/scripts/docker-bake.hcl \
             --metadata-file=build-metadata \
             --progress plain \
             --no-cache \
