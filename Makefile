@@ -1,4 +1,3 @@
-# Info
 SHELL = bash
 NAME = aerospike-backup-tools
 WORKSPACE = $(shell pwd)
@@ -9,7 +8,6 @@ HOMEPAGE = "https://www.aerospike.com"
 VENDOR = "Aerospike INC"
 LICENSE = "Apache License 2.0"
 
-# Build parameters
 GO ?= $(shell which go || echo "/usr/local/go/bin/go")
 NFPM ?= $(shell which nfpm)
 OS ?= $(shell $(GO) env GOOS)
@@ -68,7 +66,7 @@ docker-build:
 
 .PHONY: docker-buildx
 docker-buildx:
-		cd ./build/scripts && ./docker-buildx.sh \
+		cd ./scripts && ./docker-buildx.sh \
     	--repo $(IMAGE_REPO) \
     	--tag $(IMAGE_TAG) \
     	--registry $(REGISTRY) \
