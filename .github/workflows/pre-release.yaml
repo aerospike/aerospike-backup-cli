@@ -12,7 +12,7 @@ on:
       - 'v*'
 
 jobs:
-  goreleaser:
+  go-releaser:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
@@ -44,6 +44,8 @@ jobs:
   create-release:
     permissions:
       contents: write
+    needs:
+      - go-releaser
     runs-on: ubuntu-24.04
     steps:
       - name: Check if release exists
