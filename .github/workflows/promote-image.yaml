@@ -223,14 +223,14 @@ jobs:
           echo "Image Name : $IMAGE_NAME"
           echo "Image Tag  : $IMAGE_TAG"
           
-          echo "Verifying OCI archive content at ./abs-image/abs-image.tar"
-          if [ ! -f ./abs-image/abs-image.tar ]; then
-            echo "Archive file not found: ./abs-image/abs-image.tar"
+          echo "Verifying OCI archive content at ./cli-image/cli-image.tar"
+          if [ ! -f ./cli-image/cli-image.tar ]; then
+            echo "Archive file not found: ./cli-image/cli-image.tar"
             exit 1
           fi
           
           echo "Listing contents of OCI archive:"
-          tar -tf ./abs-image/abs-image.tar || {
+          tar -tf ./cli-image/cli-image.tar || {
             echo "Failed to list archive contents."
             exit 1
           }
@@ -241,7 +241,7 @@ jobs:
             echo "Pushing tag: $TAG"
             skopeo copy --all \
               --dest-creds $DOCKER_USERNAME:$DOCKER_PASSWORD \
-              oci-archive:./abs-image/abs-image.tar \
+              oci-archive:./cli-image/cli-image.tar \
               docker://docker.io/aerospike/$IMAGE_NAME:$TAG
           
             SKOPEO_STATUS=$?
