@@ -199,7 +199,7 @@ jobs:
         if: steps.check-bundle.outputs.found == 'true' && steps.promote-to-dockerhub.outputs.status == 'failure'
         uses: dawidd6/action-download-artifact@ac66b43f0e6a346234dd65d4d0c8fbb31cb316e5 # v11
         with:
-          workflow: pre-release.yml
+          workflow: pre-release.yaml
           name: cli-image
           path: ./cli-image
           commit: ${{ env.TAG_COMMIT }}
