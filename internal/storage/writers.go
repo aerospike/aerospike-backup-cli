@@ -29,7 +29,10 @@ import (
 	"github.com/aerospike/backup-go/io/storage/azure/blob"
 	"github.com/aerospike/backup-go/io/storage/gcp/storage"
 	"github.com/aerospike/backup-go/io/storage/local"
+	"github.com/aerospike/backup-go/io/storage/std"
 )
+
+const stdPlaceholder = "-"
 
 // NewBackupWriter initializes and returns a backup.Writer
 // based on the provided parameters or cleans up artifacts if required.
@@ -110,6 +113,9 @@ func newWriter(
 		}
 
 		return newAzureWriter(ctx, params.AzureBlob, opts)
+	case params.Backup.OutputFile == stdPlaceholder:
+		defer logger.Info("initialized standard output writer")
+		return newStdWriter(ctx, opts)
 	default:
 		defer logger.Info("initialized local storage writer")
 		return newLocalWriter(ctx, opts)
@@ -174,6 +180,12 @@ func newLocalWriter(ctx context.Context,
 	opts []ioStorage.Opt,
 ) (backup.Writer, error) {
 	return local.NewWriter(ctx, opts...)
+}
+
+func newStdWriter(ctx context.Context,
+	opts []ioStorage.Opt,
+) (backup.Writer, error) {
+	return std.NewWriter(ctx, opts...)
 }
 
 func newS3Writer(

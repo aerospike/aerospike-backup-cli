@@ -38,6 +38,7 @@ import (
 const (
 	testS3Bucket     = "asbackup"
 	testFileNameASBX = "0_test_1.asbx"
+	testStdinType    = "stdin"
 )
 
 func TestNewLocalReader(t *testing.T) {
@@ -61,7 +62,7 @@ func TestNewLocalReader(t *testing.T) {
 	err := createTmpFileLocal(dir, testFileNameASBX)
 	require.NoError(t, err)
 
-	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
+	logger := slog.New(slog.NewTextHandler(os.Stderr, nil))
 
 	reader, err := newReader(ctx, params, nil, true, logger)
 	assert.NoError(t, err)
@@ -136,7 +137,7 @@ func TestNewS3Reader(t *testing.T) {
 	err = createTmpFileS3(ctx, client, dir, testFileNameASBX)
 	require.NoError(t, err)
 
-	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
+	logger := slog.New(slog.NewTextHandler(os.Stderr, nil))
 
 	reader, err := newReader(ctx, params, nil, true, logger)
 	assert.NoError(t, err)
@@ -204,7 +205,7 @@ func TestNewGcpReader(t *testing.T) {
 	err = createTmpFileGcp(ctx, client, dir, testFileNameASBX)
 	require.NoError(t, err)
 
-	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
+	logger := slog.New(slog.NewTextHandler(os.Stderr, nil))
 
 	reader, err := newReader(ctx, params, nil, true, logger)
 	assert.NoError(t, err)
@@ -274,7 +275,7 @@ func TestNewAzureReader(t *testing.T) {
 	err = createTmpFileAzure(ctx, client, dir, testFileNameASBX)
 	require.NoError(t, err)
 
-	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
+	logger := slog.New(slog.NewTextHandler(os.Stderr, nil))
 
 	reader, err := newReader(ctx, params, nil, true, logger)
 	assert.NoError(t, err)
@@ -403,4 +404,26 @@ func TestPrepareDirectoryList(t *testing.T) {
 			assert.Equal(t, tt.expected, actual)
 		})
 	}
+}
+
+func TestNewStdReader(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+
+	params := &appConfig.RestoreServiceConfig{
+		Restore: &models.Restore{
+			InputFile: stdPlaceholder,
+		},
+		AwsS3:      &models.AwsS3{},
+		GcpStorage: &models.GcpStorage{},
+		AzureBlob:  &models.AzureBlob{},
+	}
+
+	logger := slog.New(slog.NewTextHandler(os.Stderr, nil))
+
+	reader, err := newReader(ctx, params, nil, true, logger)
+	assert.NoError(t, err)
+	assert.NotNil(t, reader)
+	assert.Equal(t, testStdinType, reader.GetType())
 }

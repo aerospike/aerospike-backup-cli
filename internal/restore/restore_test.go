@@ -84,7 +84,7 @@ func Test_BackupRestore(t *testing.T) {
 	err := createRecords(asbParams.ClientConfig, asbParams.ClientPolicy, testNamespace, testSet)
 	require.NoError(t, err)
 
-	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
+	logger := slog.New(slog.NewTextHandler(os.Stderr, nil))
 
 	asb, err := appBackup.NewService(ctx, asbParams, logger)
 	require.NoError(t, err)

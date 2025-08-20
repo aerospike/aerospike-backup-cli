@@ -32,6 +32,7 @@ import (
 	"github.com/aerospike/backup-go/io/storage/azure/blob"
 	gcpStorage "github.com/aerospike/backup-go/io/storage/gcp/storage"
 	"github.com/aerospike/backup-go/io/storage/local"
+	"github.com/aerospike/backup-go/io/storage/std"
 )
 
 // NewRestoreReader creates and returns a reader based on the restore mode specified in RestoreServiceConfig.
@@ -176,6 +177,9 @@ func newReader(
 		}
 
 		return newAzureReader(ctx, params.AzureBlob, opts, logger)
+	case params.Restore.InputFile == stdPlaceholder:
+		defer logger.Info("initialized standard input reader")
+		return newStdReader(ctx, opts)
 	default:
 		defer logger.Info("initialized local storage reader")
 		return newLocalReader(ctx, opts)
@@ -220,6 +224,13 @@ func newLocalReader(
 	opts []ioStorage.Opt,
 ) (backup.StreamingReader, error) {
 	return local.NewReader(ctx, opts...)
+}
+
+func newStdReader(
+	ctx context.Context,
+	opts []ioStorage.Opt,
+) (backup.StreamingReader, error) {
+	return std.NewReader(ctx, opts...)
 }
 
 func newS3Reader(

@@ -43,9 +43,9 @@ func NewLogger(level string, isVerbose, isJSON bool) (*slog.Logger, error) {
 
 	switch isJSON {
 	case true:
-		return slog.New(slog.NewJSONHandler(os.Stdout, loggerOpt)), nil
+		return slog.New(slog.NewJSONHandler(os.Stderr, loggerOpt)), nil
 	default:
-		return slog.New(slog.NewTextHandler(os.Stdout, loggerOpt)), nil
+		return slog.New(slog.NewTextHandler(os.Stderr, loggerOpt)), nil
 	}
 }
 

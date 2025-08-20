@@ -32,7 +32,7 @@ func (f *Restore) NewFlagSet() *pflag.FlagSet {
 
 	flagSet.StringVarP(&f.InputFile, "input-file", "i",
 		"",
-		"Restore from a single backup file. Use - for stdin.\n"+
+		"Restore from a single backup file. Use '-' for stdin.\n"+
 			"Required, unless --directory or --directory-list is used.\n")
 	flagSet.StringVar(&f.DirectoryList, "directory-list",
 		"",
