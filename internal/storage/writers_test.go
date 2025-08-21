@@ -310,7 +310,7 @@ func TestNewStdWriter(t *testing.T) {
 
 	params := &config.BackupServiceConfig{
 		Backup: &models.Backup{
-			OutputFile: stdPlaceholder,
+			OutputFile: config.StdPlaceholder,
 		},
 		AwsS3:      &models.AwsS3{},
 		GcpStorage: &models.GcpStorage{},
