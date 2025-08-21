@@ -32,8 +32,6 @@ import (
 	"github.com/aerospike/backup-go/io/storage/std"
 )
 
-const stdPlaceholder = "-"
-
 // NewBackupWriter initializes and returns a backup.Writer
 // based on the provided parameters or cleans up artifacts if required.
 func NewBackupWriter(
@@ -66,11 +64,6 @@ func newWriter(
 	directory, outputFile := getDirectoryOutputFile(params)
 	shouldClearTarget, continueBackup := getShouldCleanContinue(params)
 	opts := newWriterOpts(directory, outputFile, shouldClearTarget, continueBackup, params.IsXDR(), logger)
-
-	var isStd bool
-	if params.Backup != nil && params.Backup.OutputFile == stdPlaceholder {
-		isStd = true
-	}
 
 	logger.Info("initializing storage for writer",
 		slog.String("directory", directory),
@@ -118,7 +111,7 @@ func newWriter(
 		}
 
 		return newAzureWriter(ctx, params.AzureBlob, opts)
-	case isStd:
+	case params.IsStdout():
 		defer logger.Info("initialized standard output writer")
 		return newStdWriter(ctx, opts)
 	default:

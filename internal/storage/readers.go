@@ -177,7 +177,7 @@ func newReader(
 		}
 
 		return newAzureReader(ctx, params.AzureBlob, opts, logger)
-	case params.Restore.InputFile == stdPlaceholder:
+	case params.IsStdin():
 		defer logger.Info("initialized standard input reader")
 		return newStdReader(ctx, opts)
 	default:
