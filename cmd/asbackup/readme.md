@@ -173,6 +173,7 @@ Backup Flags:
                                     Default: backup all nodes in the cluster
   -X, --partition-list string       List of partitions <filter[,<filter>[...]]> to back up. Partition filters can be ranges,
                                     individual partitions, or records after a specific digest within a single partition.
+                                    To use this argument --parallel value must be set to the number of elements in partition list or greater
                                     This argument is mutually exclusive with after-digest.
                                     Filter: <begin partition>[-<partition count>]|<digest>
                                     begin partition: 0-4095
