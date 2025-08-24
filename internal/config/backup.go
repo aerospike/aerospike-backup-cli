@@ -26,8 +26,12 @@ import (
 	"github.com/aerospike/tools-common-go/client"
 )
 
-// MaxRack max number of racks that can exist.
-const MaxRack = 1000000
+const (
+	// MaxRack max number of racks that can exist.
+	MaxRack = 1000000
+	// StdPlaceholder is the placeholder for stdout file name.
+	StdPlaceholder = "-"
+)
 
 // BackupServiceConfig represents the configuration structure for the backup service
 // involving various policies and integrations.
@@ -118,6 +122,16 @@ func (p *BackupServiceConfig) SkipWriterInit() bool {
 	return true
 }
 
+// IsStdout checks if the backup operation should write to stdout
+// by verifying that Backup is non-nil and OutputFile is StdPlaceholder.
+func (p *BackupServiceConfig) IsStdout() bool {
+	if p.Backup != nil && p.Backup.OutputFile == StdPlaceholder {
+		return true
+	}
+
+	return false
+}
+
 // NewBackupConfigs creates and returns a new ConfigBackup and ConfigBackupXDR object,
 // initialized with given backup parameters.
 // This function sets various backup parameters including namespace, file limits, parallelism options, bandwidth,
@@ -180,6 +194,15 @@ func newBackupConfig(params *BackupServiceConfig) (*backup.ConfigBackup, error) 
 	c.NoTTLOnly = params.Backup.NoTTLOnly
 	c.OutputFilePrefix = params.Backup.OutputFilePrefix
 	c.MetricsEnabled = true
+
+	// Reconfigure params for stdout.
+	if params.IsStdout() {
+		// If we back up to stdout, file limit can break the input stream because it will file headers and close descriptors.
+		// So the file limit is disabled for stdout.
+		c.FileLimit = 0
+		// Parallel write can be only 1 to stdout, otherwise records data will be mixed and corrupted.
+		c.ParallelWrite = 1
+	}
 
 	if params.Backup.RackList != "" {
 		list, err := ParseRacks(params.Backup.RackList)

@@ -66,9 +66,9 @@ func TestIndent(t *testing.T) {
 
 func TestPrintMetric(t *testing.T) {
 	// Redirect stdout to capture output
-	oldStdout := os.Stdout
+	oldStdout := os.Stderr
 	r, w, _ := os.Pipe()
-	os.Stdout = w
+	os.Stderr = w
 
 	// Test with string value
 	printMetric("TestKey", "TestValue")
@@ -81,7 +81,7 @@ func TestPrintMetric(t *testing.T) {
 
 	// Close writer and restore stdout
 	w.Close()
-	os.Stdout = oldStdout
+	os.Stderr = oldStdout
 
 	// Read captured output
 	var buf bytes.Buffer
@@ -116,16 +116,16 @@ func TestPrintBackupReport(t *testing.T) {
 	stats.IncFiles() // Increment to 10
 
 	// Redirect stdout to capture output
-	oldStdout := os.Stdout
+	oldStdout := os.Stderr
 	r, w, _ := os.Pipe()
-	os.Stdout = w
+	os.Stderr = w
 
 	// Call the function
 	printBackupReport(stats, false)
 
 	// Close writer and restore stdout
 	w.Close()
-	os.Stdout = oldStdout
+	os.Stderr = oldStdout
 
 	// Read captured output
 	var buf bytes.Buffer
@@ -171,16 +171,16 @@ func TestPrintBackupReportXdr(t *testing.T) {
 	stats.IncFiles() // Increment to 10
 
 	// Redirect stdout to capture output
-	oldStdout := os.Stdout
+	oldStdout := os.Stderr
 	r, w, _ := os.Pipe()
-	os.Stdout = w
+	os.Stderr = w
 
 	// Call the function with isXdr=true
 	printBackupReport(stats, true)
 
 	// Close writer and restore stdout
 	w.Close()
-	os.Stdout = oldStdout
+	os.Stderr = oldStdout
 
 	// Read captured output
 	var buf bytes.Buffer
@@ -290,16 +290,16 @@ func TestReportBackup(t *testing.T) {
 	// Test with isJSON=false
 	t.Run("Console output", func(t *testing.T) {
 		// Redirect stdout to capture output
-		oldStdout := os.Stdout
+		oldStdout := os.Stderr
 		r, w, _ := os.Pipe()
-		os.Stdout = w
+		os.Stderr = w
 
 		// Call the function
 		ReportBackup(stats, false, false, nil)
 
 		// Close writer and restore stdout
 		w.Close()
-		os.Stdout = oldStdout
+		os.Stderr = oldStdout
 
 		// Read captured output
 		var buf bytes.Buffer
@@ -496,16 +496,16 @@ func TestPrintRestoreReport(t *testing.T) {
 	stats.TotalBytesRead.Add(5000000)
 
 	// Redirect stdout to capture output
-	oldStdout := os.Stdout
+	oldStdout := os.Stderr
 	r, w, _ := os.Pipe()
-	os.Stdout = w
+	os.Stderr = w
 
 	// Call the function
 	printRestoreReport(stats, false)
 
 	// Close writer and restore stdout
 	w.Close()
-	os.Stdout = oldStdout
+	os.Stderr = oldStdout
 
 	// Read captured output
 	var buf bytes.Buffer
@@ -618,16 +618,16 @@ func TestReportRestore(t *testing.T) {
 	// Test with isJSON=false
 	t.Run("Console output", func(t *testing.T) {
 		// Redirect stdout to capture output
-		oldStdout := os.Stdout
+		oldStdout := os.Stderr
 		r, w, _ := os.Pipe()
-		os.Stdout = w
+		os.Stderr = w
 
 		// Call the function
 		ReportRestore(stats, false, false, nil)
 
 		// Close writer and restore stdout
 		w.Close()
-		os.Stdout = oldStdout
+		os.Stderr = oldStdout
 
 		// Read captured output
 		var buf bytes.Buffer
@@ -658,16 +658,16 @@ func TestReportRestore(t *testing.T) {
 
 func TestPrintEstimateReport(t *testing.T) {
 	// Redirect stdout to capture output
-	oldStdout := os.Stdout
+	oldStdout := os.Stderr
 	r, w, _ := os.Pipe()
-	os.Stdout = w
+	os.Stderr = w
 
 	// Call the function
 	printEstimateReport(5000000)
 
 	// Close writer and restore stdout
 	w.Close()
-	os.Stdout = oldStdout
+	os.Stderr = oldStdout
 
 	// Read captured output
 	var buf bytes.Buffer
@@ -699,16 +699,16 @@ func TestReportEstimate(t *testing.T) {
 	// Test with isJSON=false
 	t.Run("Console output", func(t *testing.T) {
 		// Redirect stdout to capture output
-		oldStdout := os.Stdout
+		oldStdout := os.Stderr
 		r, w, _ := os.Pipe()
-		os.Stdout = w
+		os.Stderr = w
 
 		// Call the function
 		ReportEstimate(5000000, false, nil)
 
 		// Close writer and restore stdout
 		w.Close()
-		os.Stdout = oldStdout
+		os.Stderr = oldStdout
 
 		// Read captured output
 		var buf bytes.Buffer

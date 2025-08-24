@@ -41,6 +41,8 @@ type Common struct {
 	// Bandwidth is mapped to config.Bandwidth
 	// Is set in MiB then converted to bytes.
 	Bandwidth int64
+	// Buffer size for stdin/stdout operations.
+	StdBufferSize int
 }
 
 func (c *Common) Validate() error {
@@ -62,6 +64,10 @@ func (c *Common) Validate() error {
 
 	if c.Parallel < 0 {
 		return fmt.Errorf("parallel must be non-negative")
+	}
+
+	if c.StdBufferSize < 0 {
+		return fmt.Errorf("std buffer size must be non-negative")
 	}
 
 	return nil

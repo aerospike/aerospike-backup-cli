@@ -46,6 +46,7 @@ func TestCommon_NewFlagSet(t *testing.T) {
 		"--info-retry-interval", "1",
 		"--info-retry-multiplier", "1",
 		"--info-max-retries", "1",
+		"--std-buffer", "1",
 	}
 
 	err := flagSet.Parse(args)
@@ -69,6 +70,7 @@ func TestCommon_NewFlagSet(t *testing.T) {
 	assert.Equal(t, int64(1), result.InfoRetryIntervalMilliseconds, "The info-retry-interval flag should be parsed correctly")
 	assert.Equal(t, float64(1), result.InfoRetriesMultiplier, "The info-retry-multiplier flag should be parsed correctly")
 	assert.Equal(t, uint(1), result.InfoMaxRetries, "The info-max-retries flag should be parsed correctly")
+	assert.Equal(t, 1, result.StdBufferSize, "The std-buffer flag should be parsed correctly")
 }
 
 func TestCommon_NewFlagSet_DefaultValues(t *testing.T) {
@@ -101,4 +103,5 @@ func TestCommon_NewFlagSet_DefaultValues(t *testing.T) {
 	assert.Equal(t, int64(1000), result.InfoRetryIntervalMilliseconds, "The default value for info-retry-interval should be 1000")
 	assert.Equal(t, float64(1), result.InfoRetriesMultiplier, "The default value for info-retry-multiplier should be 1")
 	assert.Equal(t, uint(3), result.InfoMaxRetries, "The default value for info-max-retries should be 3")
+	assert.Equal(t, 4194304, result.StdBufferSize, "The default value for std-buffer should be 4194304")
 }

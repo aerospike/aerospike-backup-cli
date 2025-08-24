@@ -32,7 +32,8 @@ const (
 	testProjectID = "test-id"
 	testFileName  = "/file.bak"
 
-	testLocalType = "directory"
+	testLocalType  = "directory"
+	testStdoutType = "stdout"
 
 	testS3Endpoint = "http://localhost:9000"
 	testS3Region   = "eu"
@@ -302,4 +303,22 @@ func createAzureContainer() error {
 	_, _ = c.CreateContainer(ctx, testBucket, nil)
 
 	return nil
+}
+
+func TestNewStdWriter(t *testing.T) {
+	t.Parallel()
+
+	params := &config.BackupServiceConfig{
+		Backup: &models.Backup{
+			OutputFile: config.StdPlaceholder,
+		},
+		AwsS3:      &models.AwsS3{},
+		GcpStorage: &models.GcpStorage{},
+		AzureBlob:  &models.AzureBlob{},
+	}
+	ctx := context.Background()
+	writer, err := newWriter(ctx, params, nil, slog.Default())
+	assert.NoError(t, err)
+	assert.NotNil(t, writer)
+	assert.Equal(t, testStdoutType, writer.GetType())
 }

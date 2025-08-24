@@ -93,7 +93,7 @@ func Test_BackupWithState(t *testing.T) {
 	err := createRecords(asbParams.ClientConfig, asbParams.ClientPolicy, testNamespace, testSet)
 	require.NoError(t, err)
 
-	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
+	logger := slog.New(slog.NewTextHandler(os.Stderr, nil))
 
 	asb, err := NewService(ctx, asbParams, logger)
 	require.NoError(t, err)
@@ -154,7 +154,7 @@ func Test_BackupXDR(t *testing.T) {
 	err := createRecords(asbParams.ClientConfig, asbParams.ClientPolicy, testNamespace, testSetXDR)
 	require.NoError(t, err)
 
-	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
+	logger := slog.New(slog.NewTextHandler(os.Stderr, nil))
 
 	asb, err := NewService(ctx, asbParams, logger)
 	require.NoError(t, err)
@@ -208,7 +208,7 @@ func Test_BackupEstimates(t *testing.T) {
 	err := createRecords(asbParams.ClientConfig, asbParams.ClientPolicy, testNamespace, testSet)
 	require.NoError(t, err)
 
-	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
+	logger := slog.New(slog.NewTextHandler(os.Stderr, nil))
 
 	asb, err := NewService(ctx, asbParams, logger)
 	require.NoError(t, err)
