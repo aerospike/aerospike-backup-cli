@@ -255,6 +255,14 @@ func TestValidatePartitionFilters(t *testing.T) {
 			wantErr: true,
 		},
 		{
+			name: "Border partition filters",
+			partitionFilters: []*aerospike.PartitionFilter{
+				{Begin: 0, Count: 1000},
+				{Begin: 1000, Count: 3000},
+			},
+			wantErr: false,
+		},
+		{
 			name: "Duplicate begin value",
 			partitionFilters: []*aerospike.PartitionFilter{
 				{Begin: 0, Count: 1},
