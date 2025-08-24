@@ -20,6 +20,7 @@ import (
 	"log/slog"
 	"strings"
 
+	"github.com/aerospike/aerospike-backup-cli/cmd/asbackup/cmd/xdr"
 	"github.com/aerospike/aerospike-backup-cli/internal/backup"
 	"github.com/aerospike/aerospike-backup-cli/internal/config"
 	"github.com/aerospike/aerospike-backup-cli/internal/flags"
@@ -92,18 +93,18 @@ func NewCmd(appVersion, commitHash, buildTime string) (*cobra.Command, *Cmd) {
 	rootCmd.SilenceUsage = true
 
 	// Add sub command
-	// xdrCmd := xdr.NewCmd(
-	// 	c.flagsApp,
-	// 	c.flagsAerospike,
-	// 	c.flagsClientPolicy,
-	// 	c.flagsCompression,
-	// 	c.flagsEncryption,
-	// 	c.flagsSecretAgent,
-	// 	c.flagsAws,
-	// 	c.flagsGcp,
-	// 	c.flagsAzure,
-	// )
-	// rootCmd.AddCommand(xdrCmd)
+	xdrCmd := xdr.NewCmd(
+		c.flagsApp,
+		c.flagsAerospike,
+		c.flagsClientPolicy,
+		c.flagsCompression,
+		c.flagsEncryption,
+		c.flagsSecretAgent,
+		c.flagsAws,
+		c.flagsGcp,
+		c.flagsAzure,
+	)
+	rootCmd.AddCommand(xdrCmd)
 
 	appFlagSet := c.flagsApp.NewFlagSet()
 	aerospikeFlagSet := c.flagsAerospike.NewFlagSet(asFlags.DefaultWrapHelpString)
