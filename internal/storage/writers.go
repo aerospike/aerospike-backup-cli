@@ -113,7 +113,7 @@ func newWriter(
 		return newAzureWriter(ctx, params.AzureBlob, opts)
 	case params.IsStdout():
 		defer logger.Info("initialized standard output writer")
-		return newStdWriter(ctx, opts)
+		return newStdWriter(ctx, params.Backup.StdBufferSize)
 	default:
 		defer logger.Info("initialized local storage writer")
 		return newLocalWriter(ctx, opts)
@@ -174,16 +174,12 @@ func newWriterOpts(
 	return opts
 }
 
-func newLocalWriter(ctx context.Context,
-	opts []ioStorage.Opt,
-) (backup.Writer, error) {
+func newLocalWriter(ctx context.Context, opts []ioStorage.Opt) (backup.Writer, error) {
 	return local.NewWriter(ctx, opts...)
 }
 
-func newStdWriter(ctx context.Context,
-	opts []ioStorage.Opt,
-) (backup.Writer, error) {
-	return std.NewWriter(ctx, opts...)
+func newStdWriter(ctx context.Context, bufferSize int) (backup.Writer, error) {
+	return std.NewWriter(ctx, bufferSize)
 }
 
 func newS3Writer(

@@ -111,7 +111,8 @@ Restore Flags:
       --info-retry-multiplier float   Increases the delay between subsequent retry attempts.
                                       The actual delay is calculated as: info-retry-interval * (info-retry-multiplier ^ attemptNumber) (default 1)
       --info-max-retries uint         How many times to retry to send info commands before failing.  (default 3)
-  -i, --input-file string         Restore from a single backup file. Use - for stdin.
+      --std-buffer int                Buffer size for stdin and stdout operations. Is used for pipelining. (default 4194304)
+  -i, --input-file string         Restore from a single backup file. Use '-' for stdin.
                                   Required, unless --directory or --directory-list is used.
                                   
       --directory-list string     A comma-separated list of paths to directories that hold the backup files. Required,

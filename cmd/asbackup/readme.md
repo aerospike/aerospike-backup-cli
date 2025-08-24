@@ -126,9 +126,10 @@ Backup Flags:
       --info-retry-multiplier float   Increases the delay between subsequent retry attempts.
                                       The actual delay is calculated as: info-retry-interval * (info-retry-multiplier ^ attemptNumber) (default 1)
       --info-max-retries uint         How many times to retry to send info commands before failing.  (default 3)
+      --std-buffer int                Buffer size for stdin and stdout operations. Is used for pipelining. (default 4194304)
   -r, --remove-files                Remove an existing backup file (-o) or entire directory (-d) and replace with the new backup.
       --remove-artifacts            Remove existing backup file (-o) or files (-d) without performing a backup.
-  -o, --output-file string          Backup to a single backup file. Use - for stdout. Required, unless -d or -e is used.
+  -o, --output-file string          Backup to a single backup file. Use '-' for stdout. Required, unless -d or -e is used.
   -q, --output-file-prefix string   When using directory parameter, prepend a prefix to the names of the generated files.
   -F, --file-limit uint             Rotate backup files when their size crosses the given
                                     value (in bytes). Only used when backing up to a directory.

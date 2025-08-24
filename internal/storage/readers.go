@@ -179,7 +179,7 @@ func newReader(
 		return newAzureReader(ctx, params.AzureBlob, opts, logger)
 	case params.IsStdin():
 		defer logger.Info("initialized standard input reader")
-		return newStdReader(ctx, opts)
+		return newStdReader(ctx, params.Restore.StdBufferSize)
 	default:
 		defer logger.Info("initialized local storage reader")
 		return newLocalReader(ctx, opts)
@@ -219,18 +219,12 @@ func newReaderOpts(
 	return opts
 }
 
-func newLocalReader(
-	ctx context.Context,
-	opts []ioStorage.Opt,
-) (backup.StreamingReader, error) {
+func newLocalReader(ctx context.Context, opts []ioStorage.Opt) (backup.StreamingReader, error) {
 	return local.NewReader(ctx, opts...)
 }
 
-func newStdReader(
-	ctx context.Context,
-	opts []ioStorage.Opt,
-) (backup.StreamingReader, error) {
-	return std.NewReader(ctx, opts...)
+func newStdReader(ctx context.Context, bufferSize int) (backup.StreamingReader, error) {
+	return std.NewReader(ctx, bufferSize)
 }
 
 func newS3Reader(
