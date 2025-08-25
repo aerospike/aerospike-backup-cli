@@ -27,7 +27,7 @@ import (
 
 	"cloud.google.com/go/storage"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob"
-	appConfig "github.com/aerospike/aerospike-backup-cli/internal/config"
+	"github.com/aerospike/aerospike-backup-cli/internal/config"
 	"github.com/aerospike/aerospike-backup-cli/internal/models"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
@@ -38,6 +38,7 @@ import (
 const (
 	testS3Bucket     = "asbackup"
 	testFileNameASBX = "0_test_1.asbx"
+	testStdinType    = "stdin"
 )
 
 func TestNewLocalReader(t *testing.T) {
@@ -47,7 +48,7 @@ func TestNewLocalReader(t *testing.T) {
 
 	dir := t.TempDir()
 
-	params := &appConfig.RestoreServiceConfig{
+	params := &config.RestoreServiceConfig{
 		Restore: &models.Restore{
 			Common: models.Common{
 				Directory: dir,
@@ -61,14 +62,14 @@ func TestNewLocalReader(t *testing.T) {
 	err := createTmpFileLocal(dir, testFileNameASBX)
 	require.NoError(t, err)
 
-	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
+	logger := slog.New(slog.NewTextHandler(os.Stderr, nil))
 
 	reader, err := newReader(ctx, params, nil, true, logger)
 	assert.NoError(t, err)
 	assert.NotNil(t, reader)
 	assert.Equal(t, testLocalType, reader.GetType())
 
-	params = &appConfig.RestoreServiceConfig{
+	params = &config.RestoreServiceConfig{
 		Restore: &models.Restore{
 			InputFile: dir + testFileNameASBX,
 		},
@@ -82,7 +83,7 @@ func TestNewLocalReader(t *testing.T) {
 	assert.NotNil(t, reader)
 	assert.Equal(t, testLocalType, reader.GetType())
 
-	params = &appConfig.RestoreServiceConfig{
+	params = &config.RestoreServiceConfig{
 		Restore:    &models.Restore{},
 		AwsS3:      &models.AwsS3{},
 		GcpStorage: &models.GcpStorage{},
@@ -112,7 +113,7 @@ func TestNewS3Reader(t *testing.T) {
 	dir := t.TempDir()
 	dir = strings.TrimPrefix(dir, "/")
 
-	params := &appConfig.RestoreServiceConfig{
+	params := &config.RestoreServiceConfig{
 		Restore: &models.Restore{
 			Common: models.Common{
 				Directory: dir,
@@ -136,14 +137,14 @@ func TestNewS3Reader(t *testing.T) {
 	err = createTmpFileS3(ctx, client, dir, testFileNameASBX)
 	require.NoError(t, err)
 
-	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
+	logger := slog.New(slog.NewTextHandler(os.Stderr, nil))
 
 	reader, err := newReader(ctx, params, nil, true, logger)
 	assert.NoError(t, err)
 	assert.NotNil(t, reader)
 	assert.Equal(t, testS3Type, reader.GetType())
 
-	params = &appConfig.RestoreServiceConfig{
+	params = &config.RestoreServiceConfig{
 		Restore: &models.Restore{
 			InputFile: dir + testFileName,
 		},
@@ -184,7 +185,7 @@ func TestNewGcpReader(t *testing.T) {
 	dir := t.TempDir()
 	dir = strings.TrimPrefix(dir, "/")
 
-	params := &appConfig.RestoreServiceConfig{
+	params := &config.RestoreServiceConfig{
 		Restore: &models.Restore{
 			Common: models.Common{
 				Directory: dir,
@@ -204,14 +205,14 @@ func TestNewGcpReader(t *testing.T) {
 	err = createTmpFileGcp(ctx, client, dir, testFileNameASBX)
 	require.NoError(t, err)
 
-	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
+	logger := slog.New(slog.NewTextHandler(os.Stderr, nil))
 
 	reader, err := newReader(ctx, params, nil, true, logger)
 	assert.NoError(t, err)
 	assert.NotNil(t, reader)
 	assert.Equal(t, testGcpType, reader.GetType())
 
-	params = &appConfig.RestoreServiceConfig{
+	params = &config.RestoreServiceConfig{
 		Restore: &models.Restore{
 			InputFile: dir + testFileName,
 		},
@@ -250,7 +251,7 @@ func TestNewAzureReader(t *testing.T) {
 	dir := t.TempDir()
 	dir = strings.TrimPrefix(dir, "/")
 
-	params := &appConfig.RestoreServiceConfig{
+	params := &config.RestoreServiceConfig{
 		Restore: &models.Restore{
 			Common: models.Common{
 				Directory: dir,
@@ -274,14 +275,14 @@ func TestNewAzureReader(t *testing.T) {
 	err = createTmpFileAzure(ctx, client, dir, testFileNameASBX)
 	require.NoError(t, err)
 
-	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
+	logger := slog.New(slog.NewTextHandler(os.Stderr, nil))
 
 	reader, err := newReader(ctx, params, nil, true, logger)
 	assert.NoError(t, err)
 	assert.NotNil(t, reader)
 	assert.Equal(t, testAzureType, reader.GetType())
 
-	params = &appConfig.RestoreServiceConfig{
+	params = &config.RestoreServiceConfig{
 		Restore: &models.Restore{
 			InputFile: dir + testFileName,
 		},
@@ -403,4 +404,26 @@ func TestPrepareDirectoryList(t *testing.T) {
 			assert.Equal(t, tt.expected, actual)
 		})
 	}
+}
+
+func TestNewStdReader(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+
+	params := &config.RestoreServiceConfig{
+		Restore: &models.Restore{
+			InputFile: config.StdPlaceholder,
+		},
+		AwsS3:      &models.AwsS3{},
+		GcpStorage: &models.GcpStorage{},
+		AzureBlob:  &models.AzureBlob{},
+	}
+
+	logger := slog.New(slog.NewTextHandler(os.Stderr, nil))
+
+	reader, err := newReader(ctx, params, nil, true, logger)
+	assert.NoError(t, err)
+	assert.NotNil(t, reader)
+	assert.Equal(t, testStdinType, reader.GetType())
 }

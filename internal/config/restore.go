@@ -78,6 +78,16 @@ func NewRestoreServiceConfig(
 	}, nil
 }
 
+// IsStdin checks if the restore operation should read from stdin
+// by verifying that Restore is non-nil and InputFile is StdPlaceholder.
+func (r *RestoreServiceConfig) IsStdin() bool {
+	if r.Restore != nil && r.Restore.InputFile == StdPlaceholder {
+		return true
+	}
+
+	return false
+}
+
 // NewRestoreConfig creates and returns a new ConfigRestore object, initialized with given restore parameters.
 func NewRestoreConfig(serviceConfig *RestoreServiceConfig, logger *slog.Logger) *backup.ConfigRestore {
 	logger.Info("initializing restore config")
