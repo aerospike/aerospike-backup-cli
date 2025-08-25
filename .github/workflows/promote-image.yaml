@@ -218,19 +218,20 @@ jobs:
           IMAGE_TAG: ${{ env.IMAGE_TAG }}
           DOCKER_USERNAME: ${{ secrets.DOCKER_USER }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          OCI_ARCHIVE_PATH: ./cli-image/cli-image.tar
         run: |
           echo "Starting DockerHub push from OCI Archive..."
           echo "Image Name : $IMAGE_NAME"
           echo "Image Tag  : $IMAGE_TAG"
           
-          echo "Verifying OCI archive content at ./cli-image/cli-image.tar"
-          if [ ! -f ./cli-image/cli-image.tar ]; then
-            echo "Archive file not found: ./cli-image/cli-image.tar"
+          echo "Verifying OCI archive content at $OCI_ARCHIVE_PATH"
+          if [ ! -f "$OCI_ARCHIVE_PATH" ]; then
+            echo "Archive file not found: $OCI_ARCHIVE_PATH"
             exit 1
           fi
           
           echo "Listing contents of OCI archive:"
-          tar -tf ./cli-image/cli-image.tar || {
+          tar -tf "$OCI_ARCHIVE_PATH" || {
             echo "Failed to list archive contents."
             exit 1
           }
@@ -241,7 +242,7 @@ jobs:
             echo "Pushing tag: $TAG"
             skopeo copy --all \
               --dest-creds $DOCKER_USERNAME:$DOCKER_PASSWORD \
-              oci-archive:./cli-image/cli-image.tar \
+              oci-archive:$OCI_ARCHIVE_PATH \
               docker://docker.io/aerospike/$IMAGE_NAME:$TAG
           
             SKOPEO_STATUS=$?

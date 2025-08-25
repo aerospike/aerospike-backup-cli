@@ -41,15 +41,15 @@ RUN apk update && \
     apk upgrade --no-cache
 
 RUN apk add --no-cache shadow && \
-    addgroup -g 65532 -S abgroup && \
-    adduser -S -u 65532 -G abgroup -h /home/absuser absuser
+    addgroup -g 65532 -S abtgroup && \
+    adduser -S -u 65532 -G abtgroup -h /home/abtuser abtuser
 
-COPY --chown=absuser:abgroup --chmod=0755 --from=builder \
+COPY --chown=abtuser:abtgroup --chmod=0755 --from=builder \
     /app/aerospike-backup-cli/target/asrestore_${TARGETOS}_${TARGETARCH} \
     /usr/bin/asrestore
 
-COPY --chown=absuser:abgroup --chmod=0755 --from=builder \
+COPY --chown=abtuser:abtgroup --chmod=0755 --from=builder \
     /app/aerospike-backup-cli/target/asbackup_${TARGETOS}_${TARGETARCH} \
     /usr/bin/asbackup
 
-USER absuser
+USER abtuser
