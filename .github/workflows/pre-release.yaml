@@ -491,7 +491,7 @@ jobs:
         id: metadata
         run: |
           echo "Starting metadata extraction for Docker image build."
-                    
+          
           if [ ! -f go.mod ]; then
             echo "go.mod file not found. Cannot determine Go version."
             exit 1
