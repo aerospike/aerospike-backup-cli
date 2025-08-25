@@ -1,4 +1,3 @@
-# Info
 SHELL = bash
 NAME = aerospike-backup-tools
 WORKSPACE = $(shell pwd)
@@ -9,7 +8,6 @@ HOMEPAGE = "https://www.aerospike.com"
 VENDOR = "Aerospike INC"
 LICENSE = "Apache License 2.0"
 
-# Build parameters
 GO ?= $(shell which go || echo "/usr/local/go/bin/go")
 NFPM ?= $(shell which nfpm)
 OS ?= $(shell $(GO) env GOOS)
@@ -24,6 +22,9 @@ ARCHS ?= linux/amd64 linux/arm64
 PACKAGERS ?= deb rpm
 IMAGE_TAG ?= test
 IMAGE_REPO ?= aerospike/aerospike-backup-tools
+IMAGE_CACHE_FROM ?=
+IMAGE_CACHE_TO ?=
+IMAGE_OUTPUT ?= type=image,push=true
 BACKUP_BINARY_NAME = asbackup
 RESTORE_BINARY_NAME = asrestore
 TARGET_DIR = $(WORKSPACE)/target
@@ -68,7 +69,15 @@ docker-build:
 
 .PHONY: docker-buildx
 docker-buildx:
-	./scripts/docker-buildx.sh --tag $(IMAGE_TAG) --registry $(REGISTRY) --platforms "$(ARCHS)"
+		cd ./scripts && ./docker-buildx.sh \
+    	--repo $(IMAGE_REPO) \
+    	--tag $(IMAGE_TAG) \
+    	--registry $(REGISTRY) \
+    	--version $(VERSION) \
+    	--platforms "$(ARCHS)" \
+    	--cache-to "$(IMAGE_CACHE_TO)" \
+    	--cache-from "$(IMAGE_CACHE_FROM)" \
+    	--output "$(IMAGE_OUTPUT)"
 
 .PHONY: build
 build:
