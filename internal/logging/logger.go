@@ -20,6 +20,8 @@ import (
 	"os"
 )
 
+const defaultLogLevel = "info"
+
 // NewLogger creates a new logger with the given level, verbose, and JSON flags.
 //
 // The level flag is used to set the log level. The valid values are:
@@ -52,6 +54,6 @@ func NewLogger(level string, isVerbose, isJSON bool) (*slog.Logger, error) {
 // NewDefaultLogger returns default logger.
 func NewDefaultLogger() *slog.Logger {
 	// We won't have an error here so ignore it.
-	l, _ := NewLogger("info", false, false)
+	l, _ := NewLogger(defaultLogLevel, false, false)
 	return l
 }

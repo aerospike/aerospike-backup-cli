@@ -162,6 +162,11 @@ func NewCmd(appVersion, commitHash, buildTime string) (*cobra.Command, *Cmd) {
 		helpFunc()
 	})
 
+	// Set cobra output to logger.
+	logWriter := logging.NewCobraLogger(c.Logger)
+	rootCmd.SetOut(logWriter)
+	rootCmd.SetErr(logWriter)
+
 	return rootCmd, c
 }
 
