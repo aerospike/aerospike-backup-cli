@@ -19,7 +19,7 @@ import (
 	"strings"
 )
 
-// CobraLogger is a wrapper around slog to use it as the default output for cobra output.
+// CobraLogger is a wrapper around slog to use it as the default writer for cobra output.
 type CobraLogger struct {
 	logger *slog.Logger
 }
