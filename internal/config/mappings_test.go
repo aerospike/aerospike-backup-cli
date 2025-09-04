@@ -62,7 +62,6 @@ func TestMapBackupConfig_Success(t *testing.T) {
 			ModifiedBefore:   "2023-09-01_12:00:00",
 			ModifiedAfter:    "2023-09-02_12:00:00",
 			FilterExpression: "k1EDpHRlc3Q=",
-			ParallelNodes:    true,
 			Compact:          true,
 			NodeList:         "node1,node2",
 			NoTTLOnly:        true,
@@ -117,7 +116,6 @@ func TestMapBackupConfig_Success(t *testing.T) {
 	assert.Equal(t, 5, config.ParallelWrite, "The ParallelWrite should be set correctly")
 	assert.Equal(t, 5, config.ParallelRead, "The ParallelRead should be set correctly")
 	assert.Equal(t, int64(10*1024*1024), config.Bandwidth, "The Bandwidth should be set to 10 MiB in bytes")
-	assert.True(t, config.ParallelNodes, "The ParallelNodes flag should be set correctly")
 	assert.True(t, config.Compact, "The Compact flag should be set correctly")
 	assert.ElementsMatch(t, []string{"node1", "node2"}, config.NodeList, "The NodeList should be set correctly")
 }

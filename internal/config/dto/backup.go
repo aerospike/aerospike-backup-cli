@@ -48,7 +48,6 @@ type Backup struct {
 		NoBins                        bool     `yaml:"no-bins"`
 		SleepBetweenRetries           int      `yaml:"sleep-between-retries"`
 		FilterExpression              string   `yaml:"filter-exp"`
-		ParallelNodes                 bool     `yaml:"parallel-nodes"`
 		RemoveArtifacts               bool     `yaml:"remove-artifacts"`
 		Compact                       bool     `yaml:"compact"`
 		NodeList                      []string `yaml:"node-list"`
@@ -112,7 +111,6 @@ func (b *Backup) ToModelBackup() *models.Backup {
 		NoBins:              b.Backup.NoBins,
 		SleepBetweenRetries: b.Backup.SleepBetweenRetries,
 		FilterExpression:    b.Backup.FilterExpression,
-		ParallelNodes:       b.Backup.ParallelNodes,
 		RemoveArtifacts:     b.Backup.RemoveArtifacts,
 		Compact:             b.Backup.Compact,
 		NodeList:            strings.Join(b.Backup.NodeList, ","),

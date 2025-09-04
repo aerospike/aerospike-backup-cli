@@ -80,13 +80,6 @@ func (f *Backup) NewFlagSet() *pflag.FlagSet {
 		"Base64 encoded expression. Use the encoded filter expression in each scan call,\n"+
 			"which can be used to do a partial backup. The expression to be used can be Base64 \n"+
 			"encoded through any client. This argument is mutually exclusive with multi-set backup.\n")
-	flagSet.BoolVar(&f.ParallelNodes, "parallel-nodes",
-		false,
-		"Specifies how to perform the query of the database run for each backup.\n"+
-			"By default, asbackup runs parallel workers for partitions.\n"+
-			"If this flag is set to true, asbackup launches parallel workers for nodes.\n"+
-			"The number of parallel workers is set by the --parallel flag.\n"+
-			"This option is mutually exclusive with --continue and --estimate.")
 	flagSet.StringVarP(&f.NodeList, "node-list", "l",
 		"",
 		"<addr 1>:<port 1>[,<addr 2>:<port 2>[,...]]\n"+
@@ -148,7 +141,7 @@ func (f *Backup) NewFlagSet() *pflag.FlagSet {
 		"Name of a state file that will be saved in backup --directory.\n"+
 			"Works only with --file-limit parameter. As --file-limit is reached and the file is closed,\n"+
 			"the current state will be saved. Works only for default and/or partition backup.\n"+
-			"Not work with --parallel-nodes or --node--list.")
+			"Not work with --node--list.")
 	flagSet.StringVarP(&f.Continue, "continue", "c",
 		"",
 		"Resumes an interrupted/failed backup from where it was left off, given the .state file\n"+
