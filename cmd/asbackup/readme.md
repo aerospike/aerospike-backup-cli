@@ -158,11 +158,6 @@ Backup Flags:
                                     which can be used to do a partial backup. The expression to be used can be Base64 
                                     encoded through any client. This argument is mutually exclusive with multi-set backup.
                                     
-      --parallel-nodes              Specifies how to perform the query of the database run for each backup.
-                                    By default, asbackup runs parallel workers for partitions.
-                                    If this flag is set to true, asbackup launches parallel workers for nodes.
-                                    The number of parallel workers is set by the --parallel flag.
-                                    This option is mutually exclusive with --continue and --estimate.
   -l, --node-list string            <addr 1>:<port 1>[,<addr 2>:<port 2>[,...]]
                                     <node name 1>[,<node name 2>[,...]]
                                     To get the correct node address, use 'service-tls-std' if a database configured to use TLS
@@ -204,7 +199,7 @@ Backup Flags:
       --state-file-dst string       Name of a state file that will be saved in backup --directory.
                                     Works only with --file-limit parameter. As --file-limit is reached and the file is closed,
                                     the current state will be saved. Works only for default and/or partition backup.
-                                    Not work with --parallel-nodes or --node--list.
+                                    Not work with --node--list.
   -c, --continue string             Resumes an interrupted/failed backup from where it was left off, given the .state file
                                     that was generated from the interrupted/failed run.
                                     --continue and --state-file-dst are mutually exclusive.
@@ -471,12 +466,6 @@ backup:
   # which can be used to do a partial backup. The expression to be used can be Base64
   # encoded through any client. This argument is mutually exclusive with multi-set backup.
   filter-exp: ""
-  # Specifies how to perform the query of the database run for each backup.
-  # By default, asbackup runs parallel workers for partitions.
-  # If this flag is set to true, asbackup launches parallel workers for nodes.
-  # The number of parallel workers is set by the `parallel`.
-  # This option is mutually exclusive with `continue` and `estimate`.
-  parallel-nodes: false
   # <addr 1>:<port 1>[,<addr 2>:<port 2>[,...]]
   # <node name 1>[,<node name 2>[,...]]
   # To get the correct node address, use 'service-tls-std' if a database configured to use TLS
@@ -524,7 +513,7 @@ backup:
   # Name of a state file that will be saved in backup directory.
   # Works only with file-limit parameter. As file-limit is reached and the file is closed,
   # the current state will be saved. Works only for default and/or partition backup.
-  # Not work with parallel-nodes or nodelist
+  # Not work with node-list
   state-file-dst: ""
   # Resumes an interrupted/failed backup from where it was left off, given the .state file
   # that was generated from the interrupted/failed run.

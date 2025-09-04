@@ -170,9 +170,8 @@ func TestValidateBackup(t *testing.T) {
 		{
 			name: "Continue and nodes",
 			backup: &Backup{
-				StateFileDst:  "some-file",
-				ParallelNodes: true,
-				OutputFile:    testFile,
+				StateFileDst: "some-file",
+				OutputFile:   testFile,
 			},
 
 			wantErr:     true,
@@ -193,9 +192,8 @@ func TestValidateBackup(t *testing.T) {
 		{
 			name: "NodeList with parallel nodes",
 			backup: &Backup{
-				NodeList:      "node1,node2",
-				ParallelNodes: true,
-				OutputFile:    testFile,
+				NodeList:   "node1,node2",
+				OutputFile: testFile,
 				Common: Common{
 					Namespace: testNamespace,
 				},

@@ -225,8 +225,7 @@ func newBackupConfig(params *BackupServiceConfig) (*backup.ConfigBackup, error) 
 	}
 
 	// Overwrite partitions if we use nodes.
-	if params.Backup.ParallelNodes || params.Backup.NodeList != "" {
-		c.ParallelNodes = params.Backup.ParallelNodes
+	if params.Backup.NodeList != "" {
 		c.NodeList = SplitByComma(params.Backup.NodeList)
 	}
 
@@ -327,7 +326,6 @@ func logBackupConfig(logger *slog.Logger, params *BackupServiceConfig, backupCon
 		slog.Any("sets", backupConfig.SetList),
 		slog.Any("bins", backupConfig.BinList),
 		slog.Any("rack", backupConfig.RackList),
-		slog.Any("parallel_node", backupConfig.ParallelNodes),
 		slog.Any("parallel_read", backupConfig.ParallelRead),
 		slog.Any("parallel_write", backupConfig.ParallelWrite),
 		slog.Bool("no_records", backupConfig.NoRecords),
