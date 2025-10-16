@@ -128,7 +128,7 @@ func NewService(
 			return nil, fmt.Errorf("failed to create info client: %w", err)
 		}
 
-		version, err := infoClient.GetVersion()
+		version, err := infoClient.GetVersion(ctx)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get version: %w", err)
 		}
@@ -143,7 +143,7 @@ func NewService(
 		if params.IsStopXDR() {
 			logger.Info("stopping XDR on the database")
 
-			if err = stopXDR(infoClient, backupXDRConfig.DC, backupXDRConfig.Namespace); err != nil {
+			if err = stopXDR(ctx, infoClient, backupXDRConfig.DC, backupXDRConfig.Namespace); err != nil {
 				return nil, fmt.Errorf("failed to stop XDR: %w", err)
 			}
 
@@ -154,7 +154,7 @@ func NewService(
 		if params.IsUnblockMRT() {
 			logger.Info("enabling MRT writes on the database")
 
-			if err = unblockMrt(infoClient, backupXDRConfig.Namespace); err != nil {
+			if err = unblockMrt(ctx, infoClient, backupXDRConfig.Namespace); err != nil {
 				return nil, fmt.Errorf("failed to enable MRT writes: %w", err)
 			}
 
@@ -256,19 +256,19 @@ func (s *Service) Run(ctx context.Context) error {
 	return nil
 }
 
-func stopXDR(infoClient *asinfo.Client, dc, namespace string) error {
+func stopXDR(ctx context.Context, infoClient *asinfo.Client, dc, namespace string) error {
 	nodes := infoClient.GetNodesNames()
 
 	var errs []error
 
 	for _, node := range nodes {
 		// Check before stopping if DC exists.
-		_, err := infoClient.GetStats(node, dc, namespace)
+		_, err := infoClient.GetStats(ctx, node, dc, namespace)
 		if err != nil && strings.Contains(err.Error(), "DC not found") {
 			continue
 		}
 
-		if err = infoClient.StopXDR(node, dc); err != nil {
+		if err = infoClient.StopXDR(ctx, node, dc); err != nil {
 			errs = append(errs, fmt.Errorf("failed to stop XDR on node %s: %w", node, err))
 		}
 	}
@@ -280,13 +280,13 @@ func stopXDR(infoClient *asinfo.Client, dc, namespace string) error {
 	return nil
 }
 
-func unblockMrt(infoClient *asinfo.Client, namespace string) error {
+func unblockMrt(ctx context.Context, infoClient *asinfo.Client, namespace string) error {
 	nodes := infoClient.GetNodesNames()
 
 	var errs []error
 
 	for _, node := range nodes {
-		if err := infoClient.UnBlockMRTWrites(node, namespace); err != nil {
+		if err := infoClient.UnBlockMRTWrites(ctx, node, namespace); err != nil {
 			errs = append(errs, fmt.Errorf("failed to unblock mrts on node %s: %w", node, err))
 		}
 	}
