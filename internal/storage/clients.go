@@ -148,7 +148,6 @@ func newS3Client(ctx context.Context, a *models.AwsS3) (*s3.Client, error) {
 							h2Transport.StrictMaxConcurrentStreams = true
 						}
 					},
-					// TODO: Calculate this timeout based on fileSize
 				),
 		),
 	)
