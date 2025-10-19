@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"net"
 	"net/http"
 	"time"
 
@@ -33,10 +34,12 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/aws/ratelimit"
 	"github.com/aws/aws-sdk-go-v2/aws/retry"
+	awshttp "github.com/aws/aws-sdk-go-v2/aws/transport/http"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/googleapis/gax-go/v2"
+	"golang.org/x/net/http2"
 	"google.golang.org/api/option"
 )
 
@@ -112,42 +115,42 @@ func newS3Client(ctx context.Context, a *models.AwsS3) (*s3.Client, error) {
 					})
 			})
 		}),
-		// config.WithHTTPClient(
-		// 	awshttp.NewBuildableClient().
-		// 		WithTransportOptions(
-		// 			func(tr *http.Transport) {
-		// 				// // Proxy support.
-		// 				// tr.Proxy = http.ProxyFromEnvironment
-		// 				// // Connection pooling
-		// 				// tr.MaxIdleConns = 10
-		// 				// tr.MaxIdleConnsPerHost = 10
-		// 				// tr.IdleConnTimeout = 90 * time.Second
-		// 				// tr.DisableKeepAlives = false
-		// 				//
-		// 				// // Timeouts
-		// 				// tr.ResponseHeaderTimeout = 30 * time.Second
-		// 				// tr.TLSHandshakeTimeout = 10 * time.Second
-		// 				// tr.ExpectContinueTimeout = 1 * time.Second
-		// 				//
-		// 				// // Dial settings
-		// 				// tr.DialContext = (&net.Dialer{
-		// 				// 	Timeout:   30 * time.Second,
-		// 				// 	KeepAlive: 30 * time.Second,
-		// 				// }).DialContext
-		//
-		// 				tr.ForceAttemptHTTP2 = true
-		//
-		// 				// Http2 tweaks.
-		// 				if h2Transport, err := http2.ConfigureTransports(tr); err == nil {
-		// 					h2Transport.ReadIdleTimeout = 30 * time.Second
-		// 					h2Transport.PingTimeout = 15 * time.Second
-		// 					h2Transport.MaxReadFrameSize = 1 << 20 // 1MB frames
-		// 					h2Transport.StrictMaxConcurrentStreams = true
-		// 				}
-		// 			},
-		// 			// TODO: Calculate this timeout based on fileSize
-		// 		).WithTimeout(10*time.Minute),
-		// ),
+		config.WithHTTPClient(
+			awshttp.NewBuildableClient().
+				WithTransportOptions(
+					func(tr *http.Transport) {
+						// Proxy support.
+						tr.Proxy = http.ProxyFromEnvironment
+						// Connection pooling
+						tr.MaxIdleConns = 10
+						tr.MaxIdleConnsPerHost = 10
+						tr.IdleConnTimeout = 90 * time.Second
+						tr.DisableKeepAlives = false
+
+						// Timeouts
+						tr.ResponseHeaderTimeout = 30 * time.Second
+						tr.TLSHandshakeTimeout = 10 * time.Second
+						tr.ExpectContinueTimeout = 1 * time.Second
+
+						// Dial settings
+						tr.DialContext = (&net.Dialer{
+							Timeout:   30 * time.Second,
+							KeepAlive: 30 * time.Second,
+						}).DialContext
+
+						tr.ForceAttemptHTTP2 = true
+
+						// Http2 tweaks.
+						if h2Transport, err := http2.ConfigureTransports(tr); err == nil {
+							h2Transport.ReadIdleTimeout = 30 * time.Second
+							h2Transport.PingTimeout = 15 * time.Second
+							h2Transport.MaxReadFrameSize = 1 << 20 // 1MB frames
+							h2Transport.StrictMaxConcurrentStreams = true
+						}
+					},
+					// TODO: Calculate this timeout based on fileSize
+				),
+		),
 	)
 
 	if a.Profile != "" {
