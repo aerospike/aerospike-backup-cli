@@ -126,7 +126,6 @@ func newS3Client(ctx context.Context, a *models.AwsS3) (*s3.Client, error) {
 						tr.MaxIdleConnsPerHost = 100
 						tr.IdleConnTimeout = 90 * time.Second
 						tr.DisableKeepAlives = false
-						tr.DisableKeepAlives = false
 
 						// Timeouts
 						tr.ResponseHeaderTimeout = 30 * time.Second
@@ -138,10 +137,6 @@ func newS3Client(ctx context.Context, a *models.AwsS3) (*s3.Client, error) {
 							Timeout:   30 * time.Second,
 							KeepAlive: 30 * time.Second,
 						}).DialContext
-
-						// TCP buffers (match TCP buffers)
-						tr.WriteBufferSize = 2 * 1024 * 1024
-						tr.ReadBufferSize = 2 * 1024 * 1024
 
 						tr.ForceAttemptHTTP2 = true
 
