@@ -80,13 +80,6 @@ func (f *Backup) NewFlagSet() *pflag.FlagSet {
 		"Base64 encoded expression. Use the encoded filter expression in each scan call,\n"+
 			"which can be used to do a partial backup. The expression to be used can be Base64 \n"+
 			"encoded through any client. This argument is mutually exclusive with multi-set backup.\n")
-	flagSet.BoolVar(&f.ParallelNodes, "parallel-nodes",
-		false,
-		"Specifies how to perform the query of the database run for each backup.\n"+
-			"By default, asbackup runs parallel workers for partitions.\n"+
-			"If this flag is set to true, asbackup launches parallel workers for nodes.\n"+
-			"The number of parallel workers is set by the --parallel flag.\n"+
-			"This option is mutually exclusive with --continue and --estimate.")
 	flagSet.StringVarP(&f.NodeList, "node-list", "l",
 		"",
 		"<addr 1>:<port 1>[,<addr 2>:<port 2>[,...]]\n"+

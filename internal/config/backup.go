@@ -225,7 +225,7 @@ func newBackupConfig(params *BackupServiceConfig) (*backup.ConfigBackup, error) 
 	}
 
 	// Overwrite partitions if we use nodes.
-	if params.Backup.ParallelNodes || params.Backup.NodeList != "" {
+	if params.Backup.NodeList != "" {
 		c.NodeList = SplitByComma(params.Backup.NodeList)
 	}
 
