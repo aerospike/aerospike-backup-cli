@@ -148,7 +148,7 @@ func newS3Client(ctx context.Context, a *models.AwsS3) (*s3.Client, error) {
 							h2Transport.StrictMaxConcurrentStreams = true
 						}
 					},
-				),
+				), // Attention! Do not set .WithTimeout(10*time.Minute), it causes memory leak.
 		),
 	)
 
