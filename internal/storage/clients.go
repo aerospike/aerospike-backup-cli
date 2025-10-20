@@ -177,8 +177,8 @@ func newS3Client(ctx context.Context, a *models.AwsS3) (*s3.Client, error) {
 		if a.Endpoint != "" {
 			o.BaseEndpoint = &a.Endpoint
 		}
-		o.UseAccelerate = true
-		// o.UsePathStyle = true
+
+		o.UsePathStyle = true
 		// TODO: check this, how it affects backup and restore.
 		o.DisableLogOutputChecksumValidationSkipped = true
 	})
