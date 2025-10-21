@@ -23,7 +23,6 @@ import (
 	"syscall"
 
 	"github.com/aerospike/aerospike-backup-cli/cmd/asbackup/cmd"
-	"github.com/aerospike/aerospike-backup-cli/internal/pprof"
 )
 
 var (
@@ -38,11 +37,11 @@ func main() {
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM, os.Kill)
 
-	profiler := pprof.NewDefaultProfiler()
-	if err := profiler.Start(); err != nil {
-		log.Fatalf("Failed to start profiler: %v", err)
-	}
-	defer profiler.Stop()
+	// profiler := pprof.NewDefaultProfiler()
+	// if err := profiler.Start(); err != nil {
+	// 	log.Fatalf("Failed to start profiler: %v", err)
+	// }
+	// defer profiler.Stop()
 
 	go func() {
 		sig := <-sigChan
