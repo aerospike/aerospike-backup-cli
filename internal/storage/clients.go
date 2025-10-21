@@ -174,6 +174,9 @@ func newS3Client(ctx context.Context, a *models.AwsS3) (*s3.Client, error) {
 		}
 
 		o.UsePathStyle = true
+		// If we have checksums in cloud we won't show error,
+		// as on restore we don't support checksums validation because of range rewuets.
+		o.DisableLogOutputChecksumValidationSkipped = true
 	})
 
 	return s3Client, nil
