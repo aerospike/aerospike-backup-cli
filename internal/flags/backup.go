@@ -38,7 +38,8 @@ func (f *Backup) NewFlagSet() *pflag.FlagSet {
 		"Remove existing backup file (-o) or files (-d) without performing a backup.")
 	flagSet.StringVarP(&f.OutputFile, "output-file", "o",
 		"",
-		"Backup to a single backup file. Use '-' for stdout. Required, unless -d or -e is used.")
+		"Backup to a single backup file. Use '-' for stdout. Required, unless -d or -e is used.\n"+
+			"Should be used with --file-limit = 0.")
 	flagSet.StringVarP(&f.OutputFilePrefix, "output-file-prefix", "q",
 		"",
 		"When using directory parameter, prepend a prefix to the names of the generated files.")
