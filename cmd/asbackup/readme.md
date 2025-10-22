@@ -130,6 +130,7 @@ Backup Flags:
   -r, --remove-files                Remove an existing backup file (-o) or entire directory (-d) and replace with the new backup.
       --remove-artifacts            Remove existing backup file (-o) or files (-d) without performing a backup.
   -o, --output-file string          Backup to a single backup file. Use '-' for stdout. Required, unless -d or -e is used.
+                                    Should be used with --file-limit = 0.
   -q, --output-file-prefix string   When using directory parameter, prepend a prefix to the names of the generated files.
   -F, --file-limit uint             Rotate backup files when their size crosses the given
                                     value (in bytes). Only used when backing up to a directory.
@@ -158,11 +159,6 @@ Backup Flags:
                                     which can be used to do a partial backup. The expression to be used can be Base64 
                                     encoded through any client. This argument is mutually exclusive with multi-set backup.
                                     
-      --parallel-nodes              Specifies how to perform the query of the database run for each backup.
-                                    By default, asbackup runs parallel workers for partitions.
-                                    If this flag is set to true, asbackup launches parallel workers for nodes.
-                                    The number of parallel workers is set by the --parallel flag.
-                                    This option is mutually exclusive with --continue and --estimate.
   -l, --node-list string            <addr 1>:<port 1>[,<addr 2>:<port 2>[,...]]
                                     <node name 1>[,<node name 2>[,...]]
                                     To get the correct node address, use 'service-tls-std' if a database configured to use TLS

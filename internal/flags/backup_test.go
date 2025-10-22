@@ -36,7 +36,6 @@ func TestBackup_NewFlagSet(t *testing.T) {
 		"--no-bins",
 		"--sleep-between-retries", "10",
 		"--filter-exp", "encoded-filter-exp",
-		"--parallel-nodes",
 		"--remove-artifacts",
 		"--compact",
 		"--node-list", "node1,node2",

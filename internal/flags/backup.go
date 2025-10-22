@@ -142,7 +142,7 @@ func (f *Backup) NewFlagSet() *pflag.FlagSet {
 		"Name of a state file that will be saved in backup --directory.\n"+
 			"Works only with --file-limit parameter. As --file-limit is reached and the file is closed,\n"+
 			"the current state will be saved. Works only for default and/or partition backup.\n"+
-			"Not work with --parallel-nodes or --node--list.")
+			"Not work with --node--list.")
 	flagSet.StringVarP(&f.Continue, "continue", "c",
 		"",
 		"Resumes an interrupted/failed backup from where it was left off, given the .state file\n"+

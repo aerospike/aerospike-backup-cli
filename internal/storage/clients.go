@@ -143,7 +143,7 @@ func newS3Client(ctx context.Context, a *models.AwsS3) (*s3.Client, error) {
 							h2Transport.StrictMaxConcurrentStreams = true
 						}
 					},
-				), // Attention! Do not set .WithTimeout(10*time.Minute), it causes memory leak.
+				), // Attention! Do not set .WithTimeout(10*time.Minute), it causes a memory leak.
 		),
 	)
 
@@ -174,8 +174,8 @@ func newS3Client(ctx context.Context, a *models.AwsS3) (*s3.Client, error) {
 		}
 
 		o.UsePathStyle = true
-		// If we have checksums in cloud we won't show error,
-		// as on restore we don't support checksums validation because of range rewuets.
+		// If we have checksums in cloud, we won't show error,
+		// as on restore we don't support checksum validation because of range rewuets.
 		o.DisableLogOutputChecksumValidationSkipped = true
 	})
 
