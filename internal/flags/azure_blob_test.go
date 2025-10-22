@@ -41,7 +41,6 @@ func TestAzureBlob_NewFlagSetRestore(t *testing.T) {
 		"--azure-retry-max-delay", "10",
 		"--azure-retry-delay", "10",
 		"--azure-retry-timeout", "10",
-		"--azure-upload-concurrency", "10",
 	}
 
 	err := flagSet.Parse(args)
@@ -62,7 +61,6 @@ func TestAzureBlob_NewFlagSetRestore(t *testing.T) {
 	assert.Equal(t, 10, result.RetryMaxDelaySeconds, "The azure-retry-max-delay flag should be parsed correctly")
 	assert.Equal(t, 10, result.RetryDelaySeconds, "The azure-retry-delay flag should be parsed correctly")
 	assert.Equal(t, 10, result.RetryTimeoutSeconds, "The azure-retry-timeout flag should be parsed correctly")
-	assert.Equal(t, cloudUploadConcurrency, result.UploadConcurrency, "The azure-upload-concurrency flag should be parsed correctly")
 }
 
 func TestAzureBlob_NewFlagSet_DefaultValuesRestore(t *testing.T) {
@@ -107,6 +105,7 @@ func TestAzureBlob_NewFlagSetBackup(t *testing.T) {
 		"--azure-container-name", "my-container",
 		"--azure-access-tier", "Standard",
 		"--azure-block-size", "1",
+		"--azure-upload-concurrency", "10",
 	}
 
 	err := flagSet.Parse(args)
@@ -123,6 +122,7 @@ func TestAzureBlob_NewFlagSetBackup(t *testing.T) {
 	assert.Equal(t, "my-container", result.ContainerName, "The azure-container-name flag should be parsed correctly")
 	assert.Equal(t, "Standard", result.AccessTier, "The azure-access-tier flag should be parsed correctly")
 	assert.Equal(t, 1, result.BlockSize, "The azure-block-size flag should be parsed correctly")
+	assert.Equal(t, 10, result.UploadConcurrency, "The azure-upload-concurrency flag should be parsed correctly")
 }
 
 func TestAzureBlob_NewFlagSet_DefaultValuesBackup(t *testing.T) {

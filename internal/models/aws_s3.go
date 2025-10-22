@@ -111,14 +111,15 @@ func (a *AwsS3) Validate(isBackup bool) error {
 		return fmt.Errorf("chunk size must be non-negative")
 	}
 
-	if !isBackup {
+	switch isBackup {
+	case true:
+		if a.UploadConcurrency < 1 {
+			return fmt.Errorf("upload concurrency can't be less than 1")
+		}
+	case false:
 		if a.RestorePollDuration < 1 {
 			return fmt.Errorf("restore poll duration can't be less than 1")
 		}
-	}
-
-	if a.UploadConcurrency < 1 {
-		return fmt.Errorf("upload concurrency can't be less than 1")
 	}
 
 	return nil
