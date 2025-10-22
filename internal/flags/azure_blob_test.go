@@ -41,6 +41,7 @@ func TestAzureBlob_NewFlagSetRestore(t *testing.T) {
 		"--azure-retry-max-delay", "10",
 		"--azure-retry-delay", "10",
 		"--azure-retry-timeout", "10",
+		"--azure-upload-concurrency", "10",
 	}
 
 	err := flagSet.Parse(args)
@@ -61,6 +62,7 @@ func TestAzureBlob_NewFlagSetRestore(t *testing.T) {
 	assert.Equal(t, 10, result.RetryMaxDelaySeconds, "The azure-retry-max-delay flag should be parsed correctly")
 	assert.Equal(t, 10, result.RetryDelaySeconds, "The azure-retry-delay flag should be parsed correctly")
 	assert.Equal(t, 10, result.RetryTimeoutSeconds, "The azure-retry-timeout flag should be parsed correctly")
+	assert.Equal(t, cloudUploadConcurrency, result.UploadConcurrency, "The azure-upload-concurrency flag should be parsed correctly")
 }
 
 func TestAzureBlob_NewFlagSet_DefaultValuesRestore(t *testing.T) {
@@ -82,7 +84,7 @@ func TestAzureBlob_NewFlagSet_DefaultValuesRestore(t *testing.T) {
 	assert.Equal(t, "", result.Endpoint, "The default value for azure-endpoint should be an empty string")
 	assert.Equal(t, "", result.ContainerName, "The default value for azure-container-name should be an empty string")
 	assert.Equal(t, "", result.AccessTier, "The default value for azure-access-tier should be an empty string")
-	assert.Equal(t, int64(60000), result.RestorePollDuration, "The default value for azure-rehydrate-poll-duration should be 60000")
+	assert.Equal(t, cloudRestorePollDuration, result.RestorePollDuration, "The default value for azure-rehydrate-poll-duration should be 60000")
 	assert.Equal(t, cloudMaxRetries, result.RetryMaxAttempts, "The default value for azure-retry-max-attempts flag should be 100")
 	assert.Equal(t, cloudMaxBackoff, result.RetryMaxDelaySeconds, "The default value for azure-retry-max-delay flag should be 90")
 	assert.Equal(t, cloudBackoff, result.RetryDelaySeconds, "The default value for azure-retry-delay flag should be 60")

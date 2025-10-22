@@ -130,7 +130,7 @@ Backup Flags:
   -r, --remove-files                Remove an existing backup file (-o) or entire directory (-d) and replace with the new backup.
       --remove-artifacts            Remove existing backup file (-o) or files (-d) without performing a backup.
   -o, --output-file string          Backup to a single backup file. Use '-' for stdout. Required, unless -d or -e is used.
-                                    Should be used with --file-limit = 0.
+                                    Should be used with --file-limit = 0. Metadata will be written to the separate file.
   -q, --output-file-prefix string   When using directory parameter, prepend a prefix to the names of the generated files.
   -F, --file-limit uint             Rotate backup files when their size crosses the given
                                     value (in bytes). Only used when backing up to a directory.
@@ -200,7 +200,7 @@ Backup Flags:
       --state-file-dst string       Name of a state file that will be saved in backup --directory.
                                     Works only with --file-limit parameter. As --file-limit is reached and the file is closed,
                                     the current state will be saved. Works only for default and/or partition backup.
-                                    Not work with --parallel-nodes or --node--list.
+                                    Not work with --node--list.
   -c, --continue string             Resumes an interrupted/failed backup from where it was left off, given the .state file
                                     that was generated from the interrupted/failed run.
                                     --continue and --state-file-dst are mutually exclusive.
@@ -262,6 +262,8 @@ Any AWS parameter can be retrieved from Secret Agent.
       --s3-chunk-size int             Chunk size controls the maximum number of bytes of the object that the app will attempt to send to
                                       the storage in a single request. Objects smaller than the size will be sent in a single request,
                                       while larger objects will be split over multiple requests. (default 5242880)
+      --s3-upload-concurrency int     Defines the max number of concurrent uploads to be performed to
+                                      upload the file. Each concurrent upload will create a buffer of size s3-block-size. (default 1)
       --s3-retry-max-attempts int     Maximum number of attempts that should be made in case of an error. (default 100)
       --s3-retry-max-backoff int      Max backoff duration in seconds between retried attempts. (default 90)
       --s3-retry-backoff int          Provides the backoff in seconds strategy the retryer will use to determine the delay between retry attempts. (default 60)
@@ -301,6 +303,8 @@ Any Azure parameter can be retrieved from Secret Agent.
       --azure-access-tier string       Azure access tier is applied to created backup files.
                                        Tiers are: Archive, Cold, Cool, Hot, P10, P15, P20, P30, P4, P40, P50, P6, P60, P70, P80, Premium.
       --azure-block-size int           Block size defines the size of the buffer used during upload. (default 5242880)
+      --azure-upload-concurrency int   Defines the max number of concurrent uploads to be performed to
+                                       upload the file. Each concurrent upload will create a buffer of size azure-block-size. (default 1)
       --azure-retry-max-attempts int   Max retries specifies the maximum number of attempts a failed operation will be retried
                                        before producing an error. (default 100)
       --azure-retry-max-delay int      Max retry delay specifies the maximum delay in seconds allowed before retrying an operation.

@@ -78,9 +78,13 @@ func (f *AzureBlob) NewFlagSet() *pflag.FlagSet {
 		flagSet.IntVar(&f.BlockSize, "azure-block-size",
 			models.DefaultChunkSize,
 			"Block size defines the size of the buffer used during upload.")
+		flagSet.IntVar(&f.UploadConcurrency, "azure-upload-concurrency",
+			cloudUploadConcurrency,
+			"Defines the max number of concurrent uploads to be performed to\n"+
+				"upload the file. Each concurrent upload will create a buffer of size azure-block-size.")
 	case OperationRestore:
 		flagSet.Int64Var(&f.RestorePollDuration, "azure-rehydrate-poll-duration",
-			60000,
+			cloudRestorePollDuration,
 			"How often (in milliseconds) a backup client checks object status when restoring an archived object.")
 	}
 

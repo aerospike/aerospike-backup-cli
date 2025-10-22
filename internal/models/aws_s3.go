@@ -38,7 +38,8 @@ type AwsS3 struct {
 	RetryMaxBackoffSeconds int
 	RetryBackoffSeconds    int
 
-	ChunkSize int
+	ChunkSize         int
+	UploadConcurrency int
 }
 
 // LoadSecrets tries to load field values from secret agent.
@@ -114,6 +115,10 @@ func (a *AwsS3) Validate(isBackup bool) error {
 		if a.RestorePollDuration < 1 {
 			return fmt.Errorf("restore poll duration can't be less than 1")
 		}
+	}
+
+	if a.UploadConcurrency < 1 {
+		return fmt.Errorf("upload concurrency can't be less than 1")
 	}
 
 	return nil

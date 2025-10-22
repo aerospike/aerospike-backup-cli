@@ -20,9 +20,11 @@ import (
 )
 
 const (
-	cloudMaxRetries = 100
-	cloudMaxBackoff = 90
-	cloudBackoff    = 60
+	cloudMaxRetries          = 100
+	cloudMaxBackoff          = 90
+	cloudBackoff             = 60
+	cloudUploadConcurrency   = 1
+	cloudRestorePollDuration = int64(60000)
 )
 
 type AwsS3 struct {
@@ -79,13 +81,17 @@ func (f *AwsS3) NewFlagSet() *pflag.FlagSet {
 			"Chunk size controls the maximum number of bytes of the object that the app will attempt to send to\n"+
 				"the storage in a single request. Objects smaller than the size will be sent in a single request,\n"+
 				"while larger objects will be split over multiple requests.")
+		flagSet.IntVar(&f.UploadConcurrency, "s3-upload-concurrency",
+			cloudUploadConcurrency,
+			"Defines the max number of concurrent uploads to be performed to\n"+
+				"upload the file. Each concurrent upload will create a buffer of size s3-block-size.")
 	case OperationRestore:
 		flagSet.StringVar(&f.AccessTier, "s3-tier",
 			"",
 			"If is set, tool will try to restore archived files to the specified tier.\n"+
 				"Tiers are: Standard, Bulk, Expedited.")
 		flagSet.Int64Var(&f.RestorePollDuration, "s3-restore-poll-duration",
-			60000,
+			cloudRestorePollDuration,
 			"How often (in milliseconds) a backup client checks object status when restoring an archived object.",
 		)
 	}
