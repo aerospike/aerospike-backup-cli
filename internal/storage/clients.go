@@ -118,8 +118,9 @@ func newS3Client(ctx context.Context, a *models.AwsS3) (*s3.Client, error) {
 						// Proxy support.
 						tr.Proxy = http.ProxyFromEnvironment
 						// Connection pooling
-						tr.MaxIdleConns = 100
+						tr.MaxIdleConns = 200
 						tr.MaxIdleConnsPerHost = 100
+						tr.MaxConnsPerHost = 200
 						tr.IdleConnTimeout = 90 * time.Second
 						tr.DisableKeepAlives = false
 
@@ -141,6 +142,9 @@ func newS3Client(ctx context.Context, a *models.AwsS3) (*s3.Client, error) {
 							h2Transport.ReadIdleTimeout = 30 * time.Second
 							h2Transport.PingTimeout = 15 * time.Second
 							h2Transport.StrictMaxConcurrentStreams = false
+							h2Transport.WriteByteTimeout = 0
+							// 1MB - value from Ai.
+							h2Transport.MaxReadFrameSize = 1 << 20
 						}
 					},
 				), // Attention! Do not set .WithTimeout(10*time.Minute), it causes a memory leak.
