@@ -38,7 +38,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/googleapis/gax-go/v2"
-	"golang.org/x/net/http2"
 	"google.golang.org/api/option"
 )
 
@@ -120,7 +119,7 @@ func newS3Client(ctx context.Context, a *models.AwsS3) (*s3.Client, error) {
 						// Connection pooling
 						tr.MaxIdleConns = 200
 						tr.MaxIdleConnsPerHost = 100
-						tr.MaxConnsPerHost = 200
+						tr.MaxConnsPerHost = 100
 						tr.IdleConnTimeout = 90 * time.Second
 						tr.DisableKeepAlives = false
 
@@ -135,17 +134,20 @@ func newS3Client(ctx context.Context, a *models.AwsS3) (*s3.Client, error) {
 							KeepAlive: 30 * time.Second,
 						}).DialContext
 
-						tr.ForceAttemptHTTP2 = true
+						tr.ForceAttemptHTTP2 = false
+
+						tr.WriteBufferSize = 128 * 1024
+						tr.ReadBufferSize = 128 * 1024
 
 						// Http2 tweaks.
-						if h2Transport, err := http2.ConfigureTransports(tr); err == nil {
-							h2Transport.ReadIdleTimeout = 30 * time.Second
-							h2Transport.PingTimeout = 15 * time.Second
-							h2Transport.StrictMaxConcurrentStreams = false
-							h2Transport.WriteByteTimeout = 0
-							// 1MB - value from Ai.
-							h2Transport.MaxReadFrameSize = 1 << 20
-						}
+						// if h2Transport, err := http2.ConfigureTransports(tr); err == nil {
+						// 	h2Transport.ReadIdleTimeout = 30 * time.Second
+						// 	h2Transport.PingTimeout = 15 * time.Second
+						// 	h2Transport.StrictMaxConcurrentStreams = false
+						// 	h2Transport.WriteByteTimeout = 0
+						// 	// 1MB - value from Ai.
+						// 	h2Transport.MaxReadFrameSize = 1 << 20
+						// }
 					},
 				), // Attention! Do not set .WithTimeout(10*time.Minute), it causes a memory leak.
 		),
@@ -179,7 +181,7 @@ func newS3Client(ctx context.Context, a *models.AwsS3) (*s3.Client, error) {
 
 		o.UsePathStyle = true
 		// If we have checksums in cloud, we won't show error,
-		// as on restore we don't support checksum validation because of range rewuets.
+		// as on restore we don't support checksum validation because of range request.
 		o.DisableLogOutputChecksumValidationSkipped = true
 	})
 
