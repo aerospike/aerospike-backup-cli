@@ -38,6 +38,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/googleapis/gax-go/v2"
+	"golang.org/x/net/http2"
 	"google.golang.org/api/option"
 )
 
@@ -134,20 +135,15 @@ func newS3Client(ctx context.Context, a *models.AwsS3) (*s3.Client, error) {
 							KeepAlive: 30 * time.Second,
 						}).DialContext
 
-						tr.ForceAttemptHTTP2 = false
-
-						tr.WriteBufferSize = 128 * 1024
-						tr.ReadBufferSize = 128 * 1024
+						tr.ForceAttemptHTTP2 = true
 
 						// Http2 tweaks.
-						// if h2Transport, err := http2.ConfigureTransports(tr); err == nil {
-						// 	h2Transport.ReadIdleTimeout = 30 * time.Second
-						// 	h2Transport.PingTimeout = 15 * time.Second
-						// 	h2Transport.StrictMaxConcurrentStreams = false
-						// 	h2Transport.WriteByteTimeout = 0
-						// 	// 1MB - value from Ai.
-						// 	h2Transport.MaxReadFrameSize = 1 << 20
-						// }
+						if h2Transport, err := http2.ConfigureTransports(tr); err == nil {
+							h2Transport.ReadIdleTimeout = 30 * time.Second
+							h2Transport.PingTimeout = 15 * time.Second
+							h2Transport.StrictMaxConcurrentStreams = false
+							h2Transport.WriteByteTimeout = 0
+						}
 					},
 				), // Attention! Do not set .WithTimeout(10*time.Minute), it causes a memory leak.
 		),
