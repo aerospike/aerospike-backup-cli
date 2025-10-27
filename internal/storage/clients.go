@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"net"
 	"net/http"
 	"time"
 
@@ -32,10 +33,12 @@ import (
 	"github.com/aerospike/tools-common-go/client"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/aws/retry"
+	awshttp "github.com/aws/aws-sdk-go-v2/aws/transport/http"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/googleapis/gax-go/v2"
+	"golang.org/x/net/http2"
 	"google.golang.org/api/option"
 )
 
@@ -108,42 +111,42 @@ func newS3Client(ctx context.Context, a *models.AwsS3) (*s3.Client, error) {
 					})
 			})
 		}),
-		// config.WithHTTPClient(
-		// 	awshttp.NewBuildableClient().
-		// 		WithTransportOptions(
-		// 			func(tr *http.Transport) {
-		// 				// Proxy support.
-		// 				tr.Proxy = http.ProxyFromEnvironment
-		// 				// Connection pooling
-		// 				tr.MaxIdleConns = 200
-		// 				tr.MaxIdleConnsPerHost = 100
-		// 				tr.MaxConnsPerHost = 100
-		// 				tr.IdleConnTimeout = 90 * time.Second
-		// 				tr.DisableKeepAlives = false
-		//
-		// 				// Timeouts
-		// 				tr.ResponseHeaderTimeout = 30 * time.Second
-		// 				tr.TLSHandshakeTimeout = 10 * time.Second
-		// 				tr.ExpectContinueTimeout = 1 * time.Second
-		//
-		// 				// Dial settings
-		// 				tr.DialContext = (&net.Dialer{
-		// 					Timeout:   30 * time.Second,
-		// 					KeepAlive: 30 * time.Second,
-		// 				}).DialContext
-		//
-		// 				tr.ForceAttemptHTTP2 = true
-		//
-		// 				// Http2 tweaks.
-		// 				if h2Transport, err := http2.ConfigureTransports(tr); err == nil {
-		// 					h2Transport.ReadIdleTimeout = 30 * time.Second
-		// 					h2Transport.PingTimeout = 15 * time.Second
-		// 					h2Transport.StrictMaxConcurrentStreams = false
-		// 					h2Transport.WriteByteTimeout = 0
-		// 				}
-		// 			},
-		// 		), // Attention! Do not set .WithTimeout(10*time.Minute), it causes a memory leak.
-		// ),
+		config.WithHTTPClient(
+			awshttp.NewBuildableClient().
+				WithTransportOptions(
+					func(tr *http.Transport) {
+						// Proxy support.
+						tr.Proxy = http.ProxyFromEnvironment
+						// Connection pooling
+						tr.MaxIdleConns = 200
+						tr.MaxIdleConnsPerHost = 100
+						tr.MaxConnsPerHost = 100
+						tr.IdleConnTimeout = 90 * time.Second
+						tr.DisableKeepAlives = false
+
+						// Timeouts
+						tr.ResponseHeaderTimeout = 30 * time.Second
+						tr.TLSHandshakeTimeout = 10 * time.Second
+						tr.ExpectContinueTimeout = 1 * time.Second
+
+						// Dial settings
+						tr.DialContext = (&net.Dialer{
+							Timeout:   30 * time.Second,
+							KeepAlive: 30 * time.Second,
+						}).DialContext
+
+						tr.ForceAttemptHTTP2 = true
+
+						// Http2 tweaks.
+						if h2Transport, err := http2.ConfigureTransports(tr); err == nil {
+							h2Transport.ReadIdleTimeout = 30 * time.Second
+							h2Transport.PingTimeout = 15 * time.Second
+							h2Transport.StrictMaxConcurrentStreams = false
+							h2Transport.WriteByteTimeout = 0
+						}
+					},
+				), // Attention! Do not set .WithTimeout(10*time.Minute), it causes a memory leak.
+		),
 	)
 
 	if a.Profile != "" {

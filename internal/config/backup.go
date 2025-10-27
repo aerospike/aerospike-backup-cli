@@ -245,6 +245,7 @@ func newBackupConfig(params *BackupServiceConfig) (*backup.ConfigBackup, error) 
 		return nil, err
 	}
 
+	sp.UseCompression = true
 	c.ScanPolicy = sp
 	c.CompressionPolicy = newCompressionPolicy(params.Compression)
 	c.EncryptionPolicy = newEncryptionPolicy(params.Encryption)
