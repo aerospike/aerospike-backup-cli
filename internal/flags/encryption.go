@@ -48,7 +48,7 @@ func (f *Encryption) NewFlagSet() *pflag.FlagSet {
 	}
 
 	flagSet.StringVar(&f.Mode, "encrypt",
-		"",
+		"NONE",
 		descEncrypt+
 			"Supported encryption algorithms are: none, aes128, aes256.\n"+
 			"A private key must be given, either via the --encryption-key-file option or\n"+
