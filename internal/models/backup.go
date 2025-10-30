@@ -16,6 +16,7 @@ package models
 
 import (
 	"fmt"
+	"strings"
 )
 
 // Backup flags that will be mapped to (scan) backup config.
@@ -28,7 +29,7 @@ type Backup struct {
 	ModifiedBefore      string
 	ModifiedAfter       string
 	FileLimit           uint64
-	AfterDigest         string
+	AfterDigest         string //
 	MaxRecords          int64
 	NoBins              bool
 	SleepBetweenRetries int
@@ -36,17 +37,17 @@ type Backup struct {
 	ParallelNodes       bool
 	RemoveArtifacts     bool
 	Compact             bool
-	NodeList            string
+	NodeList            string //
 	NoTTLOnly           bool
 	PreferRacks         string
-	PartitionList       string
+	PartitionList       string //
 	Estimate            bool
 	EstimateSamples     int64
 	StateFileDst        string
 	Continue            string
 	ScanPageSize        int64
 	OutputFilePrefix    string
-	RackList            string
+	RackList            string //
 }
 
 // ShouldClearTarget check if we should clean target directory.
@@ -73,8 +74,8 @@ func (b *Backup) Validate() error {
 	}
 
 	// Only one filter is allowed.
-	if b.AfterDigest != "" && b.PartitionList != "" {
-		return fmt.Errorf("only one of after-digest or partition-list can be configured")
+	if err := b.validateSingleFilter(); err != nil {
+		return err
 	}
 
 	if (b.Continue != "" || b.Estimate || b.StateFileDst != "") &&
@@ -107,10 +108,42 @@ func (b *Backup) Validate() error {
 		}
 	}
 
-	if b.NodeList != "" && b.RackList != "" {
-		return fmt.Errorf("specify either rack-list or node-list, but not both")
-	}
-
 	// Validate nested common in the end.
 	return b.Common.Validate()
+}
+
+// Validate that only one filtering option is specified.
+func (b *Backup) validateSingleFilter() error {
+	filtersSet := 0
+	setFilters := make([]string, 0, 4)
+
+	if b.AfterDigest != "" {
+		filtersSet++
+
+		setFilters = append(setFilters, "after-digest")
+	}
+
+	if b.PartitionList != "" {
+		filtersSet++
+
+		setFilters = append(setFilters, "partition-list")
+	}
+
+	if b.NodeList != "" {
+		filtersSet++
+
+		setFilters = append(setFilters, "node-list")
+	}
+
+	if b.RackList != "" {
+		filtersSet++
+
+		setFilters = append(setFilters, "rack-list")
+	}
+
+	if filtersSet > 1 {
+		return fmt.Errorf("only one of %s can be configured", strings.Join(setFilters, " or "))
+	}
+
+	return nil
 }

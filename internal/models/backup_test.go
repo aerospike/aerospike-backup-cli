@@ -277,7 +277,7 @@ func TestValidateBackup(t *testing.T) {
 				Common:   Common{Directory: testDir},
 			},
 			wantErr:     true,
-			expectedErr: "specify either rack-list or node-list, but not both",
+			expectedErr: "only one of node-list or rack-list can be configured",
 		},
 		{
 			name: "Both continue and state-file-dst configured",
@@ -300,6 +300,139 @@ func TestValidateBackup(t *testing.T) {
 				assert.Equal(t, tt.expectedErr, err.Error())
 			} else {
 				assert.NoError(t, err, "Expected no error but got one")
+			}
+		})
+	}
+}
+
+func TestBackup_validateSingleFilter(t *testing.T) {
+	tests := []struct {
+		name          string
+		backup        *Backup
+		expectedError bool
+		errorContains string
+	}{
+		{
+			name:          "no filters set - valid",
+			backup:        &Backup{},
+			expectedError: false,
+		},
+		{
+			name: "only after-digest set - valid",
+			backup: &Backup{
+				AfterDigest: "some-digest",
+			},
+			expectedError: false,
+		},
+		{
+			name: "only partition-list set - valid",
+			backup: &Backup{
+				PartitionList: "1,2,3",
+			},
+			expectedError: false,
+		},
+		{
+			name: "only node-list set - valid",
+			backup: &Backup{
+				NodeList: "node1,node2",
+			},
+			expectedError: false,
+		},
+		{
+			name: "only rack-list set - valid",
+			backup: &Backup{
+				RackList: "rack1,rack2",
+			},
+			expectedError: false,
+		},
+		{
+			name: "after-digest and partition-list - invalid",
+			backup: &Backup{
+				AfterDigest:   "some-digest",
+				PartitionList: "1,2,3",
+			},
+			expectedError: true,
+			errorContains: "only one of",
+		},
+		{
+			name: "after-digest and node-list - invalid",
+			backup: &Backup{
+				AfterDigest: "some-digest",
+				NodeList:    "node1",
+			},
+			expectedError: true,
+			errorContains: "only one of",
+		},
+		{
+			name: "after-digest and rack-list - invalid",
+			backup: &Backup{
+				AfterDigest: "some-digest",
+				RackList:    "rack1",
+			},
+			expectedError: true,
+			errorContains: "only one of",
+		},
+		{
+			name: "partition-list and node-list - invalid",
+			backup: &Backup{
+				PartitionList: "1,2,3",
+				NodeList:      "node1",
+			},
+			expectedError: true,
+			errorContains: "only one of",
+		},
+		{
+			name: "partition-list and rack-list - invalid",
+			backup: &Backup{
+				PartitionList: "1,2,3",
+				RackList:      "rack1",
+			},
+			expectedError: true,
+			errorContains: "only one of",
+		},
+		{
+			name: "node-list and rack-list - invalid",
+			backup: &Backup{
+				NodeList: "node1",
+				RackList: "rack1",
+			},
+			expectedError: true,
+			errorContains: "only one of",
+		},
+		{
+			name: "three filters set - invalid",
+			backup: &Backup{
+				AfterDigest:   "digest",
+				PartitionList: "1,2,3",
+				NodeList:      "node1",
+			},
+			expectedError: true,
+			errorContains: "only one of",
+		},
+		{
+			name: "all four filters set - invalid",
+			backup: &Backup{
+				AfterDigest:   "digest",
+				PartitionList: "1,2,3",
+				NodeList:      "node1",
+				RackList:      "rack1",
+			},
+			expectedError: true,
+			errorContains: "only one of",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := tt.backup.validateSingleFilter()
+
+			if tt.expectedError {
+				assert.Error(t, err)
+				if tt.errorContains != "" {
+					assert.Contains(t, err.Error(), tt.errorContains)
+				}
+			} else {
+				assert.NoError(t, err)
 			}
 		})
 	}
