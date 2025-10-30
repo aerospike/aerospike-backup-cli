@@ -29,7 +29,7 @@ type Backup struct {
 	ModifiedBefore      string
 	ModifiedAfter       string
 	FileLimit           uint64
-	AfterDigest         string //
+	AfterDigest         string
 	MaxRecords          int64
 	NoBins              bool
 	SleepBetweenRetries int
@@ -37,17 +37,17 @@ type Backup struct {
 	ParallelNodes       bool
 	RemoveArtifacts     bool
 	Compact             bool
-	NodeList            string //
+	NodeList            string
 	NoTTLOnly           bool
 	PreferRacks         string
-	PartitionList       string //
+	PartitionList       string
 	Estimate            bool
 	EstimateSamples     int64
 	StateFileDst        string
 	Continue            string
 	ScanPageSize        int64
 	OutputFilePrefix    string
-	RackList            string //
+	RackList            string
 }
 
 // ShouldClearTarget check if we should clean target directory.
