@@ -27,6 +27,8 @@ import (
 	bModels "github.com/aerospike/backup-go/models"
 )
 
+const noneVal = "NONE"
+
 var (
 	// Time parsing expressions.
 	expTimeOnly = regexp.MustCompile(`^\d{2}:\d{2}:\d{2}$`)
@@ -103,7 +105,7 @@ func newCompressionPolicy(c *models.Compression) *backup.CompressionPolicy {
 		return nil
 	}
 
-	if c.Mode == "" {
+	if c.Mode == "" || strings.EqualFold(c.Mode, noneVal) {
 		return nil
 	}
 
@@ -115,7 +117,7 @@ func newEncryptionPolicy(e *models.Encryption) *backup.EncryptionPolicy {
 		return nil
 	}
 
-	if e.Mode == "" {
+	if e.Mode == "" || strings.EqualFold(e.Mode, noneVal) {
 		return nil
 	}
 

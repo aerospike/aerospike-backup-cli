@@ -222,7 +222,7 @@ Encryption Flags:
       --encrypt string                 Enables encryption of backup files using the specified encryption algorithm.
                                        Supported encryption algorithms are: none, aes128, aes256.
                                        A private key must be given, either via the --encryption-key-file option or
-                                       the --encryption-key-env option or the --encryption-key-secret.
+                                       the --encryption-key-env option or the --encryption-key-secret. (default "NONE")
       --encryption-key-file string     Grabs the encryption key from the given file, which must be in PEM format.
       --encryption-key-env string      Grabs the encryption key from the given environment variable, which must be base-64 encoded.
       --encryption-key-secret string   Grabs the encryption key from secret-agent.
