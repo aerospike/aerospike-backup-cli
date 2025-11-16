@@ -27,11 +27,12 @@ import (
 	"github.com/aerospike/backup-go"
 	"github.com/aerospike/backup-go/io/encoding/asb"
 	"github.com/aerospike/backup-go/io/encoding/asbx"
-	ioStorage "github.com/aerospike/backup-go/io/storage"
 	"github.com/aerospike/backup-go/io/storage/aws/s3"
 	"github.com/aerospike/backup-go/io/storage/azure/blob"
-	gcpStorage "github.com/aerospike/backup-go/io/storage/gcp/storage"
+	"github.com/aerospike/backup-go/io/storage/common"
+	"github.com/aerospike/backup-go/io/storage/gcp/storage"
 	"github.com/aerospike/backup-go/io/storage/local"
+	"github.com/aerospike/backup-go/io/storage/options"
 	"github.com/aerospike/backup-go/io/storage/std"
 )
 
@@ -61,7 +62,7 @@ func NewRestoreReader(
 		reader, err = newReader(ctx, params, sa, false, logger)
 
 		switch {
-		case errors.Is(err, ioStorage.ErrEmptyStorage):
+		case errors.Is(err, common.ErrEmptyStorage):
 			reader = nil
 		case err != nil:
 			return nil, nil, fmt.Errorf("failed to create asb reader: %w", err)
@@ -71,7 +72,7 @@ func NewRestoreReader(
 		xdrReader, err = newReader(ctx, params, sa, true, logger)
 
 		switch {
-		case errors.Is(err, ioStorage.ErrEmptyStorage):
+		case errors.Is(err, common.ErrEmptyStorage):
 			xdrReader = nil
 		case err != nil:
 			return nil, nil, fmt.Errorf("failed to create asbx reader: %w", err)
@@ -193,33 +194,33 @@ func newReaderOpts(
 	directoryList string,
 	isXDR bool,
 	logger *slog.Logger,
-) []ioStorage.Opt {
-	opts := make([]ioStorage.Opt, 0)
+) []options.Opt {
+	opts := make([]options.Opt, 0)
 
 	// As we validate this field in validation function, we can switch here.
 	switch {
 	case directory != "":
-		opts = append(opts, ioStorage.WithDir(directory))
+		opts = append(opts, options.WithDir(directory))
 	case inputFile != "":
-		opts = append(opts, ioStorage.WithFile(inputFile))
+		opts = append(opts, options.WithFile(inputFile))
 	case directoryList != "":
 		dirList := prepareDirectoryList(parentDirectory, directoryList)
-		opts = append(opts, ioStorage.WithDirList(dirList))
+		opts = append(opts, options.WithDirList(dirList))
 	}
 
 	// Append Validator always. As it is not applied to direct file reading.
 	if isXDR {
-		opts = append(opts, ioStorage.WithValidator(asbx.NewValidator()), ioStorage.WithSorting())
+		opts = append(opts, options.WithValidator(asbx.NewValidator()), options.WithSorting())
 	} else {
-		opts = append(opts, ioStorage.WithValidator(asb.NewValidator()))
+		opts = append(opts, options.WithValidator(asb.NewValidator()))
 	}
 
-	opts = append(opts, ioStorage.WithLogger(logger))
+	opts = append(opts, options.WithLogger(logger))
 
 	return opts
 }
 
-func newLocalReader(ctx context.Context, opts []ioStorage.Opt) (backup.StreamingReader, error) {
+func newLocalReader(ctx context.Context, opts []options.Opt) (backup.StreamingReader, error) {
 	return local.NewReader(ctx, opts...)
 }
 
@@ -230,7 +231,7 @@ func newStdReader(ctx context.Context, bufferSize int) (backup.StreamingReader, 
 func newS3Reader(
 	ctx context.Context,
 	a *models.AwsS3,
-	opts []ioStorage.Opt,
+	opts []options.Opt,
 	logger *slog.Logger,
 ) (backup.StreamingReader, error) {
 	client, err := newS3Client(ctx, a)
@@ -241,9 +242,9 @@ func newS3Reader(
 	if a.AccessTier != "" {
 		opts = append(
 			opts,
-			ioStorage.WithAccessTier(a.AccessTier),
-			ioStorage.WithLogger(logger),
-			ioStorage.WithWarmPollDuration(time.Duration(a.RestorePollDuration)*time.Millisecond),
+			options.WithAccessTier(a.AccessTier),
+			options.WithLogger(logger),
+			options.WithWarmPollDuration(time.Duration(a.RestorePollDuration)*time.Millisecond),
 		)
 	}
 
@@ -253,20 +254,20 @@ func newS3Reader(
 func newGcpReader(
 	ctx context.Context,
 	g *models.GcpStorage,
-	opts []ioStorage.Opt,
+	opts []options.Opt,
 ) (backup.StreamingReader, error) {
 	client, err := newGcpClient(ctx, g)
 	if err != nil {
 		return nil, err
 	}
 
-	return gcpStorage.NewReader(ctx, client, g.BucketName, opts...)
+	return storage.NewReader(ctx, client, g.BucketName, opts...)
 }
 
 func newAzureReader(
 	ctx context.Context,
 	a *models.AzureBlob,
-	opts []ioStorage.Opt,
+	opts []options.Opt,
 	logger *slog.Logger,
 ) (backup.StreamingReader, error) {
 	client, err := newAzureClient(a)
@@ -277,9 +278,9 @@ func newAzureReader(
 	if a.AccessTier != "" {
 		opts = append(
 			opts,
-			ioStorage.WithAccessTier(a.AccessTier),
-			ioStorage.WithLogger(logger),
-			ioStorage.WithWarmPollDuration(time.Duration(a.RestorePollDuration)*time.Millisecond),
+			options.WithAccessTier(a.AccessTier),
+			options.WithLogger(logger),
+			options.WithWarmPollDuration(time.Duration(a.RestorePollDuration)*time.Millisecond),
 		)
 	}
 
