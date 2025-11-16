@@ -22,6 +22,7 @@ import (
 
 func TestBackup_NewFlagSet(t *testing.T) {
 	t.Parallel()
+
 	backup := NewBackup()
 
 	flagSet := backup.NewFlagSet()
@@ -70,6 +71,7 @@ func TestBackup_NewFlagSet(t *testing.T) {
 
 func TestBackup_NewFlagSet_DefaultValues(t *testing.T) {
 	t.Parallel()
+
 	backup := NewBackup()
 
 	flagSet := backup.NewFlagSet()

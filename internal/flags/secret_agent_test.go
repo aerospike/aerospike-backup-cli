@@ -22,6 +22,7 @@ import (
 
 func TestSecretAgent_NewFlagSet(t *testing.T) {
 	t.Parallel()
+
 	secretAgent := NewSecretAgent()
 
 	flagSet := secretAgent.NewFlagSet()
@@ -50,6 +51,7 @@ func TestSecretAgent_NewFlagSet(t *testing.T) {
 
 func TestSecretAgent_NewFlagSet_DefaultValues(t *testing.T) {
 	t.Parallel()
+
 	secretAgent := NewSecretAgent()
 
 	flagSet := secretAgent.NewFlagSet()

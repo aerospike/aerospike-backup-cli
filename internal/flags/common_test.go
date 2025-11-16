@@ -25,6 +25,7 @@ func TestCommon_NewFlagSet(t *testing.T) {
 	t.Parallel()
 
 	var fields models.Common
+
 	common := NewCommon(&fields, OperationBackup)
 
 	flagSet := common.NewFlagSet()
@@ -77,6 +78,7 @@ func TestCommon_NewFlagSet_DefaultValues(t *testing.T) {
 	t.Parallel()
 
 	var fields models.Common
+
 	common := NewCommon(&fields, OperationRestore)
 
 	flagSet := common.NewFlagSet()

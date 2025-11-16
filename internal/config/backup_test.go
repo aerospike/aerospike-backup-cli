@@ -141,6 +141,7 @@ func TestBackupServiceConfig_IsXDR(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+
 			result := tt.config.IsXDR()
 			assert.Equal(t, tt.expected, result)
 		})
@@ -185,6 +186,7 @@ func TestBackupServiceConfig_IsContinue(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+
 			result := tt.config.IsContinue()
 			assert.Equal(t, tt.expected, result)
 		})
@@ -229,6 +231,7 @@ func TestBackupServiceConfig_IsStopXDR(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+
 			result := tt.config.IsStopXDR()
 			assert.Equal(t, tt.expected, result)
 		})
@@ -273,6 +276,7 @@ func TestBackupServiceConfig_IsUnblockMRT(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+
 			result := tt.config.IsUnblockMRT()
 			assert.Equal(t, tt.expected, result)
 		})
@@ -317,6 +321,7 @@ func TestBackupServiceConfig_SkipWriterInit(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+
 			result := tt.config.SkipWriterInit()
 			assert.Equal(t, tt.expected, result)
 		})
@@ -370,6 +375,7 @@ func TestBackupServiceConfig_IsStdout(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+
 			result := tt.config.IsStdout()
 			assert.Equal(t, tt.expected, result)
 		})

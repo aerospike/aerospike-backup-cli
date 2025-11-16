@@ -81,12 +81,15 @@ func TestPrintMetric(t *testing.T) {
 
 	// Close writer and restore stdout
 	w.Close()
+
 	os.Stderr = oldStdout
 
 	// Read captured output
 	var buf bytes.Buffer
+
 	_, err := io.Copy(&buf, r)
 	require.NoError(t, err)
+
 	output := buf.String()
 
 	// Verify output
@@ -125,12 +128,15 @@ func TestPrintBackupReport(t *testing.T) {
 
 	// Close writer and restore stdout
 	w.Close()
+
 	os.Stderr = oldStdout
 
 	// Read captured output
 	var buf bytes.Buffer
+
 	_, err := io.Copy(&buf, r)
 	require.NoError(t, err)
+
 	output := buf.String()
 
 	// Verify output
@@ -180,12 +186,15 @@ func TestPrintBackupReportXdr(t *testing.T) {
 
 	// Close writer and restore stdout
 	w.Close()
+
 	os.Stderr = oldStdout
 
 	// Read captured output
 	var buf bytes.Buffer
+
 	_, err := io.Copy(&buf, r)
 	require.NoError(t, err)
+
 	output := buf.String()
 
 	// Verify output
@@ -216,6 +225,7 @@ func TestLogBackupReport(t *testing.T) {
 
 	// Create a buffer to capture log output
 	var buf bytes.Buffer
+
 	logger := slog.New(slog.NewTextHandler(&buf, nil))
 
 	// Call the function
@@ -255,6 +265,7 @@ func TestLogBackupReportXdr(t *testing.T) {
 
 	// Create a buffer to capture log output
 	var buf bytes.Buffer
+
 	logger := slog.New(slog.NewTextHandler(&buf, nil))
 
 	// Call the function with isXdr=true
@@ -299,12 +310,14 @@ func TestReportBackup(t *testing.T) {
 
 		// Close writer and restore stdout
 		w.Close()
+
 		os.Stderr = oldStdout
 
 		// Read captured output
 		var buf bytes.Buffer
 		_, err := io.Copy(&buf, r)
 		require.NoError(t, err)
+
 		output := buf.String()
 
 		// Verify output
@@ -316,6 +329,7 @@ func TestReportBackup(t *testing.T) {
 	t.Run("JSON output", func(t *testing.T) {
 		// Create a buffer to capture log output
 		var buf bytes.Buffer
+
 		logger := slog.New(slog.NewTextHandler(&buf, nil))
 
 		// Call the function
@@ -552,22 +566,28 @@ func TestLogRestoreReport(t *testing.T) {
 	stats.RecordsExpired.Add(10)
 	stats.RecordsSkipped.Add(20)
 	stats.RecordsIgnored.Add(30)
+
 	for i := 0; i < 40; i++ {
 		stats.IncrRecordsFresher()
 	}
+
 	for i := 0; i < 50; i++ {
 		stats.IncrRecordsExisted()
 	}
+
 	for i := 0; i < 60; i++ {
 		stats.IncrRecordsInserted()
 	}
+
 	for i := 0; i < 5; i++ {
 		stats.IncrErrorsInDoubt()
 	}
+
 	stats.TotalBytesRead.Add(5000000)
 
 	// Create a buffer to capture log output
 	var buf bytes.Buffer
+
 	logger := slog.New(slog.NewTextHandler(&buf, nil))
 
 	// Call the function
@@ -601,18 +621,23 @@ func TestReportRestore(t *testing.T) {
 	stats.RecordsExpired.Add(10)
 	stats.RecordsSkipped.Add(20)
 	stats.RecordsIgnored.Add(30)
+
 	for i := 0; i < 40; i++ {
 		stats.IncrRecordsFresher()
 	}
+
 	for i := 0; i < 50; i++ {
 		stats.IncrRecordsExisted()
 	}
+
 	for i := 0; i < 60; i++ {
 		stats.IncrRecordsInserted()
 	}
+
 	for i := 0; i < 5; i++ {
 		stats.IncrErrorsInDoubt()
 	}
+
 	stats.TotalBytesRead.Add(5000000)
 
 	// Test with isJSON=false
@@ -627,12 +652,15 @@ func TestReportRestore(t *testing.T) {
 
 		// Close writer and restore stdout
 		w.Close()
+
 		os.Stderr = oldStdout
 
 		// Read captured output
 		var buf bytes.Buffer
+
 		_, err := io.Copy(&buf, r)
 		require.NoError(t, err)
+
 		output := buf.String()
 
 		// Verify output
@@ -644,6 +672,7 @@ func TestReportRestore(t *testing.T) {
 	t.Run("JSON output", func(t *testing.T) {
 		// Create a buffer to capture log output
 		var buf bytes.Buffer
+
 		logger := slog.New(slog.NewTextHandler(&buf, nil))
 
 		// Call the function
@@ -667,10 +696,12 @@ func TestPrintEstimateReport(t *testing.T) {
 
 	// Close writer and restore stdout
 	w.Close()
+
 	os.Stderr = oldStdout
 
 	// Read captured output
 	var buf bytes.Buffer
+
 	_, err := io.Copy(&buf, r)
 	require.NoError(t, err)
 	output := buf.String()
@@ -708,12 +739,15 @@ func TestReportEstimate(t *testing.T) {
 
 		// Close writer and restore stdout
 		w.Close()
+
 		os.Stderr = oldStdout
 
 		// Read captured output
 		var buf bytes.Buffer
+
 		_, err := io.Copy(&buf, r)
 		require.NoError(t, err)
+
 		output := buf.String()
 
 		// Verify output
@@ -726,6 +760,7 @@ func TestReportEstimate(t *testing.T) {
 	t.Run("JSON output", func(t *testing.T) {
 		// Create a buffer to capture log output
 		var buf bytes.Buffer
+
 		logger := slog.New(slog.NewTextHandler(&buf, nil))
 
 		// Call the function

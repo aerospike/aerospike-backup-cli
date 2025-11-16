@@ -22,6 +22,7 @@ import (
 
 func TestBackupXDR_NewFlagSet(t *testing.T) {
 	t.Parallel()
+
 	backupXDR := NewBackupXDR()
 
 	flagSet := backupXDR.NewFlagSet()
@@ -72,6 +73,7 @@ func TestBackupXDR_NewFlagSet(t *testing.T) {
 
 func TestBackupXDR_NewFlagSet_DefaultValues(t *testing.T) {
 	t.Parallel()
+
 	backupXDR := NewBackupXDR()
 
 	flagSet := backupXDR.NewFlagSet()
@@ -101,6 +103,7 @@ func TestBackupXDR_NewFlagSet_DefaultValues(t *testing.T) {
 
 func TestBackupXDR_NewFlagSet_ShortFlags(t *testing.T) {
 	t.Parallel()
+
 	backupXDR := NewBackupXDR()
 
 	flagSet := backupXDR.NewFlagSet()
@@ -150,6 +153,7 @@ func TestBackupXDR_NewFlagSet_InvalidValues(t *testing.T) {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+
 			backupXDR := NewBackupXDR()
 			flagSet := backupXDR.NewFlagSet()
 			err := flagSet.Parse(tt.args)

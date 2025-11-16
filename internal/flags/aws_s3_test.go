@@ -23,6 +23,7 @@ import (
 
 func TestAwsS3_NewFlagSet(t *testing.T) {
 	t.Parallel()
+
 	awsS3 := NewAwsS3(OperationBackup)
 
 	flagSet := awsS3.NewFlagSet()
@@ -59,6 +60,7 @@ func TestAwsS3_NewFlagSet(t *testing.T) {
 
 func TestAwsS3_NewFlagSet_DefaultValues(t *testing.T) {
 	t.Parallel()
+
 	awsS3 := NewAwsS3(OperationBackup)
 
 	flagSet := awsS3.NewFlagSet()

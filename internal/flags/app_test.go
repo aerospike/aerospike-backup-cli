@@ -48,6 +48,7 @@ func TestApp_NewFlagSet(t *testing.T) {
 
 func TestApp_NewFlagSet_DefaultValues(t *testing.T) {
 	t.Parallel()
+
 	app := NewApp()
 
 	flagSet := app.NewFlagSet()

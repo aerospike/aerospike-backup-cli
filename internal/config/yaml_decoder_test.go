@@ -133,6 +133,7 @@ func TestDecodeBackupServiceConfig(t *testing.T) {
 				require.Error(t, err)
 				require.Contains(t, err.Error(), tt.wantErr)
 				require.Nil(t, config)
+
 				return
 			}
 
@@ -210,6 +211,7 @@ func TestDecodeRestoreServiceConfig(t *testing.T) {
 				require.Error(t, err)
 				require.Contains(t, err.Error(), tt.wantErr)
 				require.Nil(t, config)
+
 				return
 			}
 
@@ -282,11 +284,13 @@ func TestDecodeFromFile(t *testing.T) {
 			}
 
 			var params dto.Backup
+
 			err := decodeFromFile(filename, &params)
 
 			if tt.wantErr != "" {
 				require.Error(t, err)
 				require.Contains(t, err.Error(), tt.wantErr)
+
 				return
 			}
 
@@ -344,6 +348,7 @@ func TestDumpFile(t *testing.T) {
 			if tt.wantErr != "" {
 				require.Error(t, err)
 				require.Contains(t, err.Error(), tt.wantErr)
+
 				return
 			}
 
@@ -403,6 +408,7 @@ func TestDtoToBackupServiceConfig(t *testing.T) {
 				require.Error(t, err)
 				require.Contains(t, err.Error(), tt.wantErr)
 				require.Nil(t, config)
+
 				return
 			}
 
@@ -458,6 +464,7 @@ func TestDtoToRestoreServiceConfig(t *testing.T) {
 				require.Error(t, err)
 				require.Contains(t, err.Error(), tt.wantErr)
 				require.Nil(t, config)
+
 				return
 			}
 

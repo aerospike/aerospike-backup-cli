@@ -168,6 +168,7 @@ func (r *Service) run(ctx context.Context, encoderType backup.EncoderType, logMe
 
 	go func() {
 		defer wg.Done()
+
 		logging.PrintFilesNumber(ctx, r.reader.GetNumber, models.RestoreModeASB, r.logger)
 	}()
 	go logging.PrintRestoreEstimate(ctx, h.GetStats(), h.GetMetrics, r.reader.GetSize, r.logger)

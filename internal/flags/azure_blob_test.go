@@ -23,6 +23,7 @@ import (
 
 func TestAzureBlob_NewFlagSetRestore(t *testing.T) {
 	t.Parallel()
+
 	azureBlob := NewAzureBlob(OperationRestore)
 
 	flagSet := azureBlob.NewFlagSet()
@@ -65,6 +66,7 @@ func TestAzureBlob_NewFlagSetRestore(t *testing.T) {
 
 func TestAzureBlob_NewFlagSet_DefaultValuesRestore(t *testing.T) {
 	t.Parallel()
+
 	azureBlob := NewAzureBlob(OperationRestore)
 
 	flagSet := azureBlob.NewFlagSet()
@@ -91,6 +93,7 @@ func TestAzureBlob_NewFlagSet_DefaultValuesRestore(t *testing.T) {
 
 func TestAzureBlob_NewFlagSetBackup(t *testing.T) {
 	t.Parallel()
+
 	azureBlob := NewAzureBlob(OperationBackup)
 
 	flagSet := azureBlob.NewFlagSet()
@@ -125,6 +128,7 @@ func TestAzureBlob_NewFlagSetBackup(t *testing.T) {
 
 func TestAzureBlob_NewFlagSet_DefaultValuesBackup(t *testing.T) {
 	t.Parallel()
+
 	azureBlob := NewAzureBlob(OperationBackup)
 
 	flagSet := azureBlob.NewFlagSet()

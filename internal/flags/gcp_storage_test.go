@@ -23,6 +23,7 @@ import (
 
 func TestGcpStorage_NewFlagSet(t *testing.T) {
 	t.Parallel()
+
 	gcpStorage := NewGcpStorage(OperationBackup)
 
 	flagSet := gcpStorage.NewFlagSet()
@@ -55,6 +56,7 @@ func TestGcpStorage_NewFlagSet(t *testing.T) {
 
 func TestGcpStorage_NewFlagSet_DefaultValues(t *testing.T) {
 	t.Parallel()
+
 	gcpStorage := NewGcpStorage(OperationBackup)
 
 	flagSet := gcpStorage.NewFlagSet()

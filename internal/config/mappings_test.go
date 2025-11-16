@@ -231,6 +231,7 @@ func TestMapRestoreConfig_Success(t *testing.T) {
 
 func TestMapCompressionPolicy_Success(t *testing.T) {
 	t.Parallel()
+
 	compressionModel := testCompression()
 
 	compressionPolicy := newCompressionPolicy(compressionModel)
@@ -241,6 +242,7 @@ func TestMapCompressionPolicy_Success(t *testing.T) {
 
 func TestMapCompressionPolicy_EmptyMode(t *testing.T) {
 	t.Parallel()
+
 	compressionModel := &models.Compression{}
 	compressionPolicy := newCompressionPolicy(compressionModel)
 	assert.Nil(t, compressionPolicy)
@@ -248,6 +250,7 @@ func TestMapCompressionPolicy_EmptyMode(t *testing.T) {
 
 func TestMapCompressionPolicy_CaseInsensitiveMode(t *testing.T) {
 	t.Parallel()
+
 	compressionModel := &models.Compression{
 		Mode:  "zstd", // Lowercase mode
 		Level: 3,
@@ -262,6 +265,7 @@ func TestMapCompressionPolicy_CaseInsensitiveMode(t *testing.T) {
 // Encryption Tests
 func TestMapEncryptionPolicy_Success(t *testing.T) {
 	t.Parallel()
+
 	encryptionModel := &models.Encryption{
 		Mode:      "AES256",
 		KeyFile:   "/path/to/keyfile",
@@ -279,6 +283,7 @@ func TestMapEncryptionPolicy_Success(t *testing.T) {
 
 func TestMapEncryptionPolicy_EmptyMode(t *testing.T) {
 	t.Parallel()
+
 	encryptionModel := &models.Encryption{}
 	encryptionPolicy := newEncryptionPolicy(encryptionModel)
 	assert.Nil(t, encryptionPolicy)
@@ -286,6 +291,7 @@ func TestMapEncryptionPolicy_EmptyMode(t *testing.T) {
 
 func TestMapEncryptionPolicy_UpperCaseMode(t *testing.T) {
 	t.Parallel()
+
 	encryptionModel := &models.Encryption{
 		Mode: "aes256", // Lowercase mode
 	}
@@ -298,6 +304,7 @@ func TestMapEncryptionPolicy_UpperCaseMode(t *testing.T) {
 // Secret Agent Tests
 func TestMapSecretAgentConfig_Success(t *testing.T) {
 	t.Parallel()
+
 	secretAgentModel := testSecretAgent()
 
 	secretAgentConfig := newSecretAgentConfig(secretAgentModel)
@@ -312,6 +319,7 @@ func TestMapSecretAgentConfig_Success(t *testing.T) {
 
 func TestMapSecretAgentConfig_EmptyAddress(t *testing.T) {
 	t.Parallel()
+
 	secretAgentModel := &models.SecretAgent{}
 	secretAgentConfig := newSecretAgentConfig(secretAgentModel)
 	assert.Nil(t, secretAgentConfig)
@@ -319,6 +327,7 @@ func TestMapSecretAgentConfig_EmptyAddress(t *testing.T) {
 
 func TestMapSecretAgentConfig_PartialConfig(t *testing.T) {
 	t.Parallel()
+
 	secretAgentModel := &models.SecretAgent{
 		Address: "localhost",
 		Port:    8080,
@@ -333,6 +342,7 @@ func TestMapSecretAgentConfig_PartialConfig(t *testing.T) {
 
 func TestMapRestoreNamespace_SuccessSingleNamespace(t *testing.T) {
 	t.Parallel()
+
 	ns := "source-ns"
 	result := newRestoreNamespace(ns)
 	assert.NotNil(t, result, "Result should not be nil")
@@ -342,6 +352,7 @@ func TestMapRestoreNamespace_SuccessSingleNamespace(t *testing.T) {
 
 func TestMapRestoreNamespace_SuccessDifferentNamespaces(t *testing.T) {
 	t.Parallel()
+
 	ns := "source-ns,destination-ns"
 	result := newRestoreNamespace(ns)
 	assert.NotNil(t, result, "Result should not be nil")
@@ -351,6 +362,7 @@ func TestMapRestoreNamespace_SuccessDifferentNamespaces(t *testing.T) {
 
 func TestMapRestoreNamespace_InvalidNamespace(t *testing.T) {
 	t.Parallel()
+
 	ns := "source-ns,destination-ns,extra-ns"
 	result := newRestoreNamespace(ns)
 	assert.Nil(t, result, "Result should be nil for invalid input")
@@ -358,6 +370,7 @@ func TestMapRestoreNamespace_InvalidNamespace(t *testing.T) {
 
 func TestMapPartitionFilter_AfterDigest(t *testing.T) {
 	t.Parallel()
+
 	backupModel := &models.Backup{
 		AfterDigest: "AvDsV2KuSZHZugDBftnLxGpR+88=",
 		Common: models.Common{
@@ -374,6 +387,7 @@ func TestMapPartitionFilter_AfterDigest(t *testing.T) {
 
 func TestMapPartitionFilter_PartitionList(t *testing.T) {
 	t.Parallel()
+
 	backupModel := &models.Backup{
 		PartitionList: "0-1024",
 		Common: models.Common{
@@ -390,6 +404,7 @@ func TestMapPartitionFilter_PartitionList(t *testing.T) {
 
 func TestMapPartitionFilter_NoFilters(t *testing.T) {
 	t.Parallel()
+
 	backupModel := &models.Backup{
 		Common: models.Common{
 			Namespace: "test-namespace",
@@ -434,6 +449,7 @@ func TestMapRestoreConfig_PartialConfig(t *testing.T) {
 
 func TestMapScanPolicy_Success(t *testing.T) {
 	t.Parallel()
+
 	backupModel := &models.Backup{
 		MaxRecords:          500,
 		SleepBetweenRetries: 50,
@@ -459,6 +475,7 @@ func TestMapScanPolicy_Success(t *testing.T) {
 
 func TestMapWritePolicy_Success(t *testing.T) {
 	t.Parallel()
+
 	restoreModel := &models.Restore{
 		Replace: true,
 		Uniq:    false,
@@ -478,18 +495,21 @@ func TestMapWritePolicy_Success(t *testing.T) {
 
 func TestSplitByComma_EmptyString(t *testing.T) {
 	t.Parallel()
+
 	result := SplitByComma("")
 	assert.Nil(t, result)
 }
 
 func TestSplitByComma_NonEmptyString(t *testing.T) {
 	t.Parallel()
+
 	result := SplitByComma("item1,item2,item3")
 	assert.Equal(t, []string{"item1", "item2", "item3"}, result)
 }
 
 func TestRecordExistsAction(t *testing.T) {
 	t.Parallel()
+
 	assert.Equal(t, aerospike.REPLACE, recordExistsAction(true, false))
 	assert.Equal(t, aerospike.CREATE_ONLY, recordExistsAction(false, true))
 	assert.Equal(t, aerospike.UPDATE, recordExistsAction(false, false))
@@ -722,6 +742,7 @@ func TestMapBackupXDRConfig(t *testing.T) {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+
 			config := newBackupXDRConfig(tt.params)
 			assert.NotNil(t, config)
 			tt.verify(t, config)
@@ -760,6 +781,7 @@ func TestMapScanPolicy_Errors(t *testing.T) {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+
 			got, err := newScanPolicy(tt.backupModel)
 			if tt.wantErr {
 				assert.Error(t, err)
@@ -806,6 +828,7 @@ func TestMapWritePolicy_ConfigurationCombinations(t *testing.T) {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+
 			got := newWritePolicy(tt.restoreModel)
 			assert.Equal(t, tt.wantAction, got.RecordExistsAction)
 			assert.Equal(t, tt.wantGenPolicy, got.GenerationPolicy)
