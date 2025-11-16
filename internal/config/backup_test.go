@@ -606,8 +606,7 @@ func TestNewBackupConfigs_ParallelNodes(t *testing.T) {
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 	serviceConfig := &BackupServiceConfig{
 		Backup: &models.Backup{
-			ParallelNodes: true,
-			NodeList:      "node1,node2,node3",
+			NodeList: "node1,node2,node3",
 		},
 		Compression: &models.Compression{},
 		Encryption:  &models.Encryption{},
@@ -618,7 +617,6 @@ func TestNewBackupConfigs_ParallelNodes(t *testing.T) {
 
 	require.NoError(t, err)
 	assert.NotNil(t, backupConfig)
-	assert.True(t, backupConfig.ParallelNodes)
 	assert.Len(t, backupConfig.NodeList, 3)
 	assert.Contains(t, backupConfig.NodeList, "node1")
 	assert.Contains(t, backupConfig.NodeList, "node2")
