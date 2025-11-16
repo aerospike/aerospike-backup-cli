@@ -215,7 +215,9 @@ func newReaderOpts(
 		opts = append(opts, options.WithValidator(asb.NewValidator()))
 	}
 
-	opts = append(opts, options.WithLogger(logger))
+	// options.WithCalculateTotalSize() is required for estimating total size of backup.
+	// Without it, restore will hang forever.
+	opts = append(opts, options.WithLogger(logger), options.WithCalculateTotalSize())
 
 	return opts
 }
