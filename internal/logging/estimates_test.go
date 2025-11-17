@@ -100,6 +100,7 @@ func TestPrintBackupEstimate(t *testing.T) {
 	}
 
 	done := make(chan struct{})
+
 	go func() {
 		PrintBackupEstimate(ctx, stats, gm, logger)
 		close(done)
@@ -138,6 +139,7 @@ func TestPrintRestoreEstimate(t *testing.T) {
 	}
 
 	done := make(chan struct{})
+
 	go func() {
 		PrintRestoreEstimate(ctx, stats, gm, gs, logger)
 		close(done)
@@ -237,6 +239,7 @@ func TestPrintEstimate(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			var buf bytes.Buffer
+
 			logger := slog.New(slog.NewTextHandler(&buf, &slog.HandlerOptions{Level: slog.LevelDebug}))
 
 			pct, err := printEstimate(tt.startTime, tt.done, tt.total, tt.previousVal, tt.getMetrics, logger)
@@ -245,6 +248,7 @@ func TestPrintEstimate(t *testing.T) {
 				require.ErrorIs(t, err, tt.wantErr)
 			} else {
 				require.NoError(t, err)
+
 				expectedPct := tt.done / tt.total
 				assert.InDelta(t, expectedPct, pct, 0.01)
 			}
@@ -260,6 +264,7 @@ func TestPrintEstimate(t *testing.T) {
 
 func TestPrintBackupEstimateExtended(t *testing.T) {
 	t.Parallel()
+
 	tests := []struct {
 		name           string
 		setupStats     func() *models.BackupStats
@@ -274,6 +279,7 @@ func TestPrintBackupEstimateExtended(t *testing.T) {
 				stats.Start()
 				stats.TotalRecords.Add(100)
 				stats.ReadRecords.Add(50)
+
 				return stats
 			},
 			getMetrics: func() *models.Metrics {
@@ -292,6 +298,7 @@ func TestPrintBackupEstimateExtended(t *testing.T) {
 				stats.Start()
 				stats.TotalRecords.Add(0)
 				stats.ReadRecords.Add(0)
+
 				return stats
 			},
 			getMetrics: func() *models.Metrics {
@@ -307,6 +314,7 @@ func TestPrintBackupEstimateExtended(t *testing.T) {
 				stats.Start()
 				stats.TotalRecords.Add(100)
 				stats.ReadRecords.Add(100) // 100% complete
+
 				return stats
 			},
 			getMetrics: func() *models.Metrics {
@@ -330,6 +338,7 @@ func TestPrintBackupEstimateExtended(t *testing.T) {
 			logger := slog.New(slog.NewTextHandler(io.Discard, &slog.HandlerOptions{Level: slog.LevelError}))
 
 			done := make(chan struct{})
+
 			go func() {
 				PrintBackupEstimate(ctx, stats, tt.getMetrics, logger)
 				close(done)
@@ -351,6 +360,7 @@ func TestPrintBackupEstimateExtended(t *testing.T) {
 
 func TestPrintRestoreEstimateExtended(t *testing.T) {
 	t.Parallel()
+
 	tests := []struct {
 		name           string
 		setupStats     func() *models.RestoreStats
@@ -367,6 +377,7 @@ func TestPrintRestoreEstimateExtended(t *testing.T) {
 				stats.IncrRecordsInserted()
 				stats.RecordsSkipped.Add(1)
 				stats.IncrRecordsExisted()
+
 				return stats
 			},
 			getMetrics: func() *models.Metrics {
@@ -386,6 +397,7 @@ func TestPrintRestoreEstimateExtended(t *testing.T) {
 			setupStats: func() *models.RestoreStats {
 				stats := models.NewRestoreStats()
 				stats.Start()
+
 				return stats
 			},
 			getMetrics: func() *models.Metrics {
@@ -402,6 +414,7 @@ func TestPrintRestoreEstimateExtended(t *testing.T) {
 			setupStats: func() *models.RestoreStats {
 				stats := models.NewRestoreStats()
 				stats.Start()
+
 				return stats
 			},
 			getMetrics: func() *models.Metrics {
@@ -443,6 +456,7 @@ func TestPrintRestoreEstimateExtended(t *testing.T) {
 			logger := slog.New(slog.NewTextHandler(io.Discard, &slog.HandlerOptions{Level: slog.LevelError}))
 
 			done := make(chan struct{})
+
 			go func() {
 				PrintRestoreEstimate(ctx, stats, tt.getMetrics, tt.getSize, logger)
 				close(done)
@@ -474,6 +488,7 @@ func TestPrintFilesNumberContextCancellation(t *testing.T) {
 	logger := slog.New(slog.NewTextHandler(io.Discard, &slog.HandlerOptions{Level: slog.LevelInfo}))
 
 	done := make(chan struct{})
+
 	go func() {
 		PrintFilesNumber(ctx, getNumber, "test", logger)
 		close(done)
@@ -493,6 +508,7 @@ func TestPrintFilesNumberContextCancellation(t *testing.T) {
 
 func TestPrintFilesNumber(t *testing.T) {
 	t.Parallel()
+
 	tests := []struct {
 		name           string
 		getNumber      func() int64
@@ -552,9 +568,11 @@ func TestPrintFilesNumber(t *testing.T) {
 			defer cancel()
 
 			var buf bytes.Buffer
+
 			logger := slog.New(slog.NewTextHandler(&buf, &slog.HandlerOptions{Level: slog.LevelInfo}))
 
 			done := make(chan struct{})
+
 			go func() {
 				PrintFilesNumber(ctx, tt.getNumber, tt.fileTypes, logger)
 				close(done)

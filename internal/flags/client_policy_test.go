@@ -22,6 +22,7 @@ import (
 
 func TestClientPolicy_NewFlagSet(t *testing.T) {
 	t.Parallel()
+
 	clientPolicy := NewClientPolicy()
 
 	flagSet := clientPolicy.NewFlagSet()
@@ -44,6 +45,7 @@ func TestClientPolicy_NewFlagSet(t *testing.T) {
 
 func TestClientPolicy_NewFlagSet_DefaultValues(t *testing.T) {
 	t.Parallel()
+
 	clientPolicy := NewClientPolicy()
 
 	flagSet := clientPolicy.NewFlagSet()

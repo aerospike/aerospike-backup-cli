@@ -22,6 +22,7 @@ import (
 
 func TestRestore_NewFlagSet(t *testing.T) {
 	t.Parallel()
+
 	restore := NewRestore()
 
 	flagSet := restore.NewFlagSet()
@@ -58,6 +59,7 @@ func TestRestore_NewFlagSet(t *testing.T) {
 
 func TestRestore_NewFlagSet_DefaultValues(t *testing.T) {
 	t.Parallel()
+
 	restore := NewRestore()
 
 	flagSet := restore.NewFlagSet()

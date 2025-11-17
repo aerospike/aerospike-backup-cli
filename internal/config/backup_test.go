@@ -141,6 +141,7 @@ func TestBackupServiceConfig_IsXDR(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+
 			result := tt.config.IsXDR()
 			assert.Equal(t, tt.expected, result)
 		})
@@ -185,6 +186,7 @@ func TestBackupServiceConfig_IsContinue(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+
 			result := tt.config.IsContinue()
 			assert.Equal(t, tt.expected, result)
 		})
@@ -229,6 +231,7 @@ func TestBackupServiceConfig_IsStopXDR(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+
 			result := tt.config.IsStopXDR()
 			assert.Equal(t, tt.expected, result)
 		})
@@ -273,6 +276,7 @@ func TestBackupServiceConfig_IsUnblockMRT(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+
 			result := tt.config.IsUnblockMRT()
 			assert.Equal(t, tt.expected, result)
 		})
@@ -317,6 +321,7 @@ func TestBackupServiceConfig_SkipWriterInit(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+
 			result := tt.config.SkipWriterInit()
 			assert.Equal(t, tt.expected, result)
 		})
@@ -370,6 +375,7 @@ func TestBackupServiceConfig_IsStdout(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+
 			result := tt.config.IsStdout()
 			assert.Equal(t, tt.expected, result)
 		})
@@ -606,8 +612,7 @@ func TestNewBackupConfigs_ParallelNodes(t *testing.T) {
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 	serviceConfig := &BackupServiceConfig{
 		Backup: &models.Backup{
-			ParallelNodes: true,
-			NodeList:      "node1,node2,node3",
+			NodeList: "node1,node2,node3",
 		},
 		Compression: &models.Compression{},
 		Encryption:  &models.Encryption{},
@@ -618,7 +623,6 @@ func TestNewBackupConfigs_ParallelNodes(t *testing.T) {
 
 	require.NoError(t, err)
 	assert.NotNil(t, backupConfig)
-	assert.True(t, backupConfig.ParallelNodes)
 	assert.Len(t, backupConfig.NodeList, 3)
 	assert.Contains(t, backupConfig.NodeList, "node1")
 	assert.Contains(t, backupConfig.NodeList, "node2")

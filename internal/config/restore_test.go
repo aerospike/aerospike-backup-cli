@@ -137,6 +137,7 @@ func TestRestoreServiceConfig_IsStdin(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+
 			result := tt.config.IsStdin()
 			assert.Equal(t, tt.expected, result)
 		})
@@ -387,6 +388,7 @@ func TestGetEncryptionLog(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+
 			result := getEncryptionLog(tt.encryption)
 			assert.Equal(t, "encryption", result.Key)
 			assert.Equal(t, tt.expected, result.Value.String())
@@ -456,6 +458,7 @@ func TestGetCompressionLog(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+
 			result := getCompressionLog(tt.compression)
 			assert.Equal(t, "compression", result.Key)
 
@@ -561,6 +564,7 @@ func TestNewRestoreConfig_RetryPolicy(t *testing.T) {
 			config := NewRestoreConfig(serviceConfig, logger)
 
 			require.NotNil(t, config)
+
 			if tt.expectedNonNil {
 				assert.NotNil(t, config.RetryPolicy)
 			}

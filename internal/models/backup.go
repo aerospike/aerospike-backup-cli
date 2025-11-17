@@ -33,7 +33,6 @@ type Backup struct {
 	NoBins              bool
 	SleepBetweenRetries int
 	FilterExpression    string
-	ParallelNodes       bool
 	RemoveArtifacts     bool
 	Compact             bool
 	NodeList            string
@@ -75,11 +74,6 @@ func (b *Backup) Validate() error {
 	// Only one filter is allowed.
 	if b.AfterDigest != "" && b.PartitionList != "" {
 		return fmt.Errorf("only one of after-digest or partition-list can be configured")
-	}
-
-	if (b.Continue != "" || b.Estimate || b.StateFileDst != "") &&
-		(b.ParallelNodes || b.NodeList != "") {
-		return fmt.Errorf("saving states and calculating estimates is not possible in parallel node mode")
 	}
 
 	if b.Continue != "" && b.StateFileDst != "" {

@@ -22,6 +22,7 @@ import (
 
 func TestEncryption_NewFlagSet(t *testing.T) {
 	t.Parallel()
+
 	encryption := NewEncryption(OperationBackup)
 
 	flagSet := encryption.NewFlagSet()
@@ -46,6 +47,7 @@ func TestEncryption_NewFlagSet(t *testing.T) {
 
 func TestEncryption_NewFlagSet_DefaultValues(t *testing.T) {
 	t.Parallel()
+
 	encryption := NewEncryption(OperationRestore)
 
 	flagSet := encryption.NewFlagSet()

@@ -244,6 +244,7 @@ func Test_validateBackupXDR(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+
 			err := tt.backup.Validate()
 			if tt.wantErr == "" {
 				assert.NoError(t, err)

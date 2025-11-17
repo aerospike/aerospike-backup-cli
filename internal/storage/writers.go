@@ -24,11 +24,11 @@ import (
 	"github.com/aerospike/backup-go"
 	"github.com/aerospike/backup-go/io/encoding/asb"
 	"github.com/aerospike/backup-go/io/encoding/asbx"
-	ioStorage "github.com/aerospike/backup-go/io/storage"
 	"github.com/aerospike/backup-go/io/storage/aws/s3"
 	"github.com/aerospike/backup-go/io/storage/azure/blob"
 	"github.com/aerospike/backup-go/io/storage/gcp/storage"
 	"github.com/aerospike/backup-go/io/storage/local"
+	"github.com/aerospike/backup-go/io/storage/options"
 	"github.com/aerospike/backup-go/io/storage/std"
 )
 
@@ -144,37 +144,37 @@ func newWriterOpts(
 	continueBackup,
 	isXDR bool,
 	logger *slog.Logger,
-) []ioStorage.Opt {
-	opts := make([]ioStorage.Opt, 0)
+) []options.Opt {
+	opts := make([]options.Opt, 0)
 
 	if directory != "" && outputFile == "" {
-		opts = append(opts, ioStorage.WithDir(directory))
+		opts = append(opts, options.WithDir(directory))
 	}
 
 	if outputFile != "" && directory == "" {
-		opts = append(opts, ioStorage.WithFile(outputFile))
+		opts = append(opts, options.WithFile(outputFile))
 	}
 
 	if shouldClearTarget {
-		opts = append(opts, ioStorage.WithRemoveFiles())
+		opts = append(opts, options.WithRemoveFiles())
 	}
 
 	if continueBackup {
-		opts = append(opts, ioStorage.WithSkipDirCheck())
+		opts = append(opts, options.WithSkipDirCheck())
 	}
 
 	if isXDR {
-		opts = append(opts, ioStorage.WithValidator(asbx.NewValidator()))
+		opts = append(opts, options.WithValidator(asbx.NewValidator()))
 	} else {
-		opts = append(opts, ioStorage.WithValidator(asb.NewValidator()))
+		opts = append(opts, options.WithValidator(asb.NewValidator()))
 	}
 
-	opts = append(opts, ioStorage.WithLogger(logger))
+	opts = append(opts, options.WithLogger(logger))
 
 	return opts
 }
 
-func newLocalWriter(ctx context.Context, opts []ioStorage.Opt) (backup.Writer, error) {
+func newLocalWriter(ctx context.Context, opts []options.Opt) (backup.Writer, error) {
 	return local.NewWriter(ctx, opts...)
 }
 
@@ -185,7 +185,7 @@ func newStdWriter(ctx context.Context, bufferSize int) (backup.Writer, error) {
 func newS3Writer(
 	ctx context.Context,
 	a *models.AwsS3,
-	opts []ioStorage.Opt,
+	opts []options.Opt,
 ) (backup.Writer, error) {
 	client, err := newS3Client(ctx, a)
 	if err != nil {
@@ -193,10 +193,10 @@ func newS3Writer(
 	}
 
 	if a.StorageClass != "" {
-		opts = append(opts, ioStorage.WithStorageClass(a.StorageClass))
+		opts = append(opts, options.WithStorageClass(a.StorageClass))
 	}
 
-	opts = append(opts, ioStorage.WithChunkSize(a.ChunkSize))
+	opts = append(opts, options.WithChunkSize(a.ChunkSize))
 
 	return s3.NewWriter(ctx, client, a.BucketName, opts...)
 }
@@ -204,14 +204,14 @@ func newS3Writer(
 func newGcpWriter(
 	ctx context.Context,
 	g *models.GcpStorage,
-	opts []ioStorage.Opt,
+	opts []options.Opt,
 ) (backup.Writer, error) {
 	client, err := newGcpClient(ctx, g)
 	if err != nil {
 		return nil, err
 	}
 
-	opts = append(opts, ioStorage.WithChunkSize(g.ChunkSize))
+	opts = append(opts, options.WithChunkSize(g.ChunkSize))
 
 	return storage.NewWriter(ctx, client, g.BucketName, opts...)
 }
@@ -219,7 +219,7 @@ func newGcpWriter(
 func newAzureWriter(
 	ctx context.Context,
 	a *models.AzureBlob,
-	opts []ioStorage.Opt,
+	opts []options.Opt,
 ) (backup.Writer, error) {
 	client, err := newAzureClient(a)
 	if err != nil {
@@ -227,10 +227,10 @@ func newAzureWriter(
 	}
 
 	if a.AccessTier != "" {
-		opts = append(opts, ioStorage.WithAccessTier(a.AccessTier))
+		opts = append(opts, options.WithAccessTier(a.AccessTier))
 	}
 
-	opts = append(opts, ioStorage.WithChunkSize(a.BlockSize))
+	opts = append(opts, options.WithChunkSize(a.BlockSize))
 
 	return blob.NewWriter(ctx, client, a.ContainerName, opts...)
 }
