@@ -20,9 +20,12 @@ import (
 )
 
 const (
-	cloudMaxRetries = 100
-	cloudMaxBackoff = 90
-	cloudBackoff    = 60
+	cloudMaxRetries          = 10
+	cloudMaxBackoff          = 90
+	cloudBackoff             = 60
+	cloudUploadConcurrency   = 1
+	cloudRestorePollDuration = int64(60000)
+	cloudRequestTimeout      = 600
 )
 
 type AwsS3 struct {
@@ -79,13 +82,17 @@ func (f *AwsS3) NewFlagSet() *pflag.FlagSet {
 			"Chunk size controls the maximum number of bytes of the object that the app will attempt to send to\n"+
 				"the storage in a single request. Objects smaller than the size will be sent in a single request,\n"+
 				"while larger objects will be split over multiple requests.")
+		flagSet.IntVar(&f.UploadConcurrency, "s3-upload-concurrency",
+			0,
+			"Defines the max number of concurrent uploads to be performed to\n"+
+				"upload the file. Each concurrent upload will create a buffer of size s3-block-size.")
 	case OperationRestore:
 		flagSet.StringVar(&f.AccessTier, "s3-tier",
 			"",
 			"If is set, tool will try to restore archived files to the specified tier.\n"+
 				"Tiers are: Standard, Bulk, Expedited.")
 		flagSet.Int64Var(&f.RestorePollDuration, "s3-restore-poll-duration",
-			60000,
+			cloudRestorePollDuration,
 			"How often (in milliseconds) a backup client checks object status when restoring an archived object.",
 		)
 	}
@@ -99,6 +106,17 @@ func (f *AwsS3) NewFlagSet() *pflag.FlagSet {
 	flagSet.IntVar(&f.RetryBackoffSeconds, "s3-retry-backoff",
 		cloudBackoff,
 		"Provides the backoff in seconds strategy the retryer will use to determine the delay between retry attempts.")
+
+	flagSet.IntVar(&f.MaxConnsPerHost, "s3-max-conns-per-host",
+		0,
+		"MaxConnsPerHost optionally limits the total number of connections per host,\n"+
+			" including connections in the dialing, active, and idle states. On limit violation, dials will block.\n"+
+			"Zero means no limit.")
+	flagSet.IntVar(&f.RequestTimeoutSeconds, "s3-request-timeout",
+		cloudRequestTimeout,
+		"Timeout specifies a time limit for requests made by this Client.\n"+
+			"The timeout includes connection time, any redirects, and reading the response body.\n"+
+			"Zero means no limit.")
 
 	return flagSet
 }

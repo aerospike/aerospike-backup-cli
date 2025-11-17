@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"net"
 	"net/http"
 	"time"
 
@@ -108,6 +109,20 @@ func newS3Client(ctx context.Context, a *models.AwsS3) (*s3.Client, error) {
 					})
 			})
 		}),
+		config.WithHTTPClient(
+			&http.Client{
+				Transport: &http.Transport{
+					DialContext: (&net.Dialer{
+						Timeout:   30 * time.Second,
+						KeepAlive: 30 * time.Second,
+					}).DialContext,
+					MaxConnsPerHost:     a.MaxConnsPerHost,
+					IdleConnTimeout:     120 * time.Second,
+					TLSHandshakeTimeout: 10 * time.Second,
+					ReadBufferSize:      64 * 1024,
+				},
+				Timeout: time.Duration(a.RequestTimeoutSeconds) * time.Second,
+			}),
 	)
 
 	if a.Profile != "" {

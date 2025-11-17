@@ -23,7 +23,6 @@ import (
 
 func TestAzureBlob_NewFlagSetRestore(t *testing.T) {
 	t.Parallel()
-
 	azureBlob := NewAzureBlob(OperationRestore)
 
 	flagSet := azureBlob.NewFlagSet()
@@ -66,7 +65,6 @@ func TestAzureBlob_NewFlagSetRestore(t *testing.T) {
 
 func TestAzureBlob_NewFlagSet_DefaultValuesRestore(t *testing.T) {
 	t.Parallel()
-
 	azureBlob := NewAzureBlob(OperationRestore)
 
 	flagSet := azureBlob.NewFlagSet()
@@ -84,7 +82,7 @@ func TestAzureBlob_NewFlagSet_DefaultValuesRestore(t *testing.T) {
 	assert.Equal(t, "", result.Endpoint, "The default value for azure-endpoint should be an empty string")
 	assert.Equal(t, "", result.ContainerName, "The default value for azure-container-name should be an empty string")
 	assert.Equal(t, "", result.AccessTier, "The default value for azure-access-tier should be an empty string")
-	assert.Equal(t, int64(60000), result.RestorePollDuration, "The default value for azure-rehydrate-poll-duration should be 60000")
+	assert.Equal(t, cloudRestorePollDuration, result.RestorePollDuration, "The default value for azure-rehydrate-poll-duration should be 60000")
 	assert.Equal(t, cloudMaxRetries, result.RetryMaxAttempts, "The default value for azure-retry-max-attempts flag should be 100")
 	assert.Equal(t, cloudMaxBackoff, result.RetryMaxDelaySeconds, "The default value for azure-retry-max-delay flag should be 90")
 	assert.Equal(t, cloudBackoff, result.RetryDelaySeconds, "The default value for azure-retry-delay flag should be 60")
@@ -93,7 +91,6 @@ func TestAzureBlob_NewFlagSet_DefaultValuesRestore(t *testing.T) {
 
 func TestAzureBlob_NewFlagSetBackup(t *testing.T) {
 	t.Parallel()
-
 	azureBlob := NewAzureBlob(OperationBackup)
 
 	flagSet := azureBlob.NewFlagSet()
@@ -108,6 +105,7 @@ func TestAzureBlob_NewFlagSetBackup(t *testing.T) {
 		"--azure-container-name", "my-container",
 		"--azure-access-tier", "Standard",
 		"--azure-block-size", "1",
+		"--azure-upload-concurrency", "10",
 	}
 
 	err := flagSet.Parse(args)
@@ -124,11 +122,11 @@ func TestAzureBlob_NewFlagSetBackup(t *testing.T) {
 	assert.Equal(t, "my-container", result.ContainerName, "The azure-container-name flag should be parsed correctly")
 	assert.Equal(t, "Standard", result.AccessTier, "The azure-access-tier flag should be parsed correctly")
 	assert.Equal(t, 1, result.BlockSize, "The azure-block-size flag should be parsed correctly")
+	assert.Equal(t, 10, result.UploadConcurrency, "The azure-upload-concurrency flag should be parsed correctly")
 }
 
 func TestAzureBlob_NewFlagSet_DefaultValuesBackup(t *testing.T) {
 	t.Parallel()
-
 	azureBlob := NewAzureBlob(OperationBackup)
 
 	flagSet := azureBlob.NewFlagSet()
