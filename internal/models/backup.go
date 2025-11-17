@@ -58,7 +58,6 @@ func (b *Backup) ShouldSaveState() bool {
 	return b.StateFileDst != "" || b.Continue != ""
 }
 
-//nolint:gocyclo // It is a long validation function.
 func (b *Backup) Validate() error {
 	if b == nil {
 		return nil
