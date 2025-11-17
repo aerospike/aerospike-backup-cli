@@ -113,9 +113,11 @@ func TestValidateRestore(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+
 			err := tt.restore.Validate()
 			if tt.wantErr {
 				assert.Error(t, err)
+
 				if tt.errMsg != "" {
 					assert.Equal(t, tt.errMsg, err.Error())
 				}

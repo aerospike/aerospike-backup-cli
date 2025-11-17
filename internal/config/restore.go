@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"log/slog"
 	"runtime"
+	"strings"
 
 	"github.com/aerospike/aerospike-backup-cli/internal/models"
 	"github.com/aerospike/backup-go"
@@ -134,21 +135,10 @@ func NewRestoreConfig(serviceConfig *RestoreServiceConfig, logger *slog.Logger) 
 }
 
 func logRestoreConfig(logger *slog.Logger, params *RestoreServiceConfig, restoreConfig *backup.ConfigRestore) {
-	encryptionMode := "none"
-	if params.Encryption != nil {
-		encryptionMode = params.Encryption.Mode
-	}
-
-	compressLevel := 0
-	if params.Compression != nil {
-		compressLevel = params.Compression.Level
-	}
-
 	logger.Info("initialized restore config",
-		slog.Any("namespace_source", *restoreConfig.Namespace.Source),
-		slog.Any("namespace_destination", *restoreConfig.Namespace.Destination),
-		slog.String("encryption", encryptionMode),
-		slog.Int("compression", compressLevel),
+		getNamespaceLog(restoreConfig),
+		getEncryptionLog(params.Encryption),
+		getCompressionLog(params.Compression),
 		slog.Any("retry", *restoreConfig.RetryPolicy),
 		slog.Any("sets", restoreConfig.SetList),
 		slog.Any("bins", restoreConfig.BinList),
@@ -162,5 +152,51 @@ func logRestoreConfig(logger *slog.Logger, params *RestoreServiceConfig, restore
 		slog.Int("max_asynx_batches", restoreConfig.MaxAsyncBatches),
 		slog.Int64("extra_ttl", restoreConfig.ExtraTTL),
 		slog.Bool("ignore_records_error", restoreConfig.IgnoreRecordError),
+	)
+}
+
+func getEncryptionLog(e *models.Encryption) slog.Attr {
+	if e == nil {
+		return slog.String("encryption", noneVal)
+	}
+
+	if e.Mode == "" || strings.EqualFold(e.Mode, noneVal) {
+		return slog.String("encryption", noneVal)
+	}
+
+	return slog.String("encryption", e.Mode)
+}
+
+func getCompressionLog(c *models.Compression) slog.Attr {
+	if c == nil {
+		return slog.String("compression", noneVal)
+	}
+	// Separated nil check and value check for easy read.
+	if c.Mode == "" || strings.EqualFold(c.Mode, noneVal) {
+		return slog.String("compression", noneVal)
+	}
+
+	return slog.Group("compression",
+		slog.String("mode", c.Mode), slog.Int("level", c.Level),
+	)
+}
+
+func getNamespaceLog(r *backup.ConfigRestore) slog.Attr {
+	if r.Namespace == nil {
+		// It can't happen, but just in case. Not to catch nil pointer.
+		return slog.String("namespace", noneVal)
+	}
+
+	var source, destination string
+	if r.Namespace.Source != nil {
+		source = *r.Namespace.Source
+	}
+
+	if r.Namespace.Destination != nil {
+		destination = *r.Namespace.Destination
+	}
+
+	return slog.Group("namespace",
+		slog.String("source", source), slog.String("destination", destination),
 	)
 }

@@ -34,7 +34,6 @@ type Backup struct {
 	NoBins              bool
 	SleepBetweenRetries int
 	FilterExpression    string
-	ParallelNodes       bool
 	RemoveArtifacts     bool
 	Compact             bool
 	NodeList            string
@@ -76,11 +75,6 @@ func (b *Backup) Validate() error {
 	// Only one filter is allowed.
 	if err := b.validateSingleFilter(); err != nil {
 		return err
-	}
-
-	if (b.Continue != "" || b.Estimate || b.StateFileDst != "") &&
-		(b.ParallelNodes || b.NodeList != "") {
-		return fmt.Errorf("saving states and calculating estimates is not possible in parallel node mode")
 	}
 
 	if b.Continue != "" && b.StateFileDst != "" {

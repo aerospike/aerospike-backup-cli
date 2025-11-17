@@ -22,6 +22,7 @@ import (
 
 func TestBackup_NewFlagSet(t *testing.T) {
 	t.Parallel()
+
 	backup := NewBackup()
 
 	flagSet := backup.NewFlagSet()
@@ -36,7 +37,6 @@ func TestBackup_NewFlagSet(t *testing.T) {
 		"--no-bins",
 		"--sleep-between-retries", "10",
 		"--filter-exp", "encoded-filter-exp",
-		"--parallel-nodes",
 		"--remove-artifacts",
 		"--compact",
 		"--node-list", "node1,node2",
@@ -60,7 +60,6 @@ func TestBackup_NewFlagSet(t *testing.T) {
 	assert.True(t, result.NoBins, "The no-bins flag should be parsed correctly")
 	assert.Equal(t, 10, result.SleepBetweenRetries, "The sleep-between-retries flag should be parsed correctly")
 	assert.Equal(t, "encoded-filter-exp", result.FilterExpression, "The filter-exp flag should be parsed correctly")
-	assert.Equal(t, true, result.ParallelNodes, "The parallel-nodes flag should be parsed correctly")
 	assert.Equal(t, true, result.RemoveArtifacts, "The remove-artifacts flag should be parsed correctly")
 	assert.Equal(t, true, result.Compact, "The compact flag should be parsed correctly")
 	assert.Equal(t, "node1,node2", result.NodeList, "The node-list flag should be parsed correctly")
@@ -72,6 +71,7 @@ func TestBackup_NewFlagSet(t *testing.T) {
 
 func TestBackup_NewFlagSet_DefaultValues(t *testing.T) {
 	t.Parallel()
+
 	backup := NewBackup()
 
 	flagSet := backup.NewFlagSet()
@@ -90,7 +90,6 @@ func TestBackup_NewFlagSet_DefaultValues(t *testing.T) {
 	assert.False(t, result.NoBins, "The default value for no-bins should be false")
 	assert.Equal(t, 5, result.SleepBetweenRetries, "The default value for sleep-between-retries should be 5")
 	assert.Equal(t, "", result.FilterExpression, "The default value for filter-exp should be an empty string")
-	assert.Equal(t, false, result.ParallelNodes, "The default value for parallel-nodes should be false")
 	assert.Equal(t, false, result.RemoveArtifacts, "The default value for remove-artifacts should be false")
 	assert.Equal(t, false, result.Compact, "The default value for compact should be false")
 	assert.Equal(t, "", result.NodeList, "The default value for node-list should be empty string")

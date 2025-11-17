@@ -96,10 +96,12 @@ func TestNewLocalReader(t *testing.T) {
 
 func createTmpFileLocal(dir, fileName string) error {
 	filePath := filepath.Join(dir, fileName)
+
 	f, err := os.Create(filePath)
 	if err != nil {
 		return fmt.Errorf("failed to create file: %w", err)
 	}
+
 	_ = f.Close()
 
 	return nil
@@ -107,6 +109,7 @@ func createTmpFileLocal(dir, fileName string) error {
 
 func TestNewS3Reader(t *testing.T) {
 	t.Parallel()
+
 	err := createAwsCredentials()
 	assert.NoError(t, err)
 
@@ -179,6 +182,7 @@ func createTmpFileS3(ctx context.Context, client *s3.Client, dir, fileName strin
 
 func TestNewGcpReader(t *testing.T) {
 	t.Parallel()
+
 	err := createGcpBucket()
 	assert.NoError(t, err)
 
@@ -232,10 +236,12 @@ func TestNewGcpReader(t *testing.T) {
 
 func createTmpFileGcp(ctx context.Context, client *storage.Client, dir, fileName string) error {
 	fileName = filepath.Join(dir, fileName)
+
 	sw := client.Bucket(testBucket).Object(fileName).NewWriter(ctx)
 	if _, err := sw.Write([]byte("test")); err != nil {
 		return err
 	}
+
 	if err := sw.Close(); err != nil {
 		return err
 	}
@@ -245,6 +251,7 @@ func createTmpFileGcp(ctx context.Context, client *storage.Client, dir, fileName
 
 func TestNewAzureReader(t *testing.T) {
 	t.Parallel()
+
 	err := createAzureContainer()
 	assert.NoError(t, err)
 

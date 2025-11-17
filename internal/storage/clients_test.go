@@ -83,6 +83,7 @@ func TestClients_newAerospikeClient(t *testing.T) {
 
 func TestClients_newS3Client(t *testing.T) {
 	t.Parallel()
+
 	err := createAwsCredentials()
 	assert.NoError(t, err)
 

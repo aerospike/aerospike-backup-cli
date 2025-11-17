@@ -68,6 +68,8 @@ Aerospike Client Flags:
       --tls-protocols "[[+][-]all] [[+][-]TLSv1] [[+][-]TLSv1.1] [[+][-]TLSv1.2] [[+][-]TLSv1.3]"   Set the TLS protocol selection criteria. This format is the same 
                                                                                                     as Apache's SSLProtocol documented at 
                                                                                                     https://httpd.apache.org/docs/current/mod/mod_ssl.html#ssl protocol. (default +TLSv1.2)
+      --services-alternate                                                                          Determines if the client should use "services-alternate" instead 
+                                                                                                    of "services" in info request during cluster tending.
       --client-timeout int         Initial host connection timeout duration. The timeout when opening a connection
                                    to the server host for the first time. (default 30000)
       --client-idle-timeout int    Idle timeout. Every time a connection is used, its idle
@@ -194,7 +196,7 @@ Encryption Flags:
                                        This must match the encryption mode used when backing up the data.
                                        Supported encryption algorithms are: none, aes128, aes256.
                                        A private key must be given, either via the --encryption-key-file option or
-                                       the --encryption-key-env option or the --encryption-key-secret.
+                                       the --encryption-key-env option or the --encryption-key-secret. (default "NONE")
       --encryption-key-file string     Grabs the encryption key from the given file, which must be in PEM format.
       --encryption-key-env string      Grabs the encryption key from the given environment variable, which must be base-64 encoded.
       --encryption-key-secret string   Grabs the encryption key from secret-agent.

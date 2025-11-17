@@ -23,6 +23,7 @@ const (
 	descEncryptBackup  = "Enables encryption of backup files using the specified encryption algorithm.\n"
 	descEncryptRestore = "Enables decryption of backup files using the specified encryption algorithm.\n" +
 		"This must match the encryption mode used when backing up the data.\n"
+	defaultNoneVal = "NONE"
 )
 
 type Encryption struct {
@@ -48,7 +49,7 @@ func (f *Encryption) NewFlagSet() *pflag.FlagSet {
 	}
 
 	flagSet.StringVar(&f.Mode, "encrypt",
-		"",
+		defaultNoneVal,
 		descEncrypt+
 			"Supported encryption algorithms are: none, aes128, aes256.\n"+
 			"A private key must be given, either via the --encryption-key-file option or\n"+

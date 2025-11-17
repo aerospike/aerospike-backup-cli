@@ -48,7 +48,7 @@ func (f *Compression) NewFlagSet() *pflag.FlagSet {
 	}
 
 	flagSet.StringVarP(&f.Mode, "compress", "z",
-		"NONE",
+		defaultNoneVal,
 		descCompress+
 			"Supported compression algorithms are: zstd, none\n"+
 			"Set the zstd compression level via the --compression-level option.")

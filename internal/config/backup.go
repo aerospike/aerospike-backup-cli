@@ -225,8 +225,7 @@ func newBackupConfig(params *BackupServiceConfig) (*backup.ConfigBackup, error) 
 	}
 
 	// Overwrite partitions if we use nodes.
-	if params.Backup.ParallelNodes || params.Backup.NodeList != "" {
-		c.ParallelNodes = params.Backup.ParallelNodes
+	if params.Backup.NodeList != "" {
 		c.NodeList = SplitByComma(params.Backup.NodeList)
 	}
 
@@ -308,26 +307,15 @@ func newBackupXDRConfig(params *BackupServiceConfig) *backup.ConfigBackupXDR {
 }
 
 func logBackupConfig(logger *slog.Logger, params *BackupServiceConfig, backupConfig *backup.ConfigBackup) {
-	encryptionMode := "none"
-	if params.Encryption != nil {
-		encryptionMode = params.Encryption.Mode
-	}
-
-	compressLevel := 0
-	if params.Compression != nil {
-		compressLevel = params.Compression.Level
-	}
-
 	logger.Info("initialized scan backup config",
 		slog.String("namespace", backupConfig.Namespace),
-		slog.String("encryption", encryptionMode),
-		slog.Int("compression", compressLevel),
+		getEncryptionLog(params.Encryption),
+		getCompressionLog(params.Compression),
 		slog.String("filters", params.Backup.PartitionList),
 		slog.Any("nodes", backupConfig.NodeList),
 		slog.Any("sets", backupConfig.SetList),
 		slog.Any("bins", backupConfig.BinList),
 		slog.Any("rack", backupConfig.RackList),
-		slog.Any("parallel_node", backupConfig.ParallelNodes),
 		slog.Any("parallel_read", backupConfig.ParallelRead),
 		slog.Any("parallel_write", backupConfig.ParallelWrite),
 		slog.Bool("no_records", backupConfig.NoRecords),
@@ -348,8 +336,8 @@ func logBackupConfig(logger *slog.Logger, params *BackupServiceConfig, backupCon
 func logXdrBackupConfig(logger *slog.Logger, params *BackupServiceConfig, backupXDRConfig *backup.ConfigBackupXDR) {
 	logger.Info("initialized xdr backup config",
 		slog.String("namespace", backupXDRConfig.Namespace),
-		slog.String("encryption", params.Encryption.Mode),
-		slog.Int("compression", params.Compression.Level),
+		getEncryptionLog(params.Encryption),
+		getCompressionLog(params.Compression),
 		slog.Any("parallel_write", backupXDRConfig.ParallelWrite),
 		slog.Uint64("file_limit", backupXDRConfig.FileLimit),
 		slog.String("dc", backupXDRConfig.DC),

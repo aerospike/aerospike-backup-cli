@@ -168,17 +168,6 @@ func TestValidateBackup(t *testing.T) {
 			expectedErr: "",
 		},
 		{
-			name: "Continue and nodes",
-			backup: &Backup{
-				StateFileDst:  "some-file",
-				ParallelNodes: true,
-				OutputFile:    testFile,
-			},
-
-			wantErr:     true,
-			expectedErr: "saving states and calculating estimates is not possible in parallel node mode",
-		},
-		{
 			name: "Continue with valid state file",
 			backup: &Backup{
 				Continue:   "state.json",
@@ -193,9 +182,8 @@ func TestValidateBackup(t *testing.T) {
 		{
 			name: "NodeList with parallel nodes",
 			backup: &Backup{
-				NodeList:      "node1,node2",
-				ParallelNodes: true,
-				OutputFile:    testFile,
+				NodeList:   "node1,node2",
+				OutputFile: testFile,
 				Common: Common{
 					Namespace: testNamespace,
 				},
@@ -294,6 +282,7 @@ func TestValidateBackup(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+
 			err := tt.backup.Validate()
 			if tt.wantErr {
 				assert.Error(t, err, "Expected error but got none")

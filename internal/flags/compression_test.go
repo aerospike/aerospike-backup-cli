@@ -22,6 +22,7 @@ import (
 
 func TestCompression_NewFlagSet(t *testing.T) {
 	t.Parallel()
+
 	compression := NewCompression(OperationBackup)
 
 	flagSet := compression.NewFlagSet()
@@ -42,6 +43,7 @@ func TestCompression_NewFlagSet(t *testing.T) {
 
 func TestCompression_NewFlagSet_DefaultValues(t *testing.T) {
 	t.Parallel()
+
 	compression := NewCompression(OperationRestore)
 
 	flagSet := compression.NewFlagSet()
@@ -51,6 +53,6 @@ func TestCompression_NewFlagSet_DefaultValues(t *testing.T) {
 
 	result := compression.GetCompression()
 
-	assert.Equal(t, "NONE", result.Mode, "The default value for compress should be 'NONE'")
+	assert.Equal(t, defaultNoneVal, result.Mode, "The default value for compress should be 'NONE'")
 	assert.Equal(t, 3, result.Level, "The default value for compression-level should be 3")
 }

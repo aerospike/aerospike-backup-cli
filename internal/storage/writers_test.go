@@ -95,6 +95,7 @@ func TestNewLocalWriter(t *testing.T) {
 
 func TestNewS3Writer(t *testing.T) {
 	t.Parallel()
+
 	err := createAwsCredentials()
 	assert.NoError(t, err)
 
@@ -150,6 +151,7 @@ func createAwsCredentials() error {
 	}
 
 	awsDir := filepath.Join(home, ".aws")
+
 	err = os.MkdirAll(awsDir, 0o700)
 	if err != nil {
 		return fmt.Errorf("error creating .aws directory: %w", err)
@@ -175,6 +177,7 @@ aws_secret_access_key = minioadminpassword`)
 
 func TestGcpWriter(t *testing.T) {
 	t.Parallel()
+
 	err := createGcpBucket()
 	assert.NoError(t, err)
 
@@ -224,6 +227,7 @@ func createGcpBucket() error {
 		BucketName: testBucket,
 		Endpoint:   testGcpEndpoint,
 	}
+
 	c, err := newGcpClient(ctx, cfg)
 	if err != nil {
 		return err
@@ -237,6 +241,7 @@ func createGcpBucket() error {
 
 func TestAzureWriter(t *testing.T) {
 	t.Parallel()
+
 	err := createAzureContainer()
 	assert.NoError(t, err)
 
