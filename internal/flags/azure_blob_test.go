@@ -106,6 +106,8 @@ func TestAzureBlob_NewFlagSetBackup(t *testing.T) {
 		"--azure-access-tier", "Standard",
 		"--azure-block-size", "1",
 		"--azure-upload-concurrency", "10",
+		"--azure-max-conns-per-host", "10",
+		"--azure-request-timeout", "10",
 	}
 
 	err := flagSet.Parse(args)
@@ -123,6 +125,8 @@ func TestAzureBlob_NewFlagSetBackup(t *testing.T) {
 	assert.Equal(t, "Standard", result.AccessTier, "The azure-access-tier flag should be parsed correctly")
 	assert.Equal(t, 1, result.BlockSize, "The azure-block-size flag should be parsed correctly")
 	assert.Equal(t, 10, result.UploadConcurrency, "The azure-upload-concurrency flag should be parsed correctly")
+	assert.Equal(t, 10, result.MaxConnsPerHost, "The azure-max-conns-per-host flag should be parsed correctly")
+	assert.Equal(t, 10, result.RequestTimeoutSeconds, "The azure-request-timeout flag should be parsed correctly")
 }
 
 func TestAzureBlob_NewFlagSet_DefaultValuesBackup(t *testing.T) {
@@ -145,4 +149,6 @@ func TestAzureBlob_NewFlagSet_DefaultValuesBackup(t *testing.T) {
 	assert.Equal(t, "", result.ContainerName, "The default value for azure-container-name should be an empty string")
 	assert.Equal(t, "", result.AccessTier, "The default value for azure-access-tier should be an empty string")
 	assert.Equal(t, models.DefaultChunkSize, result.BlockSize, "The default value for azure-block-size should be 5MB")
+	assert.Equal(t, 0, result.MaxConnsPerHost, "The default value for s3-max-conns-per-host should be 0")
+	assert.Equal(t, cloudRequestTimeout, result.RequestTimeoutSeconds, "The default value for azure-request-timeout should be 0")
 }

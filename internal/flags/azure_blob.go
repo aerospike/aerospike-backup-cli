@@ -106,6 +106,16 @@ func (f *AzureBlob) NewFlagSet() *pflag.FlagSet {
 		"Retry timeout in seconds indicates the maximum time allowed for any single try of an HTTP request.\n"+
 			"This is disabled by default. Specify a value greater than zero to enable.\n"+
 			"NOTE: Setting this to a small value might cause premature HTTP request time-outs.")
+	flagSet.IntVar(&f.MaxConnsPerHost, "azure-max-conns-per-host",
+		0,
+		"MaxConnsPerHost optionally limits the total number of connections per host,\n"+
+			" including connections in the dialing, active, and idle states. On limit violation, dials will block.\n"+
+			"Zero means no limit.")
+	flagSet.IntVar(&f.RequestTimeoutSeconds, "azure-request-timeout",
+		cloudRequestTimeout,
+		"Timeout specifies a time limit for requests made by this Client.\n"+
+			"The timeout includes connection time, any redirects, and reading the response body.\n"+
+			"Zero means no limit.")
 
 	return flagSet
 }

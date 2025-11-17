@@ -164,6 +164,20 @@ func TestAzureBlob_Validate(t *testing.T) {
 			wantErr:  "",
 		},
 		{
+			name: "negative max connections per host",
+			azure: &AzureBlob{
+				ContainerName:        testBucketName,
+				RetryTimeoutSeconds:  30,
+				RetryDelaySeconds:    5,
+				RetryMaxDelaySeconds: 60,
+				BlockSize:            1024,
+				UploadConcurrency:    1,
+				MaxConnsPerHost:      -1,
+			},
+			isBackup: true,
+			wantErr:  "max connections per host must be non-negative",
+		},
+		{
 			name: "restore poll duration exactly 1 is valid",
 			azure: &AzureBlob{
 				ContainerName:        testBucketName,

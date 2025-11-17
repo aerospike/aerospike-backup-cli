@@ -110,19 +110,7 @@ func newS3Client(ctx context.Context, a *models.AwsS3) (*s3.Client, error) {
 			})
 		}),
 		config.WithHTTPClient(
-			&http.Client{
-				Transport: &http.Transport{
-					DialContext: (&net.Dialer{
-						Timeout:   30 * time.Second,
-						KeepAlive: 30 * time.Second,
-					}).DialContext,
-					MaxConnsPerHost:     a.MaxConnsPerHost,
-					IdleConnTimeout:     120 * time.Second,
-					TLSHandshakeTimeout: 10 * time.Second,
-					ReadBufferSize:      64 * 1024,
-				},
-				Timeout: time.Duration(a.RequestTimeoutSeconds) * time.Second,
-			}),
+			newHttpClient(a.MaxConnsPerHost, a.RequestTimeoutSeconds)),
 	)
 
 	if a.Profile != "" {
@@ -196,6 +184,7 @@ func newAzureClient(a *models.AzureBlob) (*azblob.Client, error) {
 
 	azOpts := &azblob.ClientOptions{
 		ClientOptions: azcore.ClientOptions{
+			Transport: newHttpClient(a.MaxConnsPerHost, a.RequestTimeoutSeconds),
 			Retry: policy.RetryOptions{
 				MaxRetries:    int32(a.RetryMaxAttempts),
 				TryTimeout:    time.Duration(a.RetryTimeoutSeconds) * time.Second,
@@ -255,4 +244,27 @@ func toHosts(htpSlice client.HostTLSPortSlice) []*aerospike.Host {
 	}
 
 	return hosts
+}
+
+// newTransport returns a new http.Transport.
+func newTransport(maxConnsPerHost int) *http.Transport {
+	return &http.Transport{
+		Proxy: http.ProxyFromEnvironment,
+		DialContext: (&net.Dialer{
+			Timeout:   30 * time.Second,
+			KeepAlive: 30 * time.Second,
+		}).DialContext,
+		MaxConnsPerHost:     maxConnsPerHost,
+		IdleConnTimeout:     120 * time.Second,
+		TLSHandshakeTimeout: 10 * time.Second,
+		ReadBufferSize:      64 * 1024,
+		ForceAttemptHTTP2:   true,
+	}
+}
+
+func newHttpClient(maxConnsPerHost, requestTimeoutSeconds int) *http.Client {
+	return &http.Client{
+		Transport: newTransport(maxConnsPerHost),
+		Timeout:   time.Duration(requestTimeoutSeconds) * time.Second,
+	}
 }
