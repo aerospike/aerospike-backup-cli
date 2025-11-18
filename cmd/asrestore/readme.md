@@ -239,7 +239,7 @@ Any AWS parameter can be retrieved from Secret Agent.
       --s3-retry-max-backoff int          Max backoff duration in seconds between retried attempts. (default 90)
       --s3-retry-backoff int              Provides the backoff in seconds strategy the retryer will use to determine the delay between retry attempts. (default 60)
       --s3-max-conns-per-host int         MaxConnsPerHost optionally limits the total number of connections per host,
-                                           including connections in the dialing, active, and idle states. On limit violation, dials will block.
+                                          including connections in the dialing, active, and idle states. On limit violation, dials will block.
                                           Zero means no limit.
       --s3-request-timeout int            Timeout specifies a time limit for requests made by this Client.
                                           The timeout includes connection time, any redirects, and reading the response body.
@@ -265,7 +265,7 @@ Any GCP parameter can be retrieved from Secret Agent.
       --gcp-retry-backoff-multiplier float   Multiplier is the factor by which the retry period increases.
                                              It should be greater than 1. (default 2)
       --gcp-max-conns-per-host int           MaxConnsPerHost optionally limits the total number of connections per host,
-                                              including connections in the dialing, active, and idle states. On limit violation, dials will block.
+                                             including connections in the dialing, active, and idle states. On limit violation, dials will block.
                                              Zero means no limit.
       --gcp-request-timeout int              Timeout specifies a time limit for requests made by this Client.
                                              The timeout includes connection time, any redirects, and reading the response body.

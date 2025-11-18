@@ -43,6 +43,7 @@ type Cmd struct {
 	flagsAws          *flags.AwsS3
 	flagsGcp          *flags.GcpStorage
 	flagsAzure        *flags.AzureBlob
+	flagsLocal        *flags.Local
 
 	// Xdr flags
 	flagsBackupXDR *flags.BackupXDR
@@ -59,6 +60,7 @@ func NewCmd(
 	flagsAws *flags.AwsS3,
 	flagsGcp *flags.GcpStorage,
 	flagsAzure *flags.AzureBlob,
+	flagsLocal *flags.Local,
 ) *cobra.Command {
 	c := &Cmd{
 		flagsApp:          flagsApp,
@@ -70,6 +72,7 @@ func NewCmd(
 		flagsAws:          flagsAws,
 		flagsGcp:          flagsGcp,
 		flagsAzure:        flagsAzure,
+		flagsLocal:        flagsLocal,
 	}
 
 	xdrCmd := &cobra.Command{
@@ -133,7 +136,7 @@ func (c *Cmd) run(cmd *cobra.Command, _ []string) error {
 		c.flagsAws.GetAwsS3(),
 		c.flagsGcp.GetGcpStorage(),
 		c.flagsAzure.GetAzureBlob(),
-		nil,
+		c.flagsLocal.GetLocal(),
 	)
 	if err != nil {
 		return fmt.Errorf("failed to initialize app: %w", err)
