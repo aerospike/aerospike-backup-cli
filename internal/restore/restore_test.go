@@ -37,7 +37,16 @@ const (
 	testSet             = "test"
 	testStateFile       = "state"
 	testASLoginPassword = "admin"
+	testHost            = "127.0.0.1"
+	testPort            = 3000
 )
+
+func testHostPort() *client.HostTLSPort {
+	return &client.HostTLSPort{
+		Host: testHost,
+		Port: testPort,
+	}
+}
 
 // Test_BackupRestore one test for both so we can restore from just backed-up files.
 func Test_BackupRestore(t *testing.T) {
@@ -45,7 +54,7 @@ func Test_BackupRestore(t *testing.T) {
 
 	ctx := context.Background()
 	dir := t.TempDir()
-	hostPort := client.NewDefaultHostTLSPort()
+	hostPort := testHostPort()
 
 	asbParams := &config2.BackupServiceConfig{
 		App: &models.App{},

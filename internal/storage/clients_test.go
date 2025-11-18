@@ -28,12 +28,24 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const testASLoginPassword = "admin"
+const (
+	testASLoginPassword = "admin"
+
+	testHost = "127.0.0.1"
+	testPort = 3000
+)
+
+func testHostPort() *client.HostTLSPort {
+	return &client.HostTLSPort{
+		Host: testHost,
+		Port: testPort,
+	}
+}
 
 func TestClients_newAerospikeClient(t *testing.T) {
 	t.Parallel()
 
-	hostPort := client.NewDefaultHostTLSPort()
+	hostPort := testHostPort()
 	cfg := &client.AerospikeConfig{
 		Seeds: client.HostTLSPortSlice{
 			hostPort,
