@@ -270,7 +270,7 @@ func TestNewRestoreConfig_AllFlags(t *testing.T) {
 			MaxAsyncBatches:    32,
 			RetryBaseInterval:  100,
 			RetryMultiplier:    2.0,
-			RetryMaxRetries:    5,
+			RetryMaxAttempts:   5,
 			ValidateOnly:       false,
 		},
 		Compression: &models.Compression{
@@ -554,7 +554,7 @@ func TestNewRestoreConfig_RetryPolicy(t *testing.T) {
 				Restore: &models.Restore{
 					RetryBaseInterval: tt.baseInterval,
 					RetryMultiplier:   tt.multiplier,
-					RetryMaxRetries:   tt.maxRetries,
+					RetryMaxAttempts:  tt.maxRetries,
 				},
 				Compression: &models.Compression{},
 				Encryption:  &models.Encryption{},

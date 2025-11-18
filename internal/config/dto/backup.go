@@ -78,6 +78,9 @@ type Backup struct {
 	Azure struct {
 		Blob AzureBlob `yaml:"blob"`
 	} `yaml:"azure"`
+	Local struct {
+		Disk Local `yaml:"disk"`
+	} `yaml:"local"`
 }
 
 func (b *Backup) ToModelBackup() *models.Backup {

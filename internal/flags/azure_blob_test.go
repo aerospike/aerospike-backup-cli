@@ -41,6 +41,9 @@ func TestAzureBlob_NewFlagSetRestore(t *testing.T) {
 		"--azure-retry-max-delay", "10",
 		"--azure-retry-delay", "10",
 		"--azure-retry-timeout", "10",
+		"--azure-retry-read-backoff", "900",
+		"--azure-retry-read-multiplier", "1.5",
+		"--azure-retry-read-max-attempts", "5",
 	}
 
 	err := flagSet.Parse(args)
@@ -61,6 +64,9 @@ func TestAzureBlob_NewFlagSetRestore(t *testing.T) {
 	assert.Equal(t, 10, result.RetryMaxDelaySeconds, "The azure-retry-max-delay flag should be parsed correctly")
 	assert.Equal(t, 10, result.RetryDelaySeconds, "The azure-retry-delay flag should be parsed correctly")
 	assert.Equal(t, 10, result.RetryTimeoutSeconds, "The azure-retry-timeout flag should be parsed correctly")
+	assert.Equal(t, 900, result.RetryReadBackoffSeconds, "The azure-retry-read-backoff flag should be parsed correctly")
+	assert.Equal(t, 1.5, result.RetryReadMultiplier, "The azure-retry-read-multiplier flag should be parsed correctly")
+	assert.Equal(t, uint(5), result.RetryReadMaxAttempts, "The azure-retry-read-max-attempts flag should be parsed correctly")
 }
 
 func TestAzureBlob_NewFlagSet_DefaultValuesRestore(t *testing.T) {
@@ -87,6 +93,9 @@ func TestAzureBlob_NewFlagSet_DefaultValuesRestore(t *testing.T) {
 	assert.Equal(t, cloudMaxBackoff, result.RetryMaxDelaySeconds, "The default value for azure-retry-max-delay flag should be 90")
 	assert.Equal(t, cloudBackoff, result.RetryDelaySeconds, "The default value for azure-retry-delay flag should be 60")
 	assert.Equal(t, 0, result.RetryTimeoutSeconds, "The default value for azure-retry-timeout flag should be 0")
+	assert.Equal(t, cloudRetryReadBackoff, result.RetryReadBackoffSeconds, "The default value for azure-retry-read-backoff should be 0")
+	assert.Equal(t, cloudRetryReadMultiplier, result.RetryReadMultiplier, "The default value for azure-retry-read-multiplier should be 0")
+	assert.Equal(t, cloudRetryReadMaxAttempts, result.RetryReadMaxAttempts, "The default value for azure-retry-read-max-attempts should be 0")
 }
 
 func TestAzureBlob_NewFlagSetBackup(t *testing.T) {

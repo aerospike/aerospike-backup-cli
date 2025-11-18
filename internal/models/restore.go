@@ -43,11 +43,12 @@ type Restore struct {
 
 	RetryBaseInterval int64
 	RetryMultiplier   float64
-	RetryMaxRetries   uint
+	RetryMaxAttempts  uint
 
 	Mode string
 
-	ValidateOnly bool
+	ValidateOnly      bool
+	ApplyMetadataLast bool
 }
 
 func (r *Restore) IsDirectoryRestore() bool {

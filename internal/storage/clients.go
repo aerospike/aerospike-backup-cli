@@ -110,7 +110,7 @@ func newS3Client(ctx context.Context, a *models.AwsS3) (*s3.Client, error) {
 			})
 		}),
 		config.WithHTTPClient(
-			newHttpClient(a.MaxConnsPerHost, a.RequestTimeoutSeconds)),
+			newHTTPClient(a.MaxConnsPerHost, a.RequestTimeoutSeconds)),
 	)
 
 	if a.Profile != "" {
@@ -149,6 +149,8 @@ func newS3Client(ctx context.Context, a *models.AwsS3) (*s3.Client, error) {
 func newGcpClient(ctx context.Context, g *models.GcpStorage) (*gcpStorage.Client, error) {
 	opts := make([]option.ClientOption, 0)
 
+	opts = append(opts, option.WithHTTPClient(newHTTPClient(g.MaxConnsPerHost, g.RequestTimeoutSeconds)))
+
 	if g.KeyFile != "" {
 		opts = append(opts, option.WithCredentialsFile(g.KeyFile))
 	}
@@ -184,7 +186,7 @@ func newAzureClient(a *models.AzureBlob) (*azblob.Client, error) {
 
 	azOpts := &azblob.ClientOptions{
 		ClientOptions: azcore.ClientOptions{
-			Transport: newHttpClient(a.MaxConnsPerHost, a.RequestTimeoutSeconds),
+			Transport: newHTTPClient(a.MaxConnsPerHost, a.RequestTimeoutSeconds),
 			Retry: policy.RetryOptions{
 				MaxRetries:    int32(a.RetryMaxAttempts),
 				TryTimeout:    time.Duration(a.RetryTimeoutSeconds) * time.Second,
@@ -262,7 +264,8 @@ func newTransport(maxConnsPerHost int) *http.Transport {
 	}
 }
 
-func newHttpClient(maxConnsPerHost, requestTimeoutSeconds int) *http.Client {
+// newHTTPClient returns a new http.Client.
+func newHTTPClient(maxConnsPerHost, requestTimeoutSeconds int) *http.Client {
 	return &http.Client{
 		Transport: newTransport(maxConnsPerHost),
 		Timeout:   time.Duration(requestTimeoutSeconds) * time.Second,

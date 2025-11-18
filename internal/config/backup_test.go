@@ -42,6 +42,7 @@ func TestNewBackupServiceConfig_WithoutConfigFile(t *testing.T) {
 	awsS3 := &models.AwsS3{}
 	gcpStorage := &models.GcpStorage{}
 	azureBlob := &models.AzureBlob{}
+	local := &models.Local{}
 
 	config, err := NewBackupServiceConfig(
 		app,
@@ -55,6 +56,7 @@ func TestNewBackupServiceConfig_WithoutConfigFile(t *testing.T) {
 		awsS3,
 		gcpStorage,
 		azureBlob,
+		local,
 	)
 
 	require.NoError(t, err)
@@ -79,6 +81,7 @@ func TestNewBackupServiceConfig_WithInvalidConfigFile(t *testing.T) {
 
 	config, err := NewBackupServiceConfig(
 		app,
+		nil,
 		nil,
 		nil,
 		nil,

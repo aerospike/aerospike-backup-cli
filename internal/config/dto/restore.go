@@ -59,6 +59,7 @@ type Restore struct {
 		InfoMaxRetries                uint     `yaml:"info-max-retries"`
 		InfoRetriesMultiplier         float64  `yaml:"info-retries-multiplier"`
 		InfoRetryIntervalMilliseconds int64    `yaml:"info-retry-interval"`
+		ApplyMetadataLast             bool     `yaml:"apply-metadata-last"`
 	} `yaml:"restore"`
 	Compression Compression `yaml:"compression"`
 	Encryption  Encryption  `yaml:"encryption"`
@@ -109,8 +110,9 @@ func (r *Restore) ToModelRestore() *models.Restore {
 		NoGeneration:       r.Restore.NoGeneration,
 		RetryBaseInterval:  r.Restore.RetryBaseInterval,
 		RetryMultiplier:    r.Restore.RetryMultiplier,
-		RetryMaxRetries:    r.Restore.RetryMaxRetries,
+		RetryMaxAttempts:   r.Restore.RetryMaxRetries,
 		Mode:               r.Restore.Mode,
 		ValidateOnly:       r.Restore.ValidateOnly,
+		ApplyMetadataLast:  r.Restore.ApplyMetadataLast,
 	}
 }

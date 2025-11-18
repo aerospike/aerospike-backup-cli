@@ -116,7 +116,7 @@ func newWriter(
 		return newStdWriter(ctx, params.Backup.StdBufferSize)
 	default:
 		defer logger.Info("initialized local storage writer")
-		return newLocalWriter(ctx, opts)
+		return newLocalWriter(ctx, params.Local, opts)
 	}
 }
 
@@ -174,7 +174,9 @@ func newWriterOpts(
 	return opts
 }
 
-func newLocalWriter(ctx context.Context, opts []options.Opt) (backup.Writer, error) {
+func newLocalWriter(ctx context.Context, l *models.Local, opts []options.Opt) (backup.Writer, error) {
+	opts = append(opts, options.WithChunkSize(l.BufferSize))
+
 	return local.NewWriter(ctx, opts...)
 }
 

@@ -42,10 +42,10 @@ type AzureBlob struct {
 	RetryDelaySeconds    int
 	RetryMaxDelaySeconds int
 
-	BlockSize             int
-	UploadConcurrency     int
-	MaxConnsPerHost       int
-	RequestTimeoutSeconds int
+	BlockSize         int
+	UploadConcurrency int
+
+	StorageCommon
 }
 
 // LoadSecrets tries to load field values from secret agent.
@@ -132,12 +132,8 @@ func (a *AzureBlob) Validate(isBackup bool) error {
 		}
 	}
 
-	if a.MaxConnsPerHost < 0 {
-		return fmt.Errorf("max connections per host must be non-negative")
-	}
-
-	if a.RequestTimeoutSeconds < 0 {
-		return fmt.Errorf("request timeout must be non-negative")
+	if err := a.StorageCommon.Validate(isBackup); err != nil {
+		return err
 	}
 
 	return nil

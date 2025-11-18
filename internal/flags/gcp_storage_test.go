@@ -21,7 +21,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGcpStorage_NewFlagSet(t *testing.T) {
+func TestGcpStorage_NewFlagSetBackup(t *testing.T) {
 	t.Parallel()
 
 	gcpStorage := NewGcpStorage(OperationBackup)
@@ -37,6 +37,8 @@ func TestGcpStorage_NewFlagSet(t *testing.T) {
 		"--gcp-retry-max-backoff", "10",
 		"--gcp-retry-init-backoff", "10",
 		"--gcp-retry-backoff-multiplier", "10",
+		"--gcp-max-conns-per-host", "10",
+		"--gcp-request-timeout", "10",
 	}
 
 	err := flagSet.Parse(args)
@@ -52,9 +54,34 @@ func TestGcpStorage_NewFlagSet(t *testing.T) {
 	assert.Equal(t, 10, result.RetryBackoffMaxSeconds, "The gcp-retry-max-backoff flag should be parsed correctly")
 	assert.Equal(t, 10, result.RetryBackoffInitSeconds, "The gcp-retry-init-backoff flag should be parsed correctly")
 	assert.Equal(t, float64(10), result.RetryBackoffMultiplier, "The gcp-retry-backoff-multiplier flag should be parsed correctly")
+	assert.Equal(t, 10, result.MaxConnsPerHost, "The gcp-max-conns-per-host flag should be parsed correctly")
+	assert.Equal(t, 10, result.RequestTimeoutSeconds, "The gcp-request-timeout flag should be parsed correctly")
 }
 
-func TestGcpStorage_NewFlagSet_DefaultValues(t *testing.T) {
+func TestGcpStorage_NewFlagSetRestore(t *testing.T) {
+	t.Parallel()
+
+	gcpStorage := NewGcpStorage(OperationRestore)
+
+	flagSet := gcpStorage.NewFlagSet()
+
+	args := []string{
+		"--gcp-retry-read-backoff", "900",
+		"--gcp-retry-read-multiplier", "1.5",
+		"--gcp-retry-read-max-attempts", "5",
+	}
+
+	err := flagSet.Parse(args)
+	assert.NoError(t, err)
+
+	result := gcpStorage.GetGcpStorage()
+
+	assert.Equal(t, 900, result.RetryReadBackoffSeconds, "The gcp-retry-read-backoff flag should be parsed correctly")
+	assert.Equal(t, 1.5, result.RetryReadMultiplier, "The gcp-retry-read-multiplier flag should be parsed correctly")
+	assert.Equal(t, uint(5), result.RetryReadMaxAttempts, "The gcp-retry-read-max-attempts flag should be parsed correctly")
+}
+
+func TestGcpStorage_NewFlagSet_DefaultValuesBackup(t *testing.T) {
 	t.Parallel()
 
 	gcpStorage := NewGcpStorage(OperationBackup)
@@ -74,4 +101,23 @@ func TestGcpStorage_NewFlagSet_DefaultValues(t *testing.T) {
 	assert.Equal(t, cloudMaxBackoff, result.RetryBackoffMaxSeconds, "The default value for gcp-retry-max-backoff should be 90")
 	assert.Equal(t, cloudBackoff, result.RetryBackoffInitSeconds, "The default value for gcp-retry-init-backoff should be 60")
 	assert.Equal(t, float64(2), result.RetryBackoffMultiplier, "The default value for gcp-retry-backoff-multiplier should be 2")
+	assert.Equal(t, 0, result.MaxConnsPerHost, "The default value for gcp-max-conns-per-host should be 0")
+	assert.Equal(t, cloudRequestTimeout, result.RequestTimeoutSeconds, "The default value for gcp-request-timeout should be 0")
+}
+
+func TestGcpStorage_NewFlagSet_DefaultValuesRestore(t *testing.T) {
+	t.Parallel()
+
+	gcpStorage := NewGcpStorage(OperationRestore)
+
+	flagSet := gcpStorage.NewFlagSet()
+
+	err := flagSet.Parse([]string{})
+	assert.NoError(t, err)
+
+	result := gcpStorage.GetGcpStorage()
+
+	assert.Equal(t, cloudRetryReadBackoff, result.RetryReadBackoffSeconds, "The default value for gcp-retry-read-backoff should be 0")
+	assert.Equal(t, cloudRetryReadMultiplier, result.RetryReadMultiplier, "The default value for gcp-retry-read-multiplier should be 0")
+	assert.Equal(t, cloudRetryReadMaxAttempts, result.RetryReadMaxAttempts, "The default value for gcp-retry-read-max-attempts should be 0")
 }

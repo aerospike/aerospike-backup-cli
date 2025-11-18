@@ -61,6 +61,23 @@ func TestAwsS3_NewFlagSet(t *testing.T) {
 	assert.Equal(t, 10, result.UploadConcurrency, "The s3-upload-concurrency flag should be parsed correctly")
 	assert.Equal(t, 10, result.MaxConnsPerHost, "The s3-max-conns-per-host flag should be parsed correctly")
 	assert.Equal(t, 10, result.RequestTimeoutSeconds, "The s3-request-timeout flag should be parsed correctly")
+
+	awsS3 = NewAwsS3(OperationRestore)
+	flagSet = awsS3.NewFlagSet()
+	args = []string{
+		"--s3-retry-read-backoff", "900",
+		"--s3-retry-read-multiplier", "1.5",
+		"--s3-retry-read-max-attempts", "5",
+	}
+
+	err = flagSet.Parse(args)
+	assert.NoError(t, err)
+
+	result = awsS3.GetAwsS3()
+
+	assert.Equal(t, 900, result.RetryReadBackoffSeconds, "The s3-retry-read-backoff flag should be parsed correctly")
+	assert.Equal(t, 1.5, result.RetryReadMultiplier, "The s3-retry-read-multiplier flag should be parsed correctly")
+	assert.Equal(t, uint(5), result.RetryReadMaxAttempts, "The s3-retry-read-max-attempts flag should be parsed correctly")
 }
 
 func TestAwsS3_NewFlagSet_DefaultValues(t *testing.T) {
@@ -95,4 +112,7 @@ func TestAwsS3_NewFlagSet_DefaultValues(t *testing.T) {
 	result = awsS3.GetAwsS3()
 
 	assert.Equal(t, cloudRestorePollDuration, result.RestorePollDuration, "The default value for s3-retry-backoff should be 6000")
+	assert.Equal(t, cloudRetryReadBackoff, result.RetryReadBackoffSeconds, "The default value for s3-retry-read-backoff should be 0")
+	assert.Equal(t, cloudRetryReadMultiplier, result.RetryReadMultiplier, "The default value for s3-retry-read-multiplier should be 0")
+	assert.Equal(t, cloudRetryReadMaxAttempts, result.RetryReadMaxAttempts, "The default value for s3-retry-read-max-attempts should be 0")
 }

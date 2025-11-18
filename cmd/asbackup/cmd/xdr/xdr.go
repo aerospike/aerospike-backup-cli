@@ -133,6 +133,7 @@ func (c *Cmd) run(cmd *cobra.Command, _ []string) error {
 		c.flagsAws.GetAwsS3(),
 		c.flagsGcp.GetGcpStorage(),
 		c.flagsAzure.GetAzureBlob(),
+		nil,
 	)
 	if err != nil {
 		return fmt.Errorf("failed to initialize app: %w", err)

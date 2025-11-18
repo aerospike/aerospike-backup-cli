@@ -37,6 +37,8 @@ type GcpStorage struct {
 	RetryBackoffMultiplier  float64
 
 	ChunkSize int
+
+	StorageCommon
 }
 
 // LoadSecrets tries to load field values from secret agent.
@@ -62,7 +64,7 @@ func (g *GcpStorage) LoadSecrets(cfg *backup.SecretAgentConfig) error {
 }
 
 // Validate internal validation for struct params.
-func (g *GcpStorage) Validate() error {
+func (g *GcpStorage) Validate(isBackup bool) error {
 	if g.BucketName == "" {
 		return fmt.Errorf("bucket name is required")
 	}
@@ -85,6 +87,18 @@ func (g *GcpStorage) Validate() error {
 
 	if g.ChunkSize < 0 {
 		return fmt.Errorf("chunk size must be non-negative")
+	}
+
+	if g.MaxConnsPerHost < 0 {
+		return fmt.Errorf("max connections per host must be non-negative")
+	}
+
+	if g.RequestTimeoutSeconds < 0 {
+		return fmt.Errorf("request timeout must be non-negative")
+	}
+
+	if err := g.StorageCommon.Validate(isBackup); err != nil {
+		return err
 	}
 
 	return nil

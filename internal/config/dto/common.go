@@ -232,7 +232,7 @@ type SecretAgent struct {
 	ConnectionType     string `yaml:"connection-type"`
 	Address            string `yaml:"address"`
 	Port               int    `yaml:"port"`
-	TimeoutMillisecond int    `yaml:"timeout-millisecond"`
+	TimeoutMillisecond int    `yaml:"timeout"`
 	CaFile             string `yaml:"ca-file"`
 	IsBase64           bool   `yaml:"is-base64"`
 }
@@ -251,18 +251,25 @@ func (s *SecretAgent) ToModelSecretAgent() *models.SecretAgent {
 // AwsS3 defines configuration for AWS S3 storage including bucket details and retry mechanisms
 // parsed from a YAML file.
 type AwsS3 struct {
-	BucketName       string `yaml:"bucket-name"`
-	Region           string `yaml:"region"`
-	Profile          string `yaml:"profile"`
-	EndpointOverride string `yaml:"endpoint-override"`
-	AccessKeyID      string `yaml:"access-key-id"`
-	SecretAccessKey  string `yaml:"secret-access-key"`
-	StorageClass     string `yaml:"storage-class"`
-	AccessTier       string `yaml:"access-tier"`
-	RetryMaxAttempts int    `yaml:"retry-max-attempts"`
-	RetryMaxBackoff  int    `yaml:"retry-max-backoff"`
-	RetryBackoff     int    `yaml:"retry-backoff"`
-	ChunkSize        int    `yaml:"chunk-size"`
+	BucketName              string  `yaml:"bucket-name"`
+	Region                  string  `yaml:"region"`
+	Profile                 string  `yaml:"profile"`
+	EndpointOverride        string  `yaml:"endpoint-override"`
+	AccessKeyID             string  `yaml:"access-key-id"`
+	SecretAccessKey         string  `yaml:"secret-access-key"`
+	StorageClass            string  `yaml:"storage-class"`
+	AccessTier              string  `yaml:"access-tier"`
+	RetryMaxAttempts        int     `yaml:"retry-max-attempts"`
+	RetryMaxBackoff         int     `yaml:"retry-max-backoff"`
+	RetryBackoff            int     `yaml:"retry-backoff"`
+	ChunkSize               int     `yaml:"chunk-size"`
+	UploadConcurrency       int     `yaml:"upload-concurrency"`
+	CalculateChecksum       bool    `yaml:"calculate-checksum"`
+	RetryReadBackoffSeconds int     `yaml:"retry-read-backoff"`
+	RetryReadMultiplier     float64 `yaml:"retry-read-multiplier"`
+	RetryReadMaxAttempts    uint    `yaml:"retry-read-max-attempts"`
+	MaxConnsPerHost         int     `yaml:"max-conns-per-host"`
+	RequestTimeoutSeconds   int     `yaml:"request-timeout"`
 }
 
 func (a *AwsS3) ToModelAwsS3() *models.AwsS3 {
@@ -279,18 +286,33 @@ func (a *AwsS3) ToModelAwsS3() *models.AwsS3 {
 		RetryMaxBackoffSeconds: a.RetryMaxBackoff,
 		RetryBackoffSeconds:    a.RetryBackoff,
 		ChunkSize:              a.ChunkSize,
+		UploadConcurrency:      a.UploadConcurrency,
+		StorageCommon: models.StorageCommon{
+			CalculateChecksum:       a.CalculateChecksum,
+			RetryReadBackoffSeconds: a.RetryReadBackoffSeconds,
+			RetryReadMultiplier:     a.RetryReadMultiplier,
+			RetryReadMaxAttempts:    a.RetryReadMaxAttempts,
+			MaxConnsPerHost:         a.MaxConnsPerHost,
+			RequestTimeoutSeconds:   a.RequestTimeoutSeconds,
+		},
 	}
 }
 
 type GcpStorage struct {
-	KeyFile                string  `yaml:"key-file"`
-	BucketName             string  `yaml:"bucket-name"`
-	EndpointOverride       string  `yaml:"endpoint-override"`
-	RetryMaxAttempts       int     `yaml:"retry-max-attempts"`
-	RetryMaxBackoff        int     `yaml:"retry-max-backoff"`
-	RetryInitBackoff       int     `yaml:"retry-init-backoff"`
-	RetryBackoffMultiplier float64 `yaml:"retry-backoff-multiplier"`
-	ChunkSize              int     `yaml:"chunk-size"`
+	KeyFile                 string  `yaml:"key-file"`
+	BucketName              string  `yaml:"bucket-name"`
+	EndpointOverride        string  `yaml:"endpoint-override"`
+	RetryMaxAttempts        int     `yaml:"retry-max-attempts"`
+	RetryMaxBackoff         int     `yaml:"retry-max-backoff"`
+	RetryInitBackoff        int     `yaml:"retry-init-backoff"`
+	RetryBackoffMultiplier  float64 `yaml:"retry-backoff-multiplier"`
+	ChunkSize               int     `yaml:"chunk-size"`
+	CalculateChecksum       bool    `yaml:"calculate-checksum"`
+	RetryReadBackoffSeconds int     `yaml:"retry-read-backoff"`
+	RetryReadMultiplier     float64 `yaml:"retry-read-multiplier"`
+	RetryReadMaxAttempts    uint    `yaml:"retry-read-max-attempts"`
+	MaxConnsPerHost         int     `yaml:"max-conns-per-host"`
+	RequestTimeoutSeconds   int     `yaml:"request-timeout"`
 }
 
 func (g *GcpStorage) ToModelGcpStorage() *models.GcpStorage {
@@ -303,22 +325,37 @@ func (g *GcpStorage) ToModelGcpStorage() *models.GcpStorage {
 		RetryBackoffInitSeconds: g.RetryInitBackoff,
 		RetryBackoffMultiplier:  g.RetryBackoffMultiplier,
 		ChunkSize:               g.ChunkSize,
+		StorageCommon: models.StorageCommon{
+			CalculateChecksum:       g.CalculateChecksum,
+			RetryReadBackoffSeconds: g.RetryReadBackoffSeconds,
+			RetryReadMultiplier:     g.RetryReadMultiplier,
+			RetryReadMaxAttempts:    g.RetryReadMaxAttempts,
+			MaxConnsPerHost:         g.MaxConnsPerHost,
+			RequestTimeoutSeconds:   g.RequestTimeoutSeconds,
+		},
 	}
 }
 
 type AzureBlob struct {
-	AccountName      string `yaml:"account-name"`
-	AccountKey       string `yaml:"account-key"`
-	TenantID         string `yaml:"tenant-id"`
-	ClientID         string `yaml:"client-id"`
-	ClientSecret     string `yaml:"client-secret"`
-	EndpointOverride string `yaml:"endpoint-override"`
-	ContainerName    string `yaml:"container-name"`
-	AccessTier       string `yaml:"access-tier"`
-	RetryMaxAttempts int    `yaml:"retry-max-attempts"`
-	RetryTimeout     int    `yaml:"retry-timeout"`
-	RetryDelay       int    `yaml:"retry-delay"`
-	RetryMaxDelay    int    `yaml:"retry-max-delay"`
+	AccountName             string  `yaml:"account-name"`
+	AccountKey              string  `yaml:"account-key"`
+	TenantID                string  `yaml:"tenant-id"`
+	ClientID                string  `yaml:"client-id"`
+	ClientSecret            string  `yaml:"client-secret"`
+	EndpointOverride        string  `yaml:"endpoint-override"`
+	ContainerName           string  `yaml:"container-name"`
+	AccessTier              string  `yaml:"access-tier"`
+	RetryMaxAttempts        int     `yaml:"retry-max-attempts"`
+	RetryTimeout            int     `yaml:"retry-timeout"`
+	RetryDelay              int     `yaml:"retry-delay"`
+	RetryMaxDelay           int     `yaml:"retry-max-delay"`
+	UploadConcurrency       int     `yaml:"upload-concurrency"`
+	CalculateChecksum       bool    `yaml:"calculate-checksum"`
+	RetryReadBackoffSeconds int     `yaml:"retry-read-backoff"`
+	RetryReadMultiplier     float64 `yaml:"retry-read-multiplier"`
+	RetryReadMaxAttempts    uint    `yaml:"retry-read-max-attempts"`
+	MaxConnsPerHost         int     `yaml:"max-conns-per-host"`
+	RequestTimeoutSeconds   int     `yaml:"request-timeout"`
 }
 
 func (a *AzureBlob) ToModelAzureBlob() *models.AzureBlob {
@@ -335,5 +372,24 @@ func (a *AzureBlob) ToModelAzureBlob() *models.AzureBlob {
 		RetryTimeoutSeconds:  a.RetryTimeout,
 		RetryDelaySeconds:    a.RetryDelay,
 		RetryMaxDelaySeconds: a.RetryMaxDelay,
+		UploadConcurrency:    a.UploadConcurrency,
+		StorageCommon: models.StorageCommon{
+			CalculateChecksum:       a.CalculateChecksum,
+			RetryReadBackoffSeconds: a.RetryReadBackoffSeconds,
+			RetryReadMultiplier:     a.RetryReadMultiplier,
+			RetryReadMaxAttempts:    a.RetryReadMaxAttempts,
+			MaxConnsPerHost:         a.MaxConnsPerHost,
+			RequestTimeoutSeconds:   a.RequestTimeoutSeconds,
+		},
+	}
+}
+
+type Local struct {
+	BufferSize int `yaml:"buffer-size"`
+}
+
+func (l *Local) ToModelLocal() *models.Local {
+	return &models.Local{
+		BufferSize: l.BufferSize,
 	}
 }

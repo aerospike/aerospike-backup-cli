@@ -34,6 +34,7 @@ import (
 	"github.com/aerospike/backup-go/io/storage/local"
 	"github.com/aerospike/backup-go/io/storage/options"
 	"github.com/aerospike/backup-go/io/storage/std"
+	bModels "github.com/aerospike/backup-go/models"
 )
 
 // NewRestoreReader creates and returns a reader based on the restore mode specified in RestoreServiceConfig.
@@ -250,6 +251,13 @@ func newS3Reader(
 		)
 	}
 
+	opts = append(opts, options.WithRetryPolicy(
+		bModels.NewRetryPolicy(
+			time.Duration(a.RetryReadBackoffSeconds)*time.Second,
+			a.RetryReadMultiplier,
+			a.RetryReadMaxAttempts),
+	))
+
 	return s3.NewReader(ctx, client, a.BucketName, opts...)
 }
 
@@ -262,6 +270,13 @@ func newGcpReader(
 	if err != nil {
 		return nil, err
 	}
+
+	opts = append(opts, options.WithRetryPolicy(
+		bModels.NewRetryPolicy(
+			time.Duration(g.RetryReadBackoffSeconds)*time.Second,
+			g.RetryReadMultiplier,
+			g.RetryReadMaxAttempts),
+	))
 
 	return storage.NewReader(ctx, client, g.BucketName, opts...)
 }
@@ -285,6 +300,13 @@ func newAzureReader(
 			options.WithWarmPollDuration(time.Duration(a.RestorePollDuration)*time.Millisecond),
 		)
 	}
+
+	opts = append(opts, options.WithRetryPolicy(
+		bModels.NewRetryPolicy(
+			time.Duration(a.RetryReadBackoffSeconds)*time.Second,
+			a.RetryReadMultiplier,
+			a.RetryReadMaxAttempts),
+	))
 
 	return blob.NewReader(ctx, client, a.ContainerName, opts...)
 }

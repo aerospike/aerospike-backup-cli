@@ -132,6 +132,7 @@ Backup Flags:
   -r, --remove-files                Remove an existing backup file (-o) or entire directory (-d) and replace with the new backup.
       --remove-artifacts            Remove existing backup file (-o) or files (-d) without performing a backup.
   -o, --output-file string          Backup to a single backup file. Use '-' for stdout. Required, unless -d or -e is used.
+                                    Should be used with --file-limit = 0. Metadata will be written to the separate file.
   -q, --output-file-prefix string   When using directory parameter, prepend a prefix to the names of the generated files.
   -F, --file-limit uint             Rotate backup files when their size crosses the given
                                     value (in bytes). Only used when backing up to a directory.
@@ -237,7 +238,10 @@ Example: asbackup --azure-account-name secret:resource1:azaccount
       --sa-cafile string            Path to ca file for encrypted connections.
       --sa-is-base64                Whether Secret Agent responses are Base64 encoded.
 
-AWS Flags:
+Local Storage Flags:
+      --local-buffer-size int   Buffer size in bytes for local file writes. (default 5242880)
+
+AWS Storage Flags:
 For S3 storage bucket name is mandatory, and is set with --s3-bucket-name flag.
 So --directory path will only contain folder name.
 --s3-endpoint-override is used in case you want to use minio, instead of AWS.
@@ -263,11 +267,20 @@ Any AWS parameter can be retrieved from Secret Agent.
       --s3-chunk-size int             Chunk size controls the maximum number of bytes of the object that the app will attempt to send to
                                       the storage in a single request. Objects smaller than the size will be sent in a single request,
                                       while larger objects will be split over multiple requests. (default 5242880)
-      --s3-retry-max-attempts int     Maximum number of attempts that should be made in case of an error. (default 100)
+      --s3-upload-concurrency int     Defines the max number of concurrent uploads to be performed to upload the file.
+                                      Each concurrent upload will create a buffer of size s3-block-size.
+      --s3-calculate-checksum         Calculate checksum for each uploaded object.
+      --s3-retry-max-attempts int     Maximum number of attempts that should be made in case of an error. (default 10)
       --s3-retry-max-backoff int      Max backoff duration in seconds between retried attempts. (default 90)
       --s3-retry-backoff int          Provides the backoff in seconds strategy the retryer will use to determine the delay between retry attempts. (default 60)
+      --s3-max-conns-per-host int     MaxConnsPerHost optionally limits the total number of connections per host,
+                                       including connections in the dialing, active, and idle states. On limit violation, dials will block.
+                                      Zero means no limit.
+      --s3-request-timeout int        Timeout specifies a time limit for requests made by this Client.
+                                      The timeout includes connection time, any redirects, and reading the response body.
+                                      Zero means no limit. (default 600)
 
-GCP Flags:
+GCP Storage Flags:
 For GCP storage bucket name is mandatory, and is set with --gcp-bucket-name flag.
 So --directory path will only contain folder name.
 Flag --gcp-endpoint-override is mandatory, as each storage account has different service address.
@@ -278,14 +291,21 @@ Any GCP parameter can be retrieved from Secret Agent.
       --gcp-chunk-size int                   Chunk size controls the maximum number of bytes of the object that the app will attempt to send to
                                              the storage in a single request. Objects smaller than the size will be sent in a single request,
                                              while larger objects will be split over multiple requests. (default 5242880)
+      --gcp-calculate-checksum               Calculate checksum for each uploaded object.
       --gcp-retry-max-attempts int           Max retries specifies the maximum number of attempts a failed operation will be retried
-                                             before producing an error. (default 100)
+                                             before producing an error. (default 10)
       --gcp-retry-max-backoff int            Max backoff is the maximum value in seconds of the retry period. (default 90)
       --gcp-retry-init-backoff int           Initial backoff is the initial value in seconds of the retry period. (default 60)
       --gcp-retry-backoff-multiplier float   Multiplier is the factor by which the retry period increases.
                                              It should be greater than 1. (default 2)
+      --gcp-max-conns-per-host int           MaxConnsPerHost optionally limits the total number of connections per host,
+                                              including connections in the dialing, active, and idle states. On limit violation, dials will block.
+                                             Zero means no limit.
+      --gcp-request-timeout int              Timeout specifies a time limit for requests made by this Client.
+                                             The timeout includes connection time, any redirects, and reading the response body.
+                                             Zero means no limit. (default 600)
 
-Azure Flags:
+Azure Storage Flags:
 For Azure storage container name is mandatory, and is set with --azure-storage-container-name flag.
 So --directory path will only contain folder name.
 Flag --azure-endpoint is optional, and is used for tests with Azurit or any other Azure emulator.
@@ -302,8 +322,11 @@ Any Azure parameter can be retrieved from Secret Agent.
       --azure-access-tier string       Azure access tier is applied to created backup files.
                                        Tiers are: Archive, Cold, Cool, Hot, P10, P15, P20, P30, P4, P40, P50, P6, P60, P70, P80, Premium.
       --azure-block-size int           Block size defines the size of the buffer used during upload. (default 5242880)
+      --azure-upload-concurrency int   Defines the max number of concurrent uploads to be performed to upload the file.
+                                       Each concurrent upload will create a buffer of size azure-block-size. (default 1)
+      --azure-calculate-checksum       Calculate checksum for each uploaded object.
       --azure-retry-max-attempts int   Max retries specifies the maximum number of attempts a failed operation will be retried
-                                       before producing an error. (default 100)
+                                       before producing an error. (default 10)
       --azure-retry-max-delay int      Max retry delay specifies the maximum delay in seconds allowed before retrying an operation.
                                        Typically the value is greater than or equal to the value specified in azure-retry-delay. (default 90)
       --azure-retry-delay int          Retry delay specifies the initial amount of delay in seconds to use before retrying an operation.
@@ -312,6 +335,12 @@ Any Azure parameter can be retrieved from Secret Agent.
       --azure-retry-timeout int        Retry timeout in seconds indicates the maximum time allowed for any single try of an HTTP request.
                                        This is disabled by default. Specify a value greater than zero to enable.
                                        NOTE: Setting this to a small value might cause premature HTTP request time-outs.
+      --azure-max-conns-per-host int   MaxConnsPerHost optionally limits the total number of connections per host,
+                                       including connections in the dialing, active, and idle states. On limit violation, dials will block.
+                                       Zero means no limit.
+      --azure-request-timeout int      Timeout specifies a time limit for requests made by this Client.
+                                       The timeout includes connection time, any redirects, and reading the response body.
+                                       Zero means no limit. (default 600)
 ```
 
 ## Unsupported flags
@@ -567,8 +596,8 @@ secret-agent:
   address: ""
   # Secret Agent port (only for TCP connection).
   port: 0
-  # Secret Agent connection and reading timeout.
-  timeout-millisecond: 0
+  # Secret Agent connection and reading timeout in milliseconds.
+  timeout: 0
   # Path to ca file for encrypted connections.
   ca-file: ""
   # Whether Secret Agent responses are Base64 encoded.
@@ -610,6 +639,19 @@ aws:
     # the storage in a single request. Objects smaller than the size will be sent in a single request,
     # while larger objects will be split over multiple requests
     chunk-size: 5242880
+    # Defines the max number of concurrent uploads to be performed to upload the file. 
+    # Each concurrent upload will create a buffer of size s3-block-size.
+    upload-concurrency: 3
+    # Calculate checksum for each uploaded object.
+    calculate-checksum: false
+    # MaxConnsPerHost optionally limits the total number of connections per host, 
+    # including connections in the dialing, active, and idle states. On limit violation, dials will block.
+    # Zero means no limit.
+    max-conns-per-host: 0
+    # Timeout specifies a time limit for requests made by this Client.
+    # The timeout includes connection time, any redirects, and reading the response body.
+    # Zero means no limit.
+    request-timeout: 600
 gcp:
   storage:
     # Path to file containing service account JSON key.
@@ -630,6 +672,16 @@ gcp:
     # the storage in a single request. Objects smaller than the size will be sent in a single request,
     # while larger objects will be split over multiple requests.
     chunk-size: 5242880
+    # Calculate checksum for each uploaded object.
+    calculate-checksum: false
+    # MaxConnsPerHost optionally limits the total number of connections per host, 
+    # including connections in the dialing, active, and idle states. On limit violation, dials will block.
+    # Zero means no limit.
+    max-conns-per-host: 0
+    # Timeout specifies a time limit for requests made by this Client.
+    # The timeout includes connection time, any redirects, and reading the response body.
+    # Zero means no limit.
+    request-timeout: 600
 azure:
   blob:
     # Azure account name for account name, key authorization.
@@ -663,4 +715,21 @@ azure:
     retry-max-delay: 90
     # Block size defines the size of the buffer used during upload.
     block-size: 5242880
+    # Defines the max number of concurrent uploads to be performed to upload the file. 
+    # Each concurrent upload will create a buffer of size s3-block-size.
+    upload-concurrency: 3
+    # Calculate checksum for each uploaded object.
+    calculate-checksum: false
+    # MaxConnsPerHost optionally limits the total number of connections per host, 
+    # including connections in the dialing, active, and idle states. On limit violation, dials will block.
+    # Zero means no limit.
+    max-conns-per-host: 0
+    # Timeout specifies a time limit for requests made by this Client.
+    # The timeout includes connection time, any redirects, and reading the response body.
+    # Zero means no limit.
+    request-timeout: 600
+local:
+  disk:
+    # Buffer size in bytes for local file writes.
+    buffer-size: 5242880
 ```

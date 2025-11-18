@@ -73,7 +73,13 @@ func NewService(
 		return nil, err
 	}
 
-	if err := config.ValidateStorages(true, params.AwsS3, params.GcpStorage, params.AzureBlob); err != nil {
+	if err := config.ValidateStorages(
+		true,
+		params.AwsS3,
+		params.GcpStorage,
+		params.AzureBlob,
+		params.Local,
+	); err != nil {
 		return nil, err
 	}
 

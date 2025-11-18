@@ -172,7 +172,7 @@ func TestAzureBlob_Validate(t *testing.T) {
 				RetryMaxDelaySeconds: 60,
 				BlockSize:            1024,
 				UploadConcurrency:    1,
-				MaxConnsPerHost:      -1,
+				StorageCommon:        StorageCommon{MaxConnsPerHost: -1},
 			},
 			isBackup: true,
 			wantErr:  "max connections per host must be non-negative",

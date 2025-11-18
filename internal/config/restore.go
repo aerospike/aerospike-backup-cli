@@ -123,9 +123,10 @@ func NewRestoreConfig(serviceConfig *RestoreServiceConfig, logger *slog.Logger) 
 	c.RetryPolicy = NewRetryPolicy(
 		serviceConfig.Restore.RetryBaseInterval,
 		serviceConfig.Restore.RetryMultiplier,
-		serviceConfig.Restore.RetryMaxRetries,
+		serviceConfig.Restore.RetryMaxAttempts,
 	)
 	c.ValidateOnly = serviceConfig.Restore.ValidateOnly
+	c.ApplyMetadataLast = serviceConfig.Restore.ApplyMetadataLast
 
 	if !c.ValidateOnly {
 		logRestoreConfig(logger, serviceConfig, c)
