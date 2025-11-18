@@ -97,6 +97,7 @@ func Test_BackupWithState(t *testing.T) {
 		AwsS3:       &models.AwsS3{},
 		GcpStorage:  &models.GcpStorage{},
 		AzureBlob:   &models.AzureBlob{},
+		Local:       &models.Local{},
 	}
 
 	err := createRecords(asbParams.ClientConfig, asbParams.ClientPolicy, testNamespace, testSet)
@@ -158,6 +159,7 @@ func Test_BackupXDR(t *testing.T) {
 		AwsS3:       &models.AwsS3{},
 		GcpStorage:  &models.GcpStorage{},
 		AzureBlob:   &models.AzureBlob{},
+		Local:       &models.Local{},
 	}
 
 	err := createRecords(asbParams.ClientConfig, asbParams.ClientPolicy, testNamespace, testSetXDR)
@@ -212,6 +214,7 @@ func Test_BackupEstimates(t *testing.T) {
 		AwsS3:       &models.AwsS3{},
 		GcpStorage:  &models.GcpStorage{},
 		AzureBlob:   &models.AzureBlob{},
+		Local:       &models.Local{},
 	}
 
 	err := createRecords(asbParams.ClientConfig, asbParams.ClientPolicy, testNamespace, testSet)
