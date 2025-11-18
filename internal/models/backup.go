@@ -105,7 +105,7 @@ func (b *Backup) Validate() error {
 	return b.Common.Validate()
 }
 
-// Validate that only one filtering option is specified.
+// validateSingleFilter ensures only one filtering option is specified.
 func (b *Backup) validateSingleFilter() error {
 	filtersSet := 0
 	setFilters := make([]string, 0, 4)
