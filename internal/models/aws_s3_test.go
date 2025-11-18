@@ -55,6 +55,10 @@ func TestAwsS3_Validate(t *testing.T) {
 				RetryBackoffSeconds:    5,
 				ChunkSize:              1024,
 				RestorePollDuration:    10,
+				StorageCommon: StorageCommon{
+					RetryReadMultiplier:     3,
+					RetryReadBackoffSeconds: 3,
+				},
 			},
 			isBackup: false,
 			wantErr:  "",
@@ -145,6 +149,10 @@ func TestAwsS3_Validate(t *testing.T) {
 				RetryBackoffSeconds:    0,
 				ChunkSize:              0,
 				RestorePollDuration:    1,
+				StorageCommon: StorageCommon{
+					RetryReadMultiplier:     3,
+					RetryReadBackoffSeconds: 3,
+				},
 			},
 			isBackup: false,
 			wantErr:  "",
@@ -158,6 +166,10 @@ func TestAwsS3_Validate(t *testing.T) {
 				RetryBackoffSeconds:    0,
 				ChunkSize:              0,
 				RestorePollDuration:    1,
+				StorageCommon: StorageCommon{
+					RetryReadMultiplier:     3,
+					RetryReadBackoffSeconds: 3,
+				},
 			},
 			isBackup: false,
 			wantErr:  "",

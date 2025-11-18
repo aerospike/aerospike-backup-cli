@@ -53,6 +53,10 @@ func TestAzureBlob_Validate(t *testing.T) {
 				RetryMaxDelaySeconds: 60,
 				BlockSize:            1024,
 				RestorePollDuration:  10,
+				StorageCommon: StorageCommon{
+					RetryReadMultiplier:     3,
+					RetryReadBackoffSeconds: 3,
+				},
 			},
 			isBackup: false,
 			wantErr:  "",
@@ -159,6 +163,10 @@ func TestAzureBlob_Validate(t *testing.T) {
 				RetryMaxDelaySeconds: 0,
 				BlockSize:            0,
 				RestorePollDuration:  1,
+				StorageCommon: StorageCommon{
+					RetryReadMultiplier:     3,
+					RetryReadBackoffSeconds: 3,
+				},
 			},
 			isBackup: false,
 			wantErr:  "",
@@ -187,6 +195,10 @@ func TestAzureBlob_Validate(t *testing.T) {
 				RetryMaxDelaySeconds: 0,
 				BlockSize:            0,
 				RestorePollDuration:  1,
+				StorageCommon: StorageCommon{
+					RetryReadMultiplier:     3,
+					RetryReadBackoffSeconds: 3,
+				},
 			},
 			isBackup: false,
 			wantErr:  "",
