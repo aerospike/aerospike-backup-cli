@@ -16,6 +16,7 @@ package models
 
 import (
 	"fmt"
+	"strings"
 )
 
 // Backup flags that will be mapped to (scan) backup config.
@@ -57,7 +58,6 @@ func (b *Backup) ShouldSaveState() bool {
 	return b.StateFileDst != "" || b.Continue != ""
 }
 
-//nolint:gocyclo // It is a long validation function.
 func (b *Backup) Validate() error {
 	if b == nil {
 		return nil
@@ -72,8 +72,8 @@ func (b *Backup) Validate() error {
 	}
 
 	// Only one filter is allowed.
-	if b.AfterDigest != "" && b.PartitionList != "" {
-		return fmt.Errorf("only one of after-digest or partition-list can be configured")
+	if err := b.validateSingleFilter(); err != nil {
+		return err
 	}
 
 	if b.Continue != "" && b.StateFileDst != "" {
@@ -101,10 +101,42 @@ func (b *Backup) Validate() error {
 		}
 	}
 
-	if b.NodeList != "" && b.RackList != "" {
-		return fmt.Errorf("specify either rack-list or node-list, but not both")
-	}
-
 	// Validate nested common in the end.
 	return b.Common.Validate()
+}
+
+// validateSingleFilter ensures only one filtering option is specified.
+func (b *Backup) validateSingleFilter() error {
+	filtersSet := 0
+	setFilters := make([]string, 0, 4)
+
+	if b.AfterDigest != "" {
+		filtersSet++
+
+		setFilters = append(setFilters, "after-digest")
+	}
+
+	if b.PartitionList != "" {
+		filtersSet++
+
+		setFilters = append(setFilters, "partition-list")
+	}
+
+	if b.NodeList != "" {
+		filtersSet++
+
+		setFilters = append(setFilters, "node-list")
+	}
+
+	if b.RackList != "" {
+		filtersSet++
+
+		setFilters = append(setFilters, "rack-list")
+	}
+
+	if filtersSet > 1 {
+		return fmt.Errorf("only one of %s can be configured", strings.Join(setFilters, " or "))
+	}
+
+	return nil
 }
