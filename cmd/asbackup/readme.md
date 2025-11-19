@@ -17,7 +17,8 @@ As `asbackup` identifies records for backup, it serializes the data into a prede
 - Direct backups are supported to S3, Azure Blob, GCP Storage, also you can use other services for storing the backup files after creating them locally.
 - When running in directory mode, each parallel worker creates its own backup file.
 - You can control the size of backup files created by `asbackup` with the `--file-limit` option. After a backup file reaches the predefined size, `asbackup` creates another file. `asbackup` does not have an upper limit for the size of a backup file.
-- zstd is the only compression algorithm available with `asbackup`.
+- ZSTD is the only compression algorithm available with `asbackup`. 
+- ZSTD at compression levels 1-2 may produce uncompressed (raw) blocks when the algorithm determines that compression would not reduce the data size, as per [RFC 8878](https://datatracker.ietf.org/doc/html/rfc8878) specification which recommends sending uncompressed blocks when compressed output would be larger than the original.
 
 ## Default backup content
 `asbackup` backs up the following data by default:
