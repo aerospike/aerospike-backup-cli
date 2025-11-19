@@ -115,8 +115,8 @@ func (a *AwsS3) Validate(isBackup bool) error {
 
 	switch isBackup {
 	case true:
-		if a.UploadConcurrency < 1 {
-			return fmt.Errorf("upload concurrency can't be less than 1")
+		if a.UploadConcurrency < 0 {
+			return fmt.Errorf("upload concurrency can't be less than 0")
 		}
 	case false:
 		if a.RestorePollDuration < 1 {
