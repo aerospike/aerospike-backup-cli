@@ -23,7 +23,7 @@ import (
 	"time"
 
 	appBackup "github.com/aerospike/aerospike-backup-cli/internal/backup"
-	config2 "github.com/aerospike/aerospike-backup-cli/internal/config"
+	"github.com/aerospike/aerospike-backup-cli/internal/config"
 	"github.com/aerospike/aerospike-backup-cli/internal/models"
 	"github.com/aerospike/aerospike-backup-cli/internal/storage"
 	"github.com/aerospike/aerospike-client-go/v8"
@@ -37,7 +37,16 @@ const (
 	testSet             = "test"
 	testStateFile       = "state"
 	testASLoginPassword = "admin"
+	testHost            = "127.0.0.1"
+	testPort            = 3000
 )
+
+func testHostPort() *client.HostTLSPort {
+	return &client.HostTLSPort{
+		Host: testHost,
+		Port: testPort,
+	}
+}
 
 // Test_BackupRestore one test for both so we can restore from just backed-up files.
 func Test_BackupRestore(t *testing.T) {
@@ -45,9 +54,9 @@ func Test_BackupRestore(t *testing.T) {
 
 	ctx := context.Background()
 	dir := t.TempDir()
-	hostPort := client.NewDefaultHostTLSPort()
+	hostPort := testHostPort()
 
-	asbParams := &config2.BackupServiceConfig{
+	asbParams := &config.BackupServiceConfig{
 		App: &models.App{},
 		ClientConfig: &client.AerospikeConfig{
 			Seeds: client.HostTLSPortSlice{
@@ -79,6 +88,7 @@ func Test_BackupRestore(t *testing.T) {
 		AwsS3:       &models.AwsS3{},
 		GcpStorage:  &models.GcpStorage{},
 		AzureBlob:   &models.AzureBlob{},
+		Local:       &models.Local{},
 	}
 
 	err := createRecords(asbParams.ClientConfig, asbParams.ClientPolicy, testNamespace, testSet)
@@ -92,7 +102,7 @@ func Test_BackupRestore(t *testing.T) {
 	err = asb.Run(ctx)
 	require.NoError(t, err)
 
-	asrParams := &config2.RestoreServiceConfig{
+	asrParams := &config.RestoreServiceConfig{
 		App: &models.App{},
 		ClientConfig: &client.AerospikeConfig{
 			Seeds: client.HostTLSPortSlice{

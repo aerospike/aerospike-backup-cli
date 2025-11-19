@@ -62,6 +62,7 @@ func TestNewLocalWriter(t *testing.T) {
 		AwsS3:      &models.AwsS3{},
 		GcpStorage: &models.GcpStorage{},
 		AzureBlob:  &models.AzureBlob{},
+		Local:      &models.Local{},
 	}
 	ctx := context.Background()
 	writer, err := newWriter(ctx, params, nil, slog.Default())
@@ -76,6 +77,7 @@ func TestNewLocalWriter(t *testing.T) {
 		AwsS3:      &models.AwsS3{},
 		GcpStorage: &models.GcpStorage{},
 		AzureBlob:  &models.AzureBlob{},
+		Local:      &models.Local{},
 	}
 	writer, err = newWriter(ctx, params, nil, slog.Default())
 	assert.NoError(t, err)
@@ -87,6 +89,7 @@ func TestNewLocalWriter(t *testing.T) {
 		AwsS3:      &models.AwsS3{},
 		GcpStorage: &models.GcpStorage{},
 		AzureBlob:  &models.AzureBlob{},
+		Local:      &models.Local{},
 	}
 	writer, err = newWriter(ctx, params, nil, slog.Default())
 	assert.Error(t, err)
@@ -115,6 +118,7 @@ func TestNewS3Writer(t *testing.T) {
 		},
 		GcpStorage: &models.GcpStorage{},
 		AzureBlob:  &models.AzureBlob{},
+		Local:      &models.Local{},
 	}
 
 	ctx := context.Background()
@@ -136,6 +140,7 @@ func TestNewS3Writer(t *testing.T) {
 		},
 		GcpStorage: &models.GcpStorage{},
 		AzureBlob:  &models.AzureBlob{},
+		Local:      &models.Local{},
 	}
 
 	writer, err = newWriter(ctx, params, nil, slog.Default())
@@ -194,6 +199,7 @@ func TestGcpWriter(t *testing.T) {
 		},
 		AzureBlob: &models.AzureBlob{},
 		AwsS3:     &models.AwsS3{},
+		Local:     &models.Local{},
 	}
 
 	ctx := context.Background()
@@ -213,6 +219,7 @@ func TestGcpWriter(t *testing.T) {
 		},
 		AzureBlob: &models.AzureBlob{},
 		AwsS3:     &models.AwsS3{},
+		Local:     &models.Local{},
 	}
 
 	writer, err = newWriter(ctx, params, nil, slog.Default())
@@ -261,6 +268,7 @@ func TestAzureWriter(t *testing.T) {
 		},
 		GcpStorage: &models.GcpStorage{},
 		AwsS3:      &models.AwsS3{},
+		Local:      &models.Local{},
 	}
 
 	ctx := context.Background()
@@ -282,6 +290,7 @@ func TestAzureWriter(t *testing.T) {
 		},
 		GcpStorage: &models.GcpStorage{},
 		AwsS3:      &models.AwsS3{},
+		Local:      &models.Local{},
 	}
 
 	writer, err = newWriter(ctx, params, nil, slog.Default())
@@ -320,6 +329,7 @@ func TestNewStdWriter(t *testing.T) {
 		AwsS3:      &models.AwsS3{},
 		GcpStorage: &models.GcpStorage{},
 		AzureBlob:  &models.AzureBlob{},
+		Local:      &models.Local{},
 	}
 	ctx := context.Background()
 	writer, err := newWriter(ctx, params, nil, slog.Default())

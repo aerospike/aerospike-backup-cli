@@ -59,6 +59,7 @@ func dtoToBackupServiceConfig(dtoBackup *dto.Backup) (*BackupServiceConfig, erro
 		AwsS3:        dtoBackup.Aws.S3.ToModelAwsS3(),
 		GcpStorage:   dtoBackup.Gcp.Storage.ToModelGcpStorage(),
 		AzureBlob:    dtoBackup.Azure.Blob.ToModelAzureBlob(),
+		Local:        dtoBackup.Local.Disk.ToModelLocal(),
 	}, nil
 }
 

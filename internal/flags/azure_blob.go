@@ -50,24 +50,31 @@ func (f *AzureBlob) NewFlagSet() *pflag.FlagSet {
 	flagSet.StringVar(&f.AccountName, "azure-account-name",
 		"",
 		"Azure account name for account name, key authorization.")
+
 	flagSet.StringVar(&f.AccountKey, "azure-account-key",
 		"",
 		"Azure account key for account name, key authorization.")
+
 	flagSet.StringVar(&f.TenantID, "azure-tenant-id",
 		"",
 		"Azure tenant ID for Azure Active Directory authorization.")
+
 	flagSet.StringVar(&f.ClientID, "azure-client-id",
 		"",
 		"Azure client ID for Azure Active Directory authorization.")
+
 	flagSet.StringVar(&f.ClientSecret, "azure-client-secret",
 		"",
 		"Azure client secret for Azure Active Directory authorization.")
+
 	flagSet.StringVar(&f.Endpoint, "azure-endpoint",
 		"",
 		"Azure endpoint.")
+
 	flagSet.StringVar(&f.ContainerName, "azure-container-name",
 		"",
 		"Azure container Name.")
+
 	flagSet.StringVar(&f.AccessTier, "azure-access-tier",
 		"",
 		descAccessTier+
@@ -78,30 +85,67 @@ func (f *AzureBlob) NewFlagSet() *pflag.FlagSet {
 		flagSet.IntVar(&f.BlockSize, "azure-block-size",
 			models.DefaultChunkSize,
 			"Block size defines the size of the buffer used during upload.")
+
+		flagSet.IntVar(&f.UploadConcurrency, "azure-upload-concurrency",
+			cloudUploadConcurrency,
+			"Defines the max number of concurrent uploads to be performed to upload the file.\n"+
+				"Each concurrent upload will create a buffer of size azure-block-size.")
+
+		flagSet.BoolVar(&f.CalculateChecksum, "azure-calculate-checksum",
+			false,
+			"Calculate checksum for each uploaded object.")
 	case OperationRestore:
 		flagSet.Int64Var(&f.RestorePollDuration, "azure-rehydrate-poll-duration",
-			60000,
+			cloudRestorePollDuration,
 			"How often (in milliseconds) a backup client checks object status when restoring an archived object.")
+
+		flagSet.IntVar(&f.RetryReadBackoffSeconds, "azure-retry-read-backoff",
+			cloudRetryReadBackoff,
+			"The initial delay in seconds between retry attempts. In case of connection errors\n"+
+				"tool will retry reading the object from the last known position.")
+
+		flagSet.Float64Var(&f.RetryReadMultiplier, "azure-retry-read-multiplier",
+			cloudRetryReadMultiplier,
+			"Multiplier is used to increase the delay between subsequent retry attempts.\n"+
+				"Used in combination with initial delay.")
+
+		flagSet.UintVar(&f.RetryReadMaxAttempts, "azure-retry-read-max-attempts", cloudRetryReadMaxAttempts,
+			"The maximum number of retry attempts that will be made. If set to 0, no retries will be performed.")
 	}
 
 	flagSet.IntVar(&f.RetryMaxAttempts, "azure-retry-max-attempts",
 		cloudMaxRetries,
 		"Max retries specifies the maximum number of attempts a failed operation will be retried\n"+
 			"before producing an error.")
+
 	flagSet.IntVar(&f.RetryMaxDelaySeconds, "azure-retry-max-delay",
 		cloudMaxBackoff,
 		"Max retry delay specifies the maximum delay in seconds allowed before retrying an operation.\n"+
 			"Typically the value is greater than or equal to the value specified in azure-retry-delay.")
+
 	flagSet.IntVar(&f.RetryDelaySeconds, "azure-retry-delay",
 		cloudBackoff,
 		"Retry delay specifies the initial amount of delay in seconds to use before retrying an operation.\n"+
 			"The value is used only if the HTTP response does not contain a Retry-After header.\n"+
 			"The delay increases exponentially with each retry up to the maximum specified by azure-retry-max-delay.")
+
 	flagSet.IntVar(&f.RetryTimeoutSeconds, "azure-retry-timeout",
 		0,
 		"Retry timeout in seconds indicates the maximum time allowed for any single try of an HTTP request.\n"+
 			"This is disabled by default. Specify a value greater than zero to enable.\n"+
 			"NOTE: Setting this to a small value might cause premature HTTP request time-outs.")
+
+	flagSet.IntVar(&f.MaxConnsPerHost, "azure-max-conns-per-host",
+		0,
+		"MaxConnsPerHost optionally limits the total number of connections per host,\n"+
+			"including connections in the dialing, active, and idle states. On limit violation, dials will block.\n"+
+			"Zero means no limit.")
+
+	flagSet.IntVar(&f.RequestTimeoutSeconds, "azure-request-timeout",
+		cloudRequestTimeout,
+		"Timeout specifies a time limit for requests made by this Client.\n"+
+			"The timeout includes connection time, any redirects, and reading the response body.\n"+
+			"Zero means no limit.")
 
 	return flagSet
 }

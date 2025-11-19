@@ -42,7 +42,10 @@ type AzureBlob struct {
 	RetryDelaySeconds    int
 	RetryMaxDelaySeconds int
 
-	BlockSize int
+	BlockSize         int
+	UploadConcurrency int
+
+	StorageCommon
 }
 
 // LoadSecrets tries to load field values from secret agent.
@@ -118,10 +121,19 @@ func (a *AzureBlob) Validate(isBackup bool) error {
 		return fmt.Errorf("block size must be non-negative")
 	}
 
-	if !isBackup {
-		if a.RestorePollDuration < 1 {
-			return fmt.Errorf("rehydrate poll duration can't be less than 1")
+	switch isBackup {
+	case true:
+		if a.UploadConcurrency < 1 {
+			return fmt.Errorf("upload concurrency can't be less than 1")
 		}
+	case false:
+		if a.RestorePollDuration < 1 {
+			return fmt.Errorf("restore poll duration can't be less than 1")
+		}
+	}
+
+	if err := a.StorageCommon.Validate(isBackup); err != nil {
+		return err
 	}
 
 	return nil

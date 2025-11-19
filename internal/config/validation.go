@@ -28,9 +28,16 @@ func ValidateStorages(
 	awsS3 *models.AwsS3,
 	gcpStorage *models.GcpStorage,
 	azureBlob *models.AzureBlob,
+	local *models.Local,
 ) error {
 	// TODO: think how to rework this func. I want to get rid of it.
 	var count int
+
+	if local != nil {
+		if err := local.Validate(isBackup); err != nil {
+			return fmt.Errorf("failed to validate local storage: %w", err)
+		}
+	}
 
 	if awsS3 != nil && (awsS3.BucketName != "" || awsS3.Region != "" || awsS3.Profile != "" || awsS3.Endpoint != "") {
 		if err := awsS3.Validate(isBackup); err != nil {
@@ -41,7 +48,7 @@ func ValidateStorages(
 	}
 
 	if gcpStorage != nil && (gcpStorage.BucketName != "" || gcpStorage.KeyFile != "" || gcpStorage.Endpoint != "") {
-		if err := gcpStorage.Validate(); err != nil {
+		if err := gcpStorage.Validate(isBackup); err != nil {
 			return fmt.Errorf("failed to validate gcp storage: %w", err)
 		}
 

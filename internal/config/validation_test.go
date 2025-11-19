@@ -35,6 +35,7 @@ func TestValidateStorages(t *testing.T) {
 		awsS3      *models.AwsS3
 		gcpStorage *models.GcpStorage
 		azureBlob  *models.AzureBlob
+		local      *models.Local
 		wantErr    bool
 	}{
 		{
@@ -44,9 +45,14 @@ func TestValidateStorages(t *testing.T) {
 				Region:              "us-west-2",
 				BucketName:          testBucket,
 				RestorePollDuration: 1,
+				StorageCommon: models.StorageCommon{
+					RetryReadMultiplier:     2,
+					RetryReadBackoffSeconds: 100,
+				},
 			},
 			gcpStorage: &models.GcpStorage{},
 			azureBlob:  &models.AzureBlob{},
+			local:      &models.Local{},
 			wantErr:    false,
 		},
 		{
@@ -56,8 +62,13 @@ func TestValidateStorages(t *testing.T) {
 			gcpStorage: &models.GcpStorage{
 				BucketName:             testBucket,
 				RetryBackoffMultiplier: 2,
+				StorageCommon: models.StorageCommon{
+					RetryReadMultiplier:     2,
+					RetryReadBackoffSeconds: 100,
+				},
 			},
 			azureBlob: &models.AzureBlob{},
+			local:     &models.Local{},
 			wantErr:   false,
 		},
 		{
@@ -70,7 +81,9 @@ func TestValidateStorages(t *testing.T) {
 				AccountName:         "account-name",
 				AccountKey:          "account-key",
 				RestorePollDuration: 1,
+				UploadConcurrency:   10,
 			},
+			local:   &models.Local{},
 			wantErr: false,
 		},
 		{
@@ -83,6 +96,7 @@ func TestValidateStorages(t *testing.T) {
 				BucketName: "my-bucket",
 			},
 			azureBlob: &models.AzureBlob{},
+			local:     &models.Local{},
 			wantErr:   true,
 		},
 		{
@@ -98,6 +112,7 @@ func TestValidateStorages(t *testing.T) {
 				ContainerName: "my-container",
 				AccountName:   "account-name",
 			},
+			local:   &models.Local{},
 			wantErr: true,
 		},
 		{
@@ -106,6 +121,7 @@ func TestValidateStorages(t *testing.T) {
 			awsS3:      &models.AwsS3{},
 			gcpStorage: &models.GcpStorage{},
 			azureBlob:  &models.AzureBlob{},
+			local:      &models.Local{},
 			wantErr:    false,
 		},
 		{
@@ -116,9 +132,14 @@ func TestValidateStorages(t *testing.T) {
 				Region:              "",
 				Profile:             "default",
 				RestorePollDuration: 1,
+				StorageCommon: models.StorageCommon{
+					RetryReadMultiplier:     2,
+					RetryReadBackoffSeconds: 100,
+				},
 			},
 			gcpStorage: &models.GcpStorage{},
 			azureBlob:  &models.AzureBlob{},
+			local:      &models.Local{},
 			wantErr:    false,
 		},
 		{
@@ -131,6 +152,7 @@ func TestValidateStorages(t *testing.T) {
 				RetryBackoffMultiplier: 2,
 			},
 			azureBlob: &models.AzureBlob{},
+			local:     &models.Local{},
 			wantErr:   false,
 		},
 		{
@@ -143,7 +165,9 @@ func TestValidateStorages(t *testing.T) {
 				AccountName:         "account-name",
 				AccountKey:          "",
 				RestorePollDuration: 1,
+				UploadConcurrency:   10,
 			},
+			local:   &models.Local{},
 			wantErr: false,
 		},
 		{
@@ -157,7 +181,9 @@ func TestValidateStorages(t *testing.T) {
 				ClientID:            "client-id",
 				ClientSecret:        "client-secret",
 				RestorePollDuration: 1,
+				UploadConcurrency:   10,
 			},
+			local:   &models.Local{},
 			wantErr: false,
 		},
 		{
@@ -167,9 +193,11 @@ func TestValidateStorages(t *testing.T) {
 				BucketName:          "custom-bucket",
 				Endpoint:            "custom-endpoint",
 				RestorePollDuration: 1,
+				UploadConcurrency:   10,
 			},
 			gcpStorage: &models.GcpStorage{},
 			azureBlob:  &models.AzureBlob{},
+			local:      &models.Local{},
 			wantErr:    false,
 		},
 		{
@@ -181,6 +209,7 @@ func TestValidateStorages(t *testing.T) {
 			gcpStorage: &models.GcpStorage{
 				Endpoint: "gcp-endpoint",
 			},
+			local:   &models.Local{},
 			wantErr: true,
 		},
 		{
@@ -193,6 +222,7 @@ func TestValidateStorages(t *testing.T) {
 			},
 			gcpStorage: &models.GcpStorage{},
 			azureBlob:  &models.AzureBlob{},
+			local:      &models.Local{},
 			wantErr:    true,
 		},
 		{
@@ -206,6 +236,7 @@ func TestValidateStorages(t *testing.T) {
 				AccountKey:          "account-key",
 				RestorePollDuration: -11,
 			},
+			local:   &models.Local{},
 			wantErr: true,
 		},
 	}
@@ -214,7 +245,7 @@ func TestValidateStorages(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			err := ValidateStorages(tt.isBackup, tt.awsS3, tt.gcpStorage, tt.azureBlob)
+			err := ValidateStorages(tt.isBackup, tt.awsS3, tt.gcpStorage, tt.azureBlob, tt.local)
 			if tt.wantErr {
 				assert.Error(t, err, "Expected error but got none")
 			} else {

@@ -51,6 +51,7 @@ type Cmd struct {
 	flagsAws          *flags.AwsS3
 	flagsGcp          *flags.GcpStorage
 	flagsAzure        *flags.AzureBlob
+	flagsLocal        *flags.Local
 
 	// backup flags.
 	flagsBackup *flags.Backup
@@ -75,6 +76,7 @@ func NewCmd(appVersion, commitHash, buildTime string) (*cobra.Command, *Cmd) {
 		flagsAws:          flags.NewAwsS3(flags.OperationBackup),
 		flagsGcp:          flags.NewGcpStorage(flags.OperationBackup),
 		flagsAzure:        flags.NewAzureBlob(flags.OperationBackup),
+		flagsLocal:        flags.NewLocal(flags.OperationBackup),
 		// First init default logger.
 		Logger: logging.NewDefaultLogger(),
 	}
@@ -116,6 +118,7 @@ func NewCmd(appVersion, commitHash, buildTime string) (*cobra.Command, *Cmd) {
 	awsFlagSet := c.flagsAws.NewFlagSet()
 	gcpFlagSet := c.flagsGcp.NewFlagSet()
 	azureFlagSet := c.flagsAzure.NewFlagSet()
+	localFlagSet := c.flagsLocal.NewFlagSet()
 
 	// App flags.
 	rootCmd.PersistentFlags().AddFlagSet(appFlagSet)
@@ -131,6 +134,7 @@ func NewCmd(appVersion, commitHash, buildTime string) (*cobra.Command, *Cmd) {
 	rootCmd.PersistentFlags().AddFlagSet(awsFlagSet)
 	rootCmd.PersistentFlags().AddFlagSet(gcpFlagSet)
 	rootCmd.PersistentFlags().AddFlagSet(azureFlagSet)
+	rootCmd.PersistentFlags().AddFlagSet(localFlagSet)
 
 	// Deprecated fields.
 	if err := rootCmd.Flags().MarkDeprecated("nice", "use --bandwidth instead"); err != nil {
@@ -152,6 +156,7 @@ func NewCmd(appVersion, commitHash, buildTime string) (*cobra.Command, *Cmd) {
 		awsFlagSet,
 		gcpFlagSet,
 		azureFlagSet,
+		localFlagSet,
 	)
 
 	rootCmd.SetUsageFunc(func(_ *cobra.Command) error {
@@ -208,6 +213,7 @@ func (c *Cmd) run(cmd *cobra.Command, _ []string) error {
 		c.flagsAws.GetAwsS3(),
 		c.flagsGcp.GetGcpStorage(),
 		c.flagsAzure.GetAzureBlob(),
+		c.flagsLocal.GetLocal(),
 	)
 	if err != nil {
 		return fmt.Errorf("failed to initialize app: %w", err)
@@ -245,7 +251,8 @@ func newHelpFunction(
 	secretAgentFlagSet,
 	awsFlagSet,
 	gcpFlagSet,
-	azureFlagSet *pflag.FlagSet,
+	azureFlagSet,
+	localFlagSet *pflag.FlagSet,
 ) func() {
 	return func() {
 		fmt.Println(welcomeMessage)
@@ -287,8 +294,12 @@ func newHelpFunction(
 			"Example: asbackup --azure-account-name secret:resource1:azaccount")
 		secretAgentFlagSet.PrintDefaults()
 
+		// Print section: Local Flags
+		fmt.Println("\nLocal Storage Flags:")
+		localFlagSet.PrintDefaults()
+
 		// Print section: AWS Flags
-		fmt.Println("\nAWS Flags:\n" +
+		fmt.Println("\nAWS Storage Flags:\n" +
 			"For S3 storage bucket name is mandatory, and is set with --s3-bucket-name flag.\n" +
 			"So --directory path will only contain folder name.\n" +
 			"--s3-endpoint-override is used in case you want to use minio, instead of AWS.\n" +
@@ -296,7 +307,7 @@ func newHelpFunction(
 		awsFlagSet.PrintDefaults()
 
 		// Print section: GCP Flags
-		fmt.Println("\nGCP Flags:\n" +
+		fmt.Println("\nGCP Storage Flags:\n" +
 			"For GCP storage bucket name is mandatory, and is set with --gcp-bucket-name flag.\n" +
 			"So --directory path will only contain folder name.\n" +
 			"Flag --gcp-endpoint-override is mandatory, as each storage account has different service address.\n" +
@@ -304,7 +315,7 @@ func newHelpFunction(
 		gcpFlagSet.PrintDefaults()
 
 		// Print section: Azure Flags
-		fmt.Println("\nAzure Flags:\n" +
+		fmt.Println("\nAzure Storage Flags:\n" +
 			"For Azure storage container name is mandatory, and is set with --azure-storage-container-name flag.\n" +
 			"So --directory path will only contain folder name.\n" +
 			"Flag --azure-endpoint is optional, and is used for tests with Azurit or any other Azure emulator.\n" +

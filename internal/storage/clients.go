@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"net"
 	"net/http"
 	"time"
 
@@ -108,6 +109,8 @@ func newS3Client(ctx context.Context, a *models.AwsS3) (*s3.Client, error) {
 					})
 			})
 		}),
+		config.WithHTTPClient(
+			newHTTPClient(a.MaxConnsPerHost, a.RequestTimeoutSeconds)),
 	)
 
 	if a.Profile != "" {
@@ -146,6 +149,8 @@ func newS3Client(ctx context.Context, a *models.AwsS3) (*s3.Client, error) {
 func newGcpClient(ctx context.Context, g *models.GcpStorage) (*gcpStorage.Client, error) {
 	opts := make([]option.ClientOption, 0)
 
+	opts = append(opts, option.WithHTTPClient(newHTTPClient(g.MaxConnsPerHost, g.RequestTimeoutSeconds)))
+
 	if g.KeyFile != "" {
 		opts = append(opts, option.WithCredentialsFile(g.KeyFile))
 	}
@@ -181,6 +186,7 @@ func newAzureClient(a *models.AzureBlob) (*azblob.Client, error) {
 
 	azOpts := &azblob.ClientOptions{
 		ClientOptions: azcore.ClientOptions{
+			Transport: newHTTPClient(a.MaxConnsPerHost, a.RequestTimeoutSeconds),
 			Retry: policy.RetryOptions{
 				MaxRetries:    int32(a.RetryMaxAttempts),
 				TryTimeout:    time.Duration(a.RetryTimeoutSeconds) * time.Second,
@@ -240,4 +246,28 @@ func toHosts(htpSlice client.HostTLSPortSlice) []*aerospike.Host {
 	}
 
 	return hosts
+}
+
+// newTransport returns a new http.Transport.
+func newTransport(maxConnsPerHost int) *http.Transport {
+	return &http.Transport{
+		Proxy: http.ProxyFromEnvironment,
+		DialContext: (&net.Dialer{
+			Timeout:   30 * time.Second,
+			KeepAlive: 30 * time.Second,
+		}).DialContext,
+		MaxConnsPerHost:     maxConnsPerHost,
+		IdleConnTimeout:     120 * time.Second,
+		TLSHandshakeTimeout: 10 * time.Second,
+		ReadBufferSize:      64 * 1024,
+		ForceAttemptHTTP2:   true,
+	}
+}
+
+// newHTTPClient returns a new http.Client.
+func newHTTPClient(maxConnsPerHost, requestTimeoutSeconds int) *http.Client {
+	return &http.Client{
+		Transport: newTransport(maxConnsPerHost),
+		Timeout:   time.Duration(requestTimeoutSeconds) * time.Second,
+	}
 }

@@ -115,7 +115,7 @@ func (f *Restore) NewFlagSet() *pflag.FlagSet {
 		1,
 		"Increases the delay between subsequent retry attempts for the errors listed under --retry-base-interval.\n"+
 			"The actual delay is calculated as: retry-base-interval * (retry-multiplier ^ attemptNumber)")
-	flagSet.UintVar(&f.RetryMaxRetries, "retry-max-retries",
+	flagSet.UintVar(&f.RetryMaxAttempts, "retry-max-attempts",
 		0,
 		"Set the maximum number of retry attempts for the errors listed under --retry-base-interval.\n"+
 			"The default is 0, indicating no retries will be performed")
@@ -131,6 +131,11 @@ func (f *Restore) NewFlagSet() *pflag.FlagSet {
 	flagSet.BoolVar(&f.ValidateOnly, "validate",
 		false,
 		"Validate backup files without restoring.")
+
+	flagSet.BoolVar(&f.ApplyMetadataLast, "apply-metadata-last",
+		false,
+		"Defines when to restore metadata (secondary indexes and UDFs).\n"+
+			"If set to true, metadata from separate file will be restored after all records have been processed.")
 
 	return flagSet
 }

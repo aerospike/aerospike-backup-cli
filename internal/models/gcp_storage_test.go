@@ -132,6 +132,32 @@ func TestGcpStorage_Validate(t *testing.T) {
 			},
 			wantErr: "",
 		},
+		{
+			name: "negative max connections per host",
+			gcp: &GcpStorage{
+				BucketName:              testBucketName,
+				RetryMaxAttempts:        3,
+				RetryBackoffMaxSeconds:  60,
+				RetryBackoffInitSeconds: 1,
+				RetryBackoffMultiplier:  2.0,
+				ChunkSize:               1024,
+				StorageCommon:           StorageCommon{MaxConnsPerHost: -1},
+			},
+			wantErr: "max connections per host must be non-negative",
+		},
+		{
+			name: "negative request timeout",
+			gcp: &GcpStorage{
+				BucketName:              testBucketName,
+				RetryMaxAttempts:        3,
+				RetryBackoffMaxSeconds:  60,
+				RetryBackoffInitSeconds: 1,
+				RetryBackoffMultiplier:  2.0,
+				ChunkSize:               1024,
+				StorageCommon:           StorageCommon{RequestTimeoutSeconds: -1},
+			},
+			wantErr: "request timeout must be non-negative",
+		},
 	}
 
 	for _, tt := range tests {
@@ -141,7 +167,7 @@ func TestGcpStorage_Validate(t *testing.T) {
 			err := tt.gcp.LoadSecrets(nil)
 			require.NoError(t, err)
 
-			err = tt.gcp.Validate()
+			err = tt.gcp.Validate(true)
 
 			if tt.wantErr != "" {
 				switch {

@@ -284,7 +284,7 @@ func newHelpFunction(
 		secretAgentFlagSet.PrintDefaults()
 
 		// Print section: AWS Flags
-		fmt.Println("\nAWS Flags:\n" +
+		fmt.Println("\nAWS Storage Flags:\n" +
 			"For S3 storage bucket name is mandatory, and is set with --s3-bucket-name flag.\n" +
 			"So --directory path will only contain folder name.\n" +
 			"--s3-endpoint-override is used in case you want to use minio, instead of AWS.\n" +
@@ -292,7 +292,7 @@ func newHelpFunction(
 		awsFlagSet.PrintDefaults()
 
 		// Print section: GCP Flags
-		fmt.Println("\nGCP Flags:\n" +
+		fmt.Println("\nGCP Storage Flags:\n" +
 			"For GCP storage bucket name is mandatory, and is set with --gcp-bucket-name flag.\n" +
 			"So --directory path will only contain folder name.\n" +
 			"Flag --gcp-endpoint-override is mandatory, as each storage account has different service address.\n" +
@@ -300,7 +300,7 @@ func newHelpFunction(
 		gcpFlagSet.PrintDefaults()
 
 		// Print section: Azure Flags
-		fmt.Println("\nAzure Flags:\n" +
+		fmt.Println("\nAzure Storage Flags:\n" +
 			"For Azure storage container name is mandatory, and is set with --azure-storage-container-name flag.\n" +
 			"So --directory path will only contain folder name.\n" +
 			"Flag --azure-endpoint is optional, and is used for tests with Azurit or any other Azure emulator.\n" +

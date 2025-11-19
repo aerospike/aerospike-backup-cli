@@ -37,7 +37,8 @@ func TestRestore_NewFlagSet(t *testing.T) {
 		"--directory-list", "dir1,dir2",
 		"--parent-directory", "parent-dir",
 		"--warm-up", "10",
-		"--validate", "true",
+		"--validate",
+		"--apply-metadata-last",
 	}
 
 	err := flagSet.Parse(args)
@@ -55,6 +56,7 @@ func TestRestore_NewFlagSet(t *testing.T) {
 	assert.Equal(t, "parent-dir", result.ParentDirectory, "The parent-directory flag should be parsed correctly")
 	assert.Equal(t, 10, result.WarmUp, "The warm-up flag should be parsed correctly")
 	assert.Equal(t, true, result.ValidateOnly, "The validate flag should be parsed correctly")
+	assert.Equal(t, true, result.ApplyMetadataLast, "The apply-metadata-last flag should be parsed correctly")
 }
 
 func TestRestore_NewFlagSet_DefaultValues(t *testing.T) {
@@ -80,4 +82,5 @@ func TestRestore_NewFlagSet_DefaultValues(t *testing.T) {
 	assert.Equal(t, "", result.ParentDirectory, "The parent-directory flag should be an empty string")
 	assert.Equal(t, 0, result.WarmUp, "The warm-up flag should be 0")
 	assert.Equal(t, false, result.ValidateOnly, "The validate flag should be false")
+	assert.Equal(t, false, result.ApplyMetadataLast, "The default value for apply-metadata-last should be false")
 }

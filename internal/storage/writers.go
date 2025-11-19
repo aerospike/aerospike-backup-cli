@@ -116,7 +116,7 @@ func newWriter(
 		return newStdWriter(ctx, params.Backup.StdBufferSize)
 	default:
 		defer logger.Info("initialized local storage writer")
-		return newLocalWriter(ctx, opts)
+		return newLocalWriter(ctx, params.Local, opts)
 	}
 }
 
@@ -174,7 +174,9 @@ func newWriterOpts(
 	return opts
 }
 
-func newLocalWriter(ctx context.Context, opts []options.Opt) (backup.Writer, error) {
+func newLocalWriter(ctx context.Context, l *models.Local, opts []options.Opt) (backup.Writer, error) {
+	opts = append(opts, options.WithChunkSize(l.BufferSize))
+
 	return local.NewWriter(ctx, opts...)
 }
 
@@ -196,7 +198,7 @@ func newS3Writer(
 		opts = append(opts, options.WithStorageClass(a.StorageClass))
 	}
 
-	opts = append(opts, options.WithChunkSize(a.ChunkSize))
+	opts = append(opts, options.WithChunkSize(a.ChunkSize), options.WithUploadConcurrency(a.UploadConcurrency))
 
 	return s3.NewWriter(ctx, client, a.BucketName, opts...)
 }
@@ -230,7 +232,7 @@ func newAzureWriter(
 		opts = append(opts, options.WithAccessTier(a.AccessTier))
 	}
 
-	opts = append(opts, options.WithChunkSize(a.BlockSize))
+	opts = append(opts, options.WithChunkSize(a.BlockSize), options.WithUploadConcurrency(a.UploadConcurrency))
 
 	return blob.NewWriter(ctx, client, a.ContainerName, opts...)
 }

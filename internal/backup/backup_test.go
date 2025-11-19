@@ -44,14 +44,23 @@ const (
 	testAckQueueSize    = 256
 	testResultQueueSize = 256
 	testRewind          = "all"
+	testHost            = "127.0.0.1"
+	testPort            = 3000
 )
+
+func testHostPort() *client.HostTLSPort {
+	return &client.HostTLSPort{
+		Host: testHost,
+		Port: testPort,
+	}
+}
 
 func Test_BackupWithState(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
 	dir := path.Join(t.TempDir(), "plain")
-	hostPort := client.NewDefaultHostTLSPort()
+	hostPort := testHostPort()
 
 	asbParams := &config.BackupServiceConfig{
 		App: &models.App{},
@@ -88,6 +97,7 @@ func Test_BackupWithState(t *testing.T) {
 		AwsS3:       &models.AwsS3{},
 		GcpStorage:  &models.GcpStorage{},
 		AzureBlob:   &models.AzureBlob{},
+		Local:       &models.Local{},
 	}
 
 	err := createRecords(asbParams.ClientConfig, asbParams.ClientPolicy, testNamespace, testSet)
@@ -106,7 +116,7 @@ func Test_BackupXDR(t *testing.T) {
 	// Do not parallel this test. We have multiply xdr tests, so they should be executed sequentially.
 	ctx := context.Background()
 	dir := path.Join(t.TempDir(), "xdr")
-	hostPort := client.NewDefaultHostTLSPort()
+	hostPort := testHostPort()
 
 	asbParams := &config.BackupServiceConfig{
 		App: &models.App{},
@@ -149,6 +159,7 @@ func Test_BackupXDR(t *testing.T) {
 		AwsS3:       &models.AwsS3{},
 		GcpStorage:  &models.GcpStorage{},
 		AzureBlob:   &models.AzureBlob{},
+		Local:       &models.Local{},
 	}
 
 	err := createRecords(asbParams.ClientConfig, asbParams.ClientPolicy, testNamespace, testSetXDR)
@@ -167,7 +178,7 @@ func Test_BackupEstimates(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
-	hostPort := client.NewDefaultHostTLSPort()
+	hostPort := testHostPort()
 
 	asbParams := &config.BackupServiceConfig{
 		App: &models.App{},
@@ -203,6 +214,7 @@ func Test_BackupEstimates(t *testing.T) {
 		AwsS3:       &models.AwsS3{},
 		GcpStorage:  &models.GcpStorage{},
 		AzureBlob:   &models.AzureBlob{},
+		Local:       &models.Local{},
 	}
 
 	err := createRecords(asbParams.ClientConfig, asbParams.ClientPolicy, testNamespace, testSet)

@@ -187,6 +187,10 @@ func newScanPolicy(b *models.Backup) (*aerospike.ScanPolicy, error) {
 		p.ReplicaPolicy = aerospike.PREFER_RACK
 	}
 
+	if b.RackList != "" || b.NodeList != "" {
+		p.ReplicaPolicy = aerospike.MASTER
+	}
+
 	if b.NoBins {
 		p.IncludeBinData = false
 	}

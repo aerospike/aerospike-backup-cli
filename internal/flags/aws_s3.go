@@ -20,9 +20,16 @@ import (
 )
 
 const (
-	cloudMaxRetries = 100
-	cloudMaxBackoff = 90
-	cloudBackoff    = 60
+	cloudMaxRetries          = 10
+	cloudMaxBackoff          = 90
+	cloudBackoff             = 60
+	cloudUploadConcurrency   = 1
+	cloudRestorePollDuration = int64(60000)
+	cloudRequestTimeout      = 600
+
+	cloudRetryReadBackoff     = 1
+	cloudRetryReadMultiplier  = float64(2.0)
+	cloudRetryReadMaxAttempts = uint(3)
 )
 
 type AwsS3 struct {
@@ -42,18 +49,23 @@ func (f *AwsS3) NewFlagSet() *pflag.FlagSet {
 	flagSet.StringVar(&f.BucketName, "s3-bucket-name",
 		"",
 		"Existing S3 bucket name")
+
 	flagSet.StringVar(&f.Region, "s3-region",
 		"",
 		"The S3 region that the bucket(s) exist in.")
+
 	flagSet.StringVar(&f.Profile, "s3-profile",
 		"",
 		"The S3 profile to use for credentials.")
+
 	flagSet.StringVar(&f.AccessKeyID, "s3-access-key-id",
 		"",
 		"S3 access key id. If not set, profile auth info will be used.")
+
 	flagSet.StringVar(&f.SecretAccessKey, "s3-secret-access-key",
 		"",
 		"S3 secret access key. If not set, profile auth info will be used.")
+
 	flagSet.StringVar(&f.Endpoint, "s3-endpoint-override",
 		"",
 		"An alternate url endpoint to send S3 API calls to.")
@@ -74,31 +86,69 @@ func (f *AwsS3) NewFlagSet() *pflag.FlagSet {
 				"GLACIER_IR,\n"+
 				"SNOW,\n"+
 				"EXPRESS_ONEZONE.")
+
 		flagSet.IntVar(&f.ChunkSize, "s3-chunk-size",
 			models.DefaultChunkSize,
 			"Chunk size controls the maximum number of bytes of the object that the app will attempt to send to\n"+
 				"the storage in a single request. Objects smaller than the size will be sent in a single request,\n"+
 				"while larger objects will be split over multiple requests.")
+
+		flagSet.IntVar(&f.UploadConcurrency, "s3-upload-concurrency",
+			0,
+			"Defines the max number of concurrent uploads to be performed to upload the file.\n"+
+				"Each concurrent upload will create a buffer of size s3-block-size.")
+
+		flagSet.BoolVar(&f.CalculateChecksum, "s3-calculate-checksum",
+			false,
+			"Calculate checksum for each uploaded object.")
 	case OperationRestore:
 		flagSet.StringVar(&f.AccessTier, "s3-tier",
 			"",
 			"If is set, tool will try to restore archived files to the specified tier.\n"+
 				"Tiers are: Standard, Bulk, Expedited.")
+
 		flagSet.Int64Var(&f.RestorePollDuration, "s3-restore-poll-duration",
-			60000,
+			cloudRestorePollDuration,
 			"How often (in milliseconds) a backup client checks object status when restoring an archived object.",
 		)
+
+		flagSet.IntVar(&f.RetryReadBackoffSeconds, "s3-retry-read-backoff",
+			cloudRetryReadBackoff,
+			"The initial delay in seconds between retry attempts. In case of connection errors\n"+
+				"tool will retry reading the object from the last known position.")
+
+		flagSet.Float64Var(&f.RetryReadMultiplier, "s3-retry-read-multiplier",
+			cloudRetryReadMultiplier,
+			"Multiplier is used to increase the delay between subsequent retry attempts.\n"+
+				"Used in combination with initial delay.")
+
+		flagSet.UintVar(&f.RetryReadMaxAttempts, "s3-retry-read-max-attempts", cloudRetryReadMaxAttempts,
+			"The maximum number of retry attempts that will be made. If set to 0, no retries will be performed.")
 	}
 
 	flagSet.IntVar(&f.RetryMaxAttempts, "s3-retry-max-attempts",
 		cloudMaxRetries,
 		"Maximum number of attempts that should be made in case of an error.")
+
 	flagSet.IntVar(&f.RetryMaxBackoffSeconds, "s3-retry-max-backoff",
 		cloudMaxBackoff,
 		"Max backoff duration in seconds between retried attempts.")
+
 	flagSet.IntVar(&f.RetryBackoffSeconds, "s3-retry-backoff",
 		cloudBackoff,
 		"Provides the backoff in seconds strategy the retryer will use to determine the delay between retry attempts.")
+
+	flagSet.IntVar(&f.MaxConnsPerHost, "s3-max-conns-per-host",
+		0,
+		"MaxConnsPerHost optionally limits the total number of connections per host,\n"+
+			"including connections in the dialing, active, and idle states. On limit violation, dials will block.\n"+
+			"Zero means no limit.")
+
+	flagSet.IntVar(&f.RequestTimeoutSeconds, "s3-request-timeout",
+		cloudRequestTimeout,
+		"Timeout specifies a time limit for requests made by this Client.\n"+
+			"The timeout includes connection time, any redirects, and reading the response body.\n"+
+			"Zero means no limit.")
 
 	return flagSet
 }

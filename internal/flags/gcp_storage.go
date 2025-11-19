@@ -36,35 +36,70 @@ func (f *GcpStorage) NewFlagSet() *pflag.FlagSet {
 	flagSet.StringVar(&f.KeyFile, "gcp-key-path",
 		"",
 		"Path to file containing service account JSON key.")
+
 	flagSet.StringVar(&f.BucketName, "gcp-bucket-name",
 		"",
 		"Name of the Google cloud storage bucket.")
+
 	flagSet.StringVar(&f.Endpoint, "gcp-endpoint-override",
 		"",
 		"An alternate url endpoint to send GCP API calls to.")
 
-	if f.operation == OperationBackup {
+	switch f.operation {
+	case OperationBackup:
 		flagSet.IntVar(&f.ChunkSize, "gcp-chunk-size",
 			models.DefaultChunkSize,
 			"Chunk size controls the maximum number of bytes of the object that the app will attempt to send to\n"+
 				"the storage in a single request. Objects smaller than the size will be sent in a single request,\n"+
 				"while larger objects will be split over multiple requests.")
+
+		flagSet.BoolVar(&f.CalculateChecksum, "gcp-calculate-checksum",
+			false,
+			"Calculate checksum for each uploaded object.")
+	case OperationRestore:
+		flagSet.IntVar(&f.RetryReadBackoffSeconds, "gcp-retry-read-backoff",
+			cloudRetryReadBackoff,
+			"The initial delay in seconds between retry attempts. In case of connection errors\n"+
+				"tool will retry reading the object from the last known position.")
+
+		flagSet.Float64Var(&f.RetryReadMultiplier, "gcp-retry-read-multiplier",
+			cloudRetryReadMultiplier,
+			"Multiplier is used to increase the delay between subsequent retry attempts.\n"+
+				"Used in combination with initial delay.")
+
+		flagSet.UintVar(&f.RetryReadMaxAttempts, "gcp-retry-read-max-attempts", cloudRetryReadMaxAttempts,
+			"The maximum number of retry attempts that will be made. If set to 0, no retries will be performed.")
 	}
 
 	flagSet.IntVar(&f.RetryMaxAttempts, "gcp-retry-max-attempts",
 		cloudMaxRetries,
 		"Max retries specifies the maximum number of attempts a failed operation will be retried\n"+
 			"before producing an error.")
+
 	flagSet.IntVar(&f.RetryBackoffMaxSeconds, "gcp-retry-max-backoff",
 		cloudMaxBackoff,
 		"Max backoff is the maximum value in seconds of the retry period.")
+
 	flagSet.IntVar(&f.RetryBackoffInitSeconds, "gcp-retry-init-backoff",
 		cloudBackoff,
 		"Initial backoff is the initial value in seconds of the retry period.")
+
 	flagSet.Float64Var(&f.RetryBackoffMultiplier, "gcp-retry-backoff-multiplier",
 		2,
 		"Multiplier is the factor by which the retry period increases.\n"+
 			"It should be greater than 1.")
+
+	flagSet.IntVar(&f.MaxConnsPerHost, "gcp-max-conns-per-host",
+		0,
+		"MaxConnsPerHost optionally limits the total number of connections per host,\n"+
+			"including connections in the dialing, active, and idle states. On limit violation, dials will block.\n"+
+			"Zero means no limit.")
+
+	flagSet.IntVar(&f.RequestTimeoutSeconds, "gcp-request-timeout",
+		cloudRequestTimeout,
+		"Timeout specifies a time limit for requests made by this Client.\n"+
+			"The timeout includes connection time, any redirects, and reading the response body.\n"+
+			"Zero means no limit.")
 
 	return flagSet
 }

@@ -47,6 +47,7 @@ type BackupServiceConfig struct {
 	AwsS3        *models.AwsS3
 	GcpStorage   *models.GcpStorage
 	AzureBlob    *models.AzureBlob
+	Local        *models.Local
 }
 
 // NewBackupServiceConfig initializes and returns a BackupServiceConfig struct
@@ -64,6 +65,7 @@ func NewBackupServiceConfig(
 	awsS3 *models.AwsS3,
 	gcpStorage *models.GcpStorage,
 	azureBlob *models.AzureBlob,
+	local *models.Local,
 ) (*BackupServiceConfig, error) {
 	// If we have a config file, load serviceConfig from it.
 	if app.ConfigFilePath != "" {
@@ -87,6 +89,7 @@ func NewBackupServiceConfig(
 		AwsS3:        awsS3,
 		GcpStorage:   gcpStorage,
 		AzureBlob:    azureBlob,
+		Local:        local,
 	}, nil
 }
 
