@@ -185,7 +185,7 @@ func newBackupConfig(params *BackupServiceConfig) (*backup.ConfigBackup, error) 
 	c.NoRecords = params.Backup.NoRecords
 	c.NoIndexes = params.Backup.NoIndexes
 	c.RecordsPerSecond = params.Backup.RecordsPerSecond
-	c.FileLimit = params.Backup.FileLimit
+	c.FileLimit = params.Backup.FileLimit * 1024 * 1024
 	c.NoUDFs = params.Backup.NoUDFs
 	// The original backup tools have a single parallelism configuration property.
 	// We may consider splitting the configuration in the future.
@@ -286,7 +286,7 @@ func newBackupXDRConfig(params *BackupServiceConfig) *backup.ConfigBackupXDR {
 		CompressionPolicy: newCompressionPolicy(params.Compression),
 		SecretAgentConfig: newSecretAgentConfig(params.SecretAgent),
 		EncoderType:       backup.EncoderTypeASBX,
-		FileLimit:         params.BackupXDR.FileLimit,
+		FileLimit:         params.BackupXDR.FileLimit * 1024 * 1024,
 		ParallelWrite:     parallelWrite,
 		DC:                params.BackupXDR.DC,
 		LocalAddress:      params.BackupXDR.LocalAddress,

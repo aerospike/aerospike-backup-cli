@@ -45,9 +45,9 @@ func (f *Backup) NewFlagSet() *pflag.FlagSet {
 		"When using directory parameter, prepend a prefix to the names of the generated files.")
 
 	flagSet.Uint64VarP(&f.FileLimit, "file-limit", "F",
-		262144000, // 250 MB
+		250,
 		"Rotate backup files when their size crosses the given\n"+
-			"value (in bytes). Only used when backing up to a directory.\n")
+			"value (in MiB). Only used when backing up to a directory.\n")
 	flagSet.BoolVarP(&f.NoBins, "no-bins", "x",
 		false,
 		"Do not include bin data in the backup. Use this flag for data sampling or troubleshooting.\n"+

@@ -90,7 +90,7 @@ func TestMapBackupConfig_Success(t *testing.T) {
 	assert.True(t, config.NoRecords)
 	assert.False(t, config.NoIndexes)
 	assert.Equal(t, 1000, config.RecordsPerSecond)
-	assert.Equal(t, uint64(5000), config.FileLimit)
+	assert.Equal(t, uint64(5000*1024*1024), config.FileLimit)
 	assert.Equal(t, true, config.NoTTLOnly)
 
 	modBefore, err := parseLocalTimeToUTC("2023-09-01_12:00:00")
@@ -659,7 +659,7 @@ func TestMapBackupXDRConfig(t *testing.T) {
 			},
 			verify: func(t *testing.T, cfg *backup.ConfigBackupXDR) {
 				t.Helper()
-				assert.Equal(t, uint64(1000), cfg.FileLimit)
+				assert.Equal(t, uint64(1000*1024*1024), cfg.FileLimit)
 				assert.Equal(t, 4, cfg.ParallelWrite)
 				assert.Equal(t, "1h", cfg.Rewind)
 				assert.Equal(t, time.Duration(5000)*time.Millisecond, cfg.ReadTimeout)

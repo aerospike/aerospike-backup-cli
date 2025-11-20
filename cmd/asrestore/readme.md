@@ -241,7 +241,7 @@ Any AWS parameter can be retrieved from Secret Agent.
       --s3-max-conns-per-host int         MaxConnsPerHost optionally limits the total number of connections per host,
                                           including connections in the dialing, active, and idle states. On limit violation, dials will block.
                                           Zero means no limit.
-      --s3-request-timeout int            Timeout specifies a time limit for requests made by this Client.
+      --s3-request-timeout int            Timeout in seconds specifies a time limit for requests made by this Client.
                                           The timeout includes connection time, any redirects, and reading the response body.
                                           Zero means no limit. (default 600)
 
@@ -267,7 +267,7 @@ Any GCP parameter can be retrieved from Secret Agent.
       --gcp-max-conns-per-host int           MaxConnsPerHost optionally limits the total number of connections per host,
                                              including connections in the dialing, active, and idle states. On limit violation, dials will block.
                                              Zero means no limit.
-      --gcp-request-timeout int              Timeout specifies a time limit for requests made by this Client.
+      --gcp-request-timeout int              Timeout in seconds specifies a time limit for requests made by this Client.
                                              The timeout includes connection time, any redirects, and reading the response body.
                                              Zero means no limit. (default 600)
 
@@ -306,7 +306,7 @@ Any Azure parameter can be retrieved from Secret Agent.
       --azure-max-conns-per-host int         MaxConnsPerHost optionally limits the total number of connections per host,
                                              including connections in the dialing, active, and idle states. On limit violation, dials will block.
                                              Zero means no limit.
-      --azure-request-timeout int            Timeout specifies a time limit for requests made by this Client.
+      --azure-request-timeout int            Timeout in seconds specifies a time limit for requests made by this Client.
                                              The timeout includes connection time, any redirects, and reading the response body.
                                              Zero means no limit. (default 600)
 ```
