@@ -143,7 +143,7 @@ func (f *AzureBlob) NewFlagSet() *pflag.FlagSet {
 
 	flagSet.IntVar(&f.RequestTimeoutSeconds, "azure-request-timeout",
 		cloudRequestTimeout,
-		"Timeout specifies a time limit for requests made by this Client.\n"+
+		"Timeout in seconds specifies a time limit for requests made by this Client.\n"+
 			"The timeout includes connection time, any redirects, and reading the response body.\n"+
 			"Zero means no limit.")
 

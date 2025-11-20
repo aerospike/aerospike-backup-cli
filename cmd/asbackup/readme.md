@@ -136,8 +136,8 @@ Backup Flags:
                                     Should be used with --file-limit = 0. Metadata will be written to the separate file.
   -q, --output-file-prefix string   When using directory parameter, prepend a prefix to the names of the generated files.
   -F, --file-limit uint             Rotate backup files when their size crosses the given
-                                    value (in bytes). Only used when backing up to a directory.
-                                     (default 262144000)
+                                    value (in MiB). Only used when backing up to a directory.
+                                     (default 250)
   -x, --no-bins                     Do not include bin data in the backup. Use this flag for data sampling or troubleshooting.
                                     On restore all records, that don't contain bin data will be skipped.
       --no-ttl-only                 Only include records that have no ttl set (persistent records).
@@ -277,7 +277,7 @@ Any AWS parameter can be retrieved from Secret Agent.
       --s3-max-conns-per-host int     MaxConnsPerHost optionally limits the total number of connections per host,
                                       including connections in the dialing, active, and idle states. On limit violation, dials will block.
                                       Zero means no limit.
-      --s3-request-timeout int        Timeout specifies a time limit for requests made by this Client.
+      --s3-request-timeout int        Timeout in seconds specifies a time limit for requests made by this Client.
                                       The timeout includes connection time, any redirects, and reading the response body.
                                       Zero means no limit. (default 600)
 
@@ -302,7 +302,7 @@ Any GCP parameter can be retrieved from Secret Agent.
       --gcp-max-conns-per-host int           MaxConnsPerHost optionally limits the total number of connections per host,
                                              including connections in the dialing, active, and idle states. On limit violation, dials will block.
                                              Zero means no limit.
-      --gcp-request-timeout int              Timeout specifies a time limit for requests made by this Client.
+      --gcp-request-timeout int              Timeout in seconds specifies a time limit for requests made by this Client.
                                              The timeout includes connection time, any redirects, and reading the response body.
                                              Zero means no limit. (default 600)
 
@@ -339,7 +339,7 @@ Any Azure parameter can be retrieved from Secret Agent.
       --azure-max-conns-per-host int   MaxConnsPerHost optionally limits the total number of connections per host,
                                        including connections in the dialing, active, and idle states. On limit violation, dials will block.
                                        Zero means no limit.
-      --azure-request-timeout int      Timeout specifies a time limit for requests made by this Client.
+      --azure-request-timeout int      Timeout in seconds specifies a time limit for requests made by this Client.
                                        The timeout includes connection time, any redirects, and reading the response body.
                                        Zero means no limit. (default 600)
 ```
