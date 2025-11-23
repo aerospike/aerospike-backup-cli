@@ -232,12 +232,7 @@ func (c *Cmd) run(cmd *cobra.Command, _ []string) error {
 }
 
 func (c *Cmd) printVersion() {
-	version := c.appVersion
-	if c.appVersion == VersionDev {
-		version += " (" + c.commitHash + ") " + c.buildTime
-	}
-
-	fmt.Printf("version: %s\n", version)
+	fmt.Printf("version: %s (%s) %s \n", c.appVersion, c.commitHash, c.buildTime)
 }
 
 func newHelpFunction(
