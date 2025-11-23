@@ -139,7 +139,7 @@ func TestValidateBackup(t *testing.T) {
 				Common:     Common{Directory: ""},
 			},
 			wantErr:     true,
-			expectedErr: "must specify either output-file or directory",
+			expectedErr: "must specify either estimate, output-file or directory",
 		},
 		{
 			name: "Non-estimate with output file",
