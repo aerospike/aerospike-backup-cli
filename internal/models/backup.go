@@ -64,7 +64,7 @@ func (b *Backup) Validate() error {
 	}
 
 	if !b.Estimate && b.OutputFile == "" && b.Directory == "" {
-		return fmt.Errorf("must specify either output-file or directory")
+		return fmt.Errorf("must specify either estimate, output-file or directory")
 	}
 
 	if b.Directory != "" && b.OutputFile != "" {
