@@ -227,8 +227,9 @@ func newLocalReader(ctx context.Context, opts []options.Opt) (backup.StreamingRe
 	return local.NewReader(ctx, opts...)
 }
 
-func newStdReader(ctx context.Context, bufferSize int) (backup.StreamingReader, error) {
-	return std.NewReader(ctx, bufferSize)
+func newStdReader(ctx context.Context, bufferSizeMiB int) (backup.StreamingReader, error) {
+	bufferSizeBytes := bufferSizeMiB * 1024 * 1024
+	return std.NewReader(ctx, bufferSizeBytes)
 }
 
 func newS3Reader(

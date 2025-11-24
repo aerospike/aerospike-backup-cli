@@ -60,6 +60,7 @@ type Restore struct {
 		InfoRetriesMultiplier         float64  `yaml:"info-retries-multiplier"`
 		InfoRetryIntervalMilliseconds int64    `yaml:"info-retry-interval"`
 		ApplyMetadataLast             bool     `yaml:"apply-metadata-last"`
+		StdBufferSize                 int      `yaml:"std-buffer-size"`
 	} `yaml:"restore"`
 	Compression Compression `yaml:"compression"`
 	Encryption  Encryption  `yaml:"encryption"`
@@ -95,6 +96,7 @@ func (r *Restore) ToModelRestore() *models.Restore {
 			InfoMaxRetries:                r.Restore.InfoMaxRetries,
 			InfoRetriesMultiplier:         r.Restore.InfoRetriesMultiplier,
 			InfoRetryIntervalMilliseconds: r.Restore.InfoRetryIntervalMilliseconds,
+			StdBufferSize:                 r.Restore.StdBufferSize,
 		},
 		InputFile:          r.Restore.InputFile,
 		DirectoryList:      strings.Join(r.Restore.DirectoryList, ","),

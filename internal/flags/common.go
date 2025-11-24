@@ -171,8 +171,8 @@ func (f *Common) NewFlagSet() *pflag.FlagSet {
 	flagSet.UintVar(&f.fields.InfoMaxRetries, "info-max-retries", 3,
 		"How many times to retry to send info commands before failing. ")
 	flagSet.IntVar(&f.fields.StdBufferSize, "std-buffer",
-		4194304,
-		"Buffer size for stdin and stdout operations. Is used for pipelining.")
+		4,
+		"Buffer size in MiB for stdin and stdout operations. Is used for pipelining.")
 
 	return flagSet
 }

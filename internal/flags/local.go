@@ -33,7 +33,7 @@ func (f *Local) NewFlagSet() *pflag.FlagSet {
 
 	flagSet.IntVar(&f.BufferSize, "local-buffer-size",
 		models.DefaultChunkSize,
-		"Buffer size in bytes for local file writes.")
+		"Buffer size in megabytes for local file writes.")
 
 	return flagSet
 }
