@@ -105,5 +105,5 @@ func TestCommon_NewFlagSet_DefaultValues(t *testing.T) {
 	assert.Equal(t, int64(1000), result.InfoRetryIntervalMilliseconds, "The default value for info-retry-interval should be 1000")
 	assert.Equal(t, float64(1), result.InfoRetriesMultiplier, "The default value for info-retry-multiplier should be 1")
 	assert.Equal(t, uint(3), result.InfoMaxRetries, "The default value for info-max-retries should be 3")
-	assert.Equal(t, 4194304, result.StdBufferSize, "The default value for std-buffer should be 4194304")
+	assert.Equal(t, 4, result.StdBufferSize, "The default value for std-buffer should be 4194304")
 }

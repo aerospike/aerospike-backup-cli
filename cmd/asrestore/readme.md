@@ -113,7 +113,7 @@ Restore Flags:
       --info-retry-multiplier float   Increases the delay between subsequent retry attempts.
                                       The actual delay is calculated as: info-retry-interval * (info-retry-multiplier ^ attemptNumber) (default 1)
       --info-max-retries uint         How many times to retry to send info commands before failing.  (default 3)
-      --std-buffer int                Buffer size for stdin and stdout operations. Is used for pipelining. (default 4194304)
+      --std-buffer int                Buffer size in MiB for stdin and stdout operations. Is used for pipelining. (default 4)
   -i, --input-file string         Restore from a single backup file. Use '-' for stdin.
                                   Required, unless --directory or --directory-list is used.
                                   
@@ -529,6 +529,8 @@ restore:
   # Defines when to restore metadata (secondary indexes and UDFs).
   # If set to true, metadata from separate file will be restored after all records have been processed.
   apply-metadata-last: false
+  # Buffer size in MiB for stdin and stdout operations. Is used for pipelining. (default 4)
+  std-buffer-size: 4
 compression:
   # Enables decompressing of backup files using the specified compression algorithm.
   # This must match the compression mode used when backing up the data.

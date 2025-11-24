@@ -28,7 +28,7 @@ func TestLocal_NewFlagSet(t *testing.T) {
 	flagSet := local.NewFlagSet()
 
 	args := []string{
-		"--local-buffer-size", "8388608",
+		"--local-buffer-size", "8",
 	}
 
 	err := flagSet.Parse(args)
@@ -36,7 +36,7 @@ func TestLocal_NewFlagSet(t *testing.T) {
 
 	result := local.GetLocal()
 
-	assert.Equal(t, 8388608, result.BufferSize, "The local-buffer-size flag should be parsed correctly")
+	assert.Equal(t, 8, result.BufferSize, "The local-buffer-size flag should be parsed correctly")
 }
 
 func TestLocal_NewFlagSet_DefaultValues(t *testing.T) {

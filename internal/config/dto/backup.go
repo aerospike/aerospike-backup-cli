@@ -65,6 +65,7 @@ type Backup struct {
 		InfoMaxRetries                uint     `yaml:"info-max-retries"`
 		InfoRetriesMultiplier         float64  `yaml:"info-retries-multiplier"`
 		InfoRetryIntervalMilliseconds int64    `yaml:"info-retry-interval"`
+		StdBufferSize                 int      `yaml:"std-buffer-size"`
 	} `yaml:"backup"`
 	Compression Compression `yaml:"compression"`
 	Encryption  Encryption  `yaml:"encryption"`
@@ -103,6 +104,7 @@ func (b *Backup) ToModelBackup() *models.Backup {
 			InfoMaxRetries:                b.Backup.InfoMaxRetries,
 			InfoRetriesMultiplier:         b.Backup.InfoRetriesMultiplier,
 			InfoRetryIntervalMilliseconds: b.Backup.InfoRetryIntervalMilliseconds,
+			StdBufferSize:                 b.Backup.StdBufferSize,
 		},
 		OutputFile:          b.Backup.OutputFile,
 		RemoveFiles:         b.Backup.RemoveFiles,

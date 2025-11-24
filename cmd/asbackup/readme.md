@@ -129,7 +129,7 @@ Backup Flags:
       --info-retry-multiplier float   Increases the delay between subsequent retry attempts.
                                       The actual delay is calculated as: info-retry-interval * (info-retry-multiplier ^ attemptNumber) (default 1)
       --info-max-retries uint         How many times to retry to send info commands before failing.  (default 3)
-      --std-buffer int                Buffer size for stdin and stdout operations. Is used for pipelining. (default 4194304)
+      --std-buffer int                Buffer size in MiB for stdin and stdout operations. Is used for pipelining. (default 4)
   -r, --remove-files                Remove an existing backup file (-o) or entire directory (-d) and replace with the new backup.
       --remove-artifacts            Remove existing backup file (-o) or files (-d) without performing a backup.
   -o, --output-file string          Backup to a single backup file. Use '-' for stdout. Required, unless -d or -e is used.
@@ -240,7 +240,7 @@ Example: asbackup --azure-account-name secret:resource1:azaccount
       --sa-is-base64                Whether Secret Agent responses are Base64 encoded.
 
 Local Storage Flags:
-      --local-buffer-size int   Buffer size in bytes for local file writes. (default 5242880)
+      --local-buffer-size int   Buffer size in megabytes for local file writes. (default 5)
 
 AWS Storage Flags:
 For S3 storage bucket name is mandatory, and is set with --s3-bucket-name flag.
@@ -265,9 +265,9 @@ Any AWS parameter can be retrieved from Secret Agent.
                                       GLACIER_IR,
                                       SNOW,
                                       EXPRESS_ONEZONE.
-      --s3-chunk-size int             Chunk size controls the maximum number of bytes of the object that the app will attempt to send to
+      --s3-chunk-size int             Chunk size controls the maximum number of megabytes of the object that the app will attempt to send to
                                       the storage in a single request. Objects smaller than the size will be sent in a single request,
-                                      while larger objects will be split over multiple requests. (default 5242880)
+                                      while larger objects will be split over multiple requests. (default 5)
       --s3-upload-concurrency int     Defines the max number of concurrent uploads to be performed to upload the file.
                                       Each concurrent upload will create a buffer of size s3-block-size.
       --s3-calculate-checksum         Calculate checksum for each uploaded object.
@@ -289,9 +289,9 @@ Any GCP parameter can be retrieved from Secret Agent.
       --gcp-key-path string                  Path to file containing service account JSON key.
       --gcp-bucket-name string               Name of the Google cloud storage bucket.
       --gcp-endpoint-override string         An alternate url endpoint to send GCP API calls to.
-      --gcp-chunk-size int                   Chunk size controls the maximum number of bytes of the object that the app will attempt to send to
+      --gcp-chunk-size int                   Chunk size controls the maximum number of megabytes of the object that the app will attempt to send to
                                              the storage in a single request. Objects smaller than the size will be sent in a single request,
-                                             while larger objects will be split over multiple requests. (default 5242880)
+                                             while larger objects will be split over multiple requests. (default 5)
       --gcp-calculate-checksum               Calculate checksum for each uploaded object.
       --gcp-retry-max-attempts int           Max retries specifies the maximum number of attempts a failed operation will be retried
                                              before producing an error. (default 10)
@@ -322,7 +322,7 @@ Any Azure parameter can be retrieved from Secret Agent.
       --azure-container-name string    Azure container Name.
       --azure-access-tier string       Azure access tier is applied to created backup files.
                                        Tiers are: Archive, Cold, Cool, Hot, P10, P15, P20, P30, P4, P40, P50, P6, P60, P70, P80, Premium.
-      --azure-block-size int           Block size defines the size of the buffer used during upload. (default 5242880)
+      --azure-block-size int           Block size in MiB defines the size of the buffer used during upload. (default 5)
       --azure-upload-concurrency int   Defines the max number of concurrent uploads to be performed to upload the file.
                                        Each concurrent upload will create a buffer of size azure-block-size. (default 1)
       --azure-calculate-checksum       Calculate checksum for each uploaded object.
@@ -571,6 +571,8 @@ backup:
   # Set the timeout (ms) for asinfo commands sent from asrestore to the database.
   # The info commands are to check version, get indexes, get udfs, count records, and check batch write support.
   info-timeout: 10000
+  # Buffer size in MiB for stdin and stdout operations. Is used for pipelining. (default 4)
+  std-buffer-size: 4
 compression:
   # Enables compressing of backup files using the specified compression algorithm.
   # Supported compression algorithms are: zstd, none\n"+
@@ -636,10 +638,10 @@ aws:
     retry-max-backoff: 90
     # Provides the backoff in seconds strategy the retryer will use to determine the delay between retry attempts.
     retry-backoff: 60
-    # Chunk size controls the maximum number of bytes of the object that the app will attempt to send to
+    # Chunk size controls the maximum number of megabytes of the object that the app will attempt to send to
     # the storage in a single request. Objects smaller than the size will be sent in a single request,
     # while larger objects will be split over multiple requests
-    chunk-size: 5242880
+    chunk-size: 5
     # Defines the max number of concurrent uploads to be performed to upload the file. 
     # Each concurrent upload will create a buffer of size s3-block-size.
     upload-concurrency: 3
@@ -669,10 +671,10 @@ gcp:
     retry-init-backoff: 60
     # Multiplier is the factor by which the retry period increases. It should be greater than 1.
     retry-backoff-multiplier: 2
-    # Chunk size controls the maximum number of bytes of the object that the app will attempt to send to
+    # Chunk size controls the maximum number of megabytes of the object that the app will attempt to send to
     # the storage in a single request. Objects smaller than the size will be sent in a single request,
     # while larger objects will be split over multiple requests.
-    chunk-size: 5242880
+    chunk-size: 5
     # Calculate checksum for each uploaded object.
     calculate-checksum: false
     # MaxConnsPerHost optionally limits the total number of connections per host, 
@@ -714,8 +716,8 @@ azure:
     # Max retry delay specifies the maximum delay in seconds allowed before retrying an operation.
     # Typically the value is greater than or equal to the value specified in azure-retry-delay.
     retry-max-delay: 90
-    # Block size defines the size of the buffer used during upload.
-    block-size: 5242880
+    # Block size defines the size of the buffer in MiB used during upload.
+    block-size: 5
     # Defines the max number of concurrent uploads to be performed to upload the file. 
     # Each concurrent upload will create a buffer of size s3-block-size.
     upload-concurrency: 3
@@ -731,6 +733,6 @@ azure:
     request-timeout: 600
 local:
   disk:
-    # Buffer size in bytes for local file writes.
-    buffer-size: 5242880
+    # Buffer size in megabytes for local file writes.
+    buffer-size: 5
 ```

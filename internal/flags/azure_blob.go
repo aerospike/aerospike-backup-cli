@@ -84,7 +84,7 @@ func (f *AzureBlob) NewFlagSet() *pflag.FlagSet {
 	case OperationBackup:
 		flagSet.IntVar(&f.BlockSize, "azure-block-size",
 			models.DefaultChunkSize,
-			"Block size defines the size of the buffer used during upload.")
+			"Block size in MiB defines the size of the buffer used during upload.")
 
 		flagSet.IntVar(&f.UploadConcurrency, "azure-upload-concurrency",
 			cloudUploadConcurrency,

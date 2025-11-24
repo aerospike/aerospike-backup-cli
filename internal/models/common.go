@@ -16,7 +16,7 @@ package models
 
 import "fmt"
 
-const DefaultChunkSize = 5 * 1024 * 1024
+const DefaultChunkSize = 5
 
 // Common parameters are used by both backup and restore operations.
 type Common struct {
