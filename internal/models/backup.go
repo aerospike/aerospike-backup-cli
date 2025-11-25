@@ -71,6 +71,10 @@ func (b *Backup) Validate() error {
 		return fmt.Errorf("only one of output-file and directory may be configured at the same time")
 	}
 
+	if b.OutputFile != "" && b.FileLimit != 0 {
+		return fmt.Errorf("output-file can be used only with file-limit = 0")
+	}
+
 	// Only one filter is allowed.
 	if err := b.validateSingleFilter(); err != nil {
 		return err

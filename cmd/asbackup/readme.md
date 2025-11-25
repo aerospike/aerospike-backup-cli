@@ -464,7 +464,7 @@ backup:
   # The limits for read/write storage bandwidth in MiB/s.
   bandwidth: 0
   # Remove an existing backup file `output-file` or entire directory `directory` and replace with the new backup.
-  remove-files: true
+  remove-files: false
   # Remove existing backup file `output-file` or files `directory` without performing a backup.
   remove-artifacts: false
   # Backup to a single backup file. Use - for stdout. Required, unless `directory` or `estimate` is used.
