@@ -88,14 +88,14 @@ func TestAzureBlob_NewFlagSet_DefaultValuesRestore(t *testing.T) {
 	assert.Equal(t, "", result.Endpoint, "The default value for azure-endpoint should be an empty string")
 	assert.Equal(t, "", result.ContainerName, "The default value for azure-container-name should be an empty string")
 	assert.Equal(t, "", result.AccessTier, "The default value for azure-access-tier should be an empty string")
-	assert.Equal(t, cloudRestorePollDuration, result.RestorePollDuration, "The default value for azure-rehydrate-poll-duration should be 60000")
-	assert.Equal(t, cloudMaxRetries, result.RetryMaxAttempts, "The default value for azure-retry-max-attempts flag should be 100")
-	assert.Equal(t, cloudMaxBackoff, result.RetryMaxDelaySeconds, "The default value for azure-retry-max-delay flag should be 90")
-	assert.Equal(t, cloudBackoff, result.RetryDelaySeconds, "The default value for azure-retry-delay flag should be 60")
-	assert.Equal(t, 0, result.RetryTimeoutSeconds, "The default value for azure-retry-timeout flag should be 0")
-	assert.Equal(t, cloudRetryReadBackoff, result.RetryReadBackoffSeconds, "The default value for azure-retry-read-backoff should be 0")
-	assert.Equal(t, cloudRetryReadMultiplier, result.RetryReadMultiplier, "The default value for azure-retry-read-multiplier should be 0")
-	assert.Equal(t, cloudRetryReadMaxAttempts, result.RetryReadMaxAttempts, "The default value for azure-retry-read-max-attempts should be 0")
+	assert.Equal(t, models.DefaultAzureRestorePollDuration, result.RestorePollDuration, "The default value for azure-rehydrate-poll-duration should be 60000")
+	assert.Equal(t, models.DefaultAzureRetryMaxAttempts, result.RetryMaxAttempts, "The default value for azure-retry-max-attempts flag should be 100")
+	assert.Equal(t, models.DefaultAzureRetryMaxDelaySeconds, result.RetryMaxDelaySeconds, "The default value for azure-retry-max-delay flag should be 90")
+	assert.Equal(t, models.DefaultAzureRetryDelaySeconds, result.RetryDelaySeconds, "The default value for azure-retry-delay flag should be 60")
+	assert.Equal(t, models.DefaultAzureRetryTimeoutSeconds, result.RetryTimeoutSeconds, "The default value for azure-retry-timeout flag should be 0")
+	assert.Equal(t, models.DefaultCloudRetryReadBackoffSeconds, result.RetryReadBackoffSeconds, "The default value for azure-retry-read-backoff should be 0")
+	assert.Equal(t, models.DefaultCloudRetryReadMultiplier, result.RetryReadMultiplier, "The default value for azure-retry-read-multiplier should be 0")
+	assert.Equal(t, models.DefaultCloudRetryReadMaxAttempts, result.RetryReadMaxAttempts, "The default value for azure-retry-read-max-attempts should be 0")
 }
 
 func TestAzureBlob_NewFlagSetBackup(t *testing.T) {
@@ -157,7 +157,7 @@ func TestAzureBlob_NewFlagSet_DefaultValuesBackup(t *testing.T) {
 	assert.Equal(t, "", result.Endpoint, "The default value for azure-endpoint should be an empty string")
 	assert.Equal(t, "", result.ContainerName, "The default value for azure-container-name should be an empty string")
 	assert.Equal(t, "", result.AccessTier, "The default value for azure-access-tier should be an empty string")
-	assert.Equal(t, models.DefaultChunkSize, result.BlockSize, "The default value for azure-block-size should be 5MB")
+	assert.Equal(t, models.DefaultAzureBlockSize, result.BlockSize, "The default value for azure-block-size should be 5MB")
 	assert.Equal(t, 0, result.MaxConnsPerHost, "The default value for s3-max-conns-per-host should be 0")
-	assert.Equal(t, cloudRequestTimeout, result.RequestTimeoutSeconds, "The default value for azure-request-timeout should be 0")
+	assert.Equal(t, models.DefaultCloudRequestTimeoutSeconds, result.RequestTimeoutSeconds, "The default value for azure-request-timeout should be 0")
 }

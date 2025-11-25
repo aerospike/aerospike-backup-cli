@@ -50,5 +50,5 @@ func TestLocal_NewFlagSet_DefaultValues(t *testing.T) {
 
 	result := local.GetLocal()
 
-	assert.Equal(t, models.DefaultChunkSize, result.BufferSize, "The default value for local-buffer-size should be DefaultChunkSize")
+	assert.Equal(t, models.DefaultLocalBufferSize, result.BufferSize, "The default value for local-buffer-size should be DefaultChunkSize")
 }

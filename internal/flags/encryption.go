@@ -49,19 +49,22 @@ func (f *Encryption) NewFlagSet() *pflag.FlagSet {
 	}
 
 	flagSet.StringVar(&f.Mode, "encrypt",
-		defaultNoneVal,
+		models.DefaultEncryptionMode,
 		descEncrypt+
 			"Supported encryption algorithms are: none, aes128, aes256.\n"+
 			"A private key must be given, either via the --encryption-key-file option or\n"+
 			"the --encryption-key-env option or the --encryption-key-secret.")
+
 	flagSet.StringVar(&f.KeyFile, "encryption-key-file",
-		"",
+		models.DefaultEncryptionKeyFile,
 		"Grabs the encryption key from the given file, which must be in PEM format.")
+
 	flagSet.StringVar(&f.KeyEnv, "encryption-key-env",
-		"",
+		models.DefaultEncryptionKeyEnv,
 		"Grabs the encryption key from the given environment variable, which must be base-64 encoded.")
+
 	flagSet.StringVar(&f.KeySecret, "encryption-key-secret",
-		"",
+		models.DefaultEncryptionKeySecret,
 		"Grabs the encryption key from secret-agent.")
 
 	return flagSet

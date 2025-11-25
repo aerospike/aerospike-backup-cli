@@ -25,12 +25,12 @@ import (
 // decodeBackupServiceConfig reads a backup configuration file and decodes it into BackupServiceConfig.
 // Returns an error on failure.
 func decodeBackupServiceConfig(filename string) (*BackupServiceConfig, error) {
-	var backupDto dto.Backup
+	backupDto := dto.DefaultBackup()
 	if err := decodeFromFile(filename, &backupDto); err != nil {
 		return nil, err
 	}
 
-	serviceConfig, err := dtoToBackupServiceConfig(&backupDto)
+	serviceConfig, err := dtoToBackupServiceConfig(backupDto)
 	if err != nil {
 		return nil, err
 	}

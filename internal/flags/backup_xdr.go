@@ -31,95 +31,119 @@ func (f *BackupXDR) NewFlagSet() *pflag.FlagSet {
 	flagSet := &pflag.FlagSet{}
 
 	flagSet.StringVarP(&f.Namespace, "namespace", "n",
-		"",
+		models.DefaultBackupXDRNamespace,
 		"The namespace to be backed up. Required.")
 
 	flagSet.StringVarP(&f.Directory, "directory", "d",
-		"",
+		models.DefaultBackupXDRDirectory,
 		"The directory that holds the backup files. Required.")
+
 	flagSet.BoolVarP(&f.RemoveFiles, "remove-files", "r",
-		false,
+		models.DefaultBackupXDRRemoveFiles,
 		"Remove an existing backup file (-o) or entire directory (-d) and replace with the new backup.")
+
 	flagSet.Uint64VarP(&f.FileLimit, "file-limit", "F",
-		250,
+		models.DefaultBackupXDRFileLimit,
 		"Rotate backup files when their size crosses the given\n"+
 			"value (MiB). Only used when backing up to a directory.")
+
 	flagSet.IntVar(&f.ParallelWrite, "parallel-write",
-		0,
+		models.DefaultBackupXDRParallelWrite,
 		"Number of concurrent backup files writing.\n"+
 			"If not set, the default value is automatically calculated and appears as the number of CPUs on your machine.")
+
 	flagSet.StringVar(&f.DC, "dc",
-		"dc",
+		models.DefaultBackupXDRDC,
 		"DC that will be created on source instance for xdr backup.\n"+
 			"DC name can include only Latin lowercase and uppercase letters with no diacritical marks (a-z, A-Z),\n"+
 			"digits 0-9, underscores (_), hyphens (-), and dollar signs ($). Max length is 31 bytes.")
+
 	flagSet.BoolVar(&f.Forward, "forward",
-		false,
+		models.DefaultBackupXDRForward,
 		"By default XDR writes that originated from another XDR are not forwarded to the specified\n"+
 			"destination datacenters. Setting this parameter to true sends writes that originated from another XDR\n"+
 			"to the specified destination datacenters.")
+
 	flagSet.StringVar(&f.LocalAddress, "local-address",
-		"127.0.0.1",
+		models.DefaultBackupXDRLocalAddress,
 		"Local IP address that the XDR server listens on.")
+
 	flagSet.IntVar(&f.LocalPort, "local-port",
-		8080,
+		models.DefaultBackupXDRLocalPort,
 		"Local port that the XDR server listens on.")
+
 	flagSet.StringVar(&f.Rewind, "rewind",
-		"all",
+		models.DefaultBackupXDRRewind,
 		"Rewind is used to ship all existing records of a namespace.\n"+
 			"When rewinding a namespace, XDR will scan through the index and ship\n"+
 			"all the records for that namespace, partition by partition.\n"+
 			"Can be the string \"all\" or an integer number of seconds.")
+
 	flagSet.IntVar(&f.MaxThroughput, "max-throughput",
-		0,
+		models.DefaultBackupXDRMaxThroughput,
 		"Number of records per second to ship using XDR.\n"+
 			"The --max-throughput value should be in multiples of 100.\n"+
 			"If 0, the default server value will be used.")
+
 	flagSet.Int64Var(&f.ReadTimeoutMilliseconds, "read-timeout",
-		1000,
+		models.DefaultBackupXDRReadTimeoutMilliseconds,
 		"Timeout in milliseconds for TCP read operations. Used by TCP server for XDR.")
+
 	flagSet.Int64Var(&f.WriteTimeoutMilliseconds, "write-timeout",
-		1000,
+		models.DefaultBackupXDRWriteTimeoutMilliseconds,
 		"Timeout in milliseconds for TCP write operations. Used by TCP server for XDR.")
+
 	flagSet.IntVar(&f.ResultQueueSize, "results-queue-size",
-		256,
+		models.DefaultBackupXDRResultQueueSize,
 		"Buffer for processing messages received from XDR.")
+
 	flagSet.IntVar(&f.AckQueueSize, "ack-queue-size",
-		256,
+		models.DefaultBackupXDRAckQueueSize,
 		"Buffer for processing acknowledge messages sent to XDR.")
+
 	flagSet.IntVar(&f.MaxConnections, "max-connections",
-		4096,
+		models.DefaultBackupXDRMaxConnections,
 		"Maximum number of concurrent TCP connections.")
+
 	flagSet.Int64Var(&f.InfoPolingPeriodMilliseconds, "info-poling-period",
-		1000,
+		models.DefaultBackupXDRInfoPolingPeriodMilliseconds,
 		"How often (in milliseconds) a backup client sends info commands\n"+
 			"to check Aerospike cluster statistics on recovery rate and lag.")
-	flagSet.Int64Var(&f.InfoRetryIntervalMilliseconds, "info-retry-interval", 1000,
+
+	flagSet.Int64Var(&f.InfoRetryIntervalMilliseconds, "info-retry-interval",
+		models.DefaultBackupXDRInfoRetryIntervalMilliseconds,
 		"Set the initial interval for a retry in milliseconds when info commands are sent.\n"+
 			"This parameter is applied to stop-xdr and unblock-mrt requests.")
+
 	flagSet.Float64Var(&f.InfoRetriesMultiplier, "info-retry-multiplier",
-		1,
+		models.DefaultBackupXDRInfoRetriesMultiplier,
 		"Increases the delay between subsequent retry attempts.\n"+
 			"The actual delay is calculated as: info-retry-interval * (info-retry-multiplier ^ attemptNumber)")
-	flagSet.UintVar(&f.InfoMaxRetries, "info-max-retries", 3,
+
+	flagSet.UintVar(&f.InfoMaxRetries, "info-max-retries",
+		models.DefaultBackupXDRInfoMaxRetries,
 		"How many times to retry sending info commands before failing.\n"+
 			" This parameter is applied to stop-xdr and unblock-mrt requests.")
+
 	flagSet.Int64Var(&f.StartTimeoutMilliseconds, "start-timeout",
-		30000,
+		models.DefaultBackupXDRStartTimeoutMilliseconds,
 		"Timeout for starting TCP server for XDR.\n"+
 			"If the TCP server for XDR does not receive any data within this timeout period, it will shut down.\n"+
 			"This situation can occur if the --local-address and --local-port options are misconfigured.")
+
 	flagSet.BoolVar(&f.StopXDR, "stop-xdr",
-		false,
+		models.DefaultBackupXDRStopXDR,
 		"Stops XDR and removes XDR configuration from the database.\n"+
 			"Used if previous XDR backup was interrupted or failed, but the database server still sends XDR events.\n"+
 			"Use this functionality to stop XDR after an interrupted backup.")
+
 	flagSet.BoolVar(&f.UnblockMRT, "unblock-mrt",
-		false,
+		models.DefaultBackupXDRUnblockMRT,
 		"Unblock MRT writes on the database.\n"+
 			"Use this functionality to unblock MRT writes after an interrupted backup.")
+
 	flagSet.Int64VarP(&f.InfoTimeout, "info-timeout", "T",
-		10000,
+		models.DefaultBackupXDRInfoTimeout,
 		"Set the timeout (ms) for asinfo commands sent from asrestore to the database.\n"+
 			"The info commands are to check version, get indexes, get udfs, count records, and check batch write support.")
 

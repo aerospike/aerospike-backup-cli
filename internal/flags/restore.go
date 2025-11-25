@@ -31,34 +31,40 @@ func (f *Restore) NewFlagSet() *pflag.FlagSet {
 	flagSet := &pflag.FlagSet{}
 
 	flagSet.StringVarP(&f.InputFile, "input-file", "i",
-		"",
+		models.DefaultRestoreInputFile,
 		"Restore from a single backup file. Use '-' for stdin.\n"+
 			"Required, unless --directory or --directory-list is used.\n")
+
 	flagSet.StringVar(&f.DirectoryList, "directory-list",
-		"",
+		models.DefaultRestoreDirectoryList,
 		"A comma-separated list of paths to directories that hold the backup files. Required,\n"+
 			"unless -i or -d is used. The paths may not contain commas.\n"+
 			"Example: 'asrestore --directory-list /path/to/dir1/,/path/to/dir2'\n")
+
 	flagSet.StringVar(&f.ParentDirectory, "parent-directory",
-		"",
+		models.DefaultRestoreParentDirectory,
 		"A common root path for all paths used in --directory-list.\n"+
 			"This path is prepended to all entries in --directory-list.\n"+
 			"Example: 'asrestore --parent-directory /common/root/path\n"+
 			"--directory-list /path/to/dir1/,/path/to/dir2'\n")
+
 	flagSet.BoolVarP(&f.Uniq, "unique", "u",
-		false,
+		models.DefaultRestoreUniq,
 		"Skip modifying records that already exist in the namespace.")
+
 	flagSet.BoolVarP(&f.Replace, "replace", "r",
-		false,
+		models.DefaultRestoreReplace,
 		"Fully replace records that already exist in the namespace.\n"+
 			"This option still performs a generation check by default and needs to be combined with the -g option\n"+
 			"if you do not want to perform a generation check.\n"+
 			"This option is mutually exclusive with --unique.")
+
 	flagSet.BoolVarP(&f.NoGeneration, "no-generation", "g",
-		false,
+		models.DefaultRestoreNoGeneration,
 		"Don't check the generation of records that already exist in the namespace.")
+
 	flagSet.BoolVar(&f.IgnoreRecordError, "ignore-record-error",
-		false,
+		models.DefaultRestoreIgnoreRecordError,
 		"Ignore errors specific to records, not UDFs or indexes. The errors are:\n"+
 			"AEROSPIKE_RECORD_TOO_BIG,\n"+
 			"AEROSPIKE_KEY_MISMATCH,\n"+
@@ -68,25 +74,30 @@ func (f *Restore) NewFlagSet() *pflag.FlagSet {
 			"AEROSPIKE_BIN_TYPE_ERROR,\n"+
 			"AEROSPIKE_BIN_NOT_FOUND.\n"+
 			"By default, these errors are not ignored and asrestore terminates.")
+
 	flagSet.BoolVar(&f.DisableBatchWrites, "disable-batch-writes",
-		false,
+		models.DefaultRestoreDisableBatchWrites,
 		"Disables the use of batch writes when restoring records to the Aerospike cluster.\n"+
 			"By default, the cluster is checked for batch write support. Only set this flag if you explicitly\n"+
 			"don't want batch writes to be used or if asrestore is failing to work because it cannot recognize\n"+
 			"that batch writes are disabled.\n")
+
 	flagSet.IntVar(&f.MaxAsyncBatches, "max-async-batches",
-		32,
+		models.DefaultRestoreMaxAsyncBatches,
 		"To send data to Aerospike Database, asrestore creates write workers that work in parallel.\n"+
 			"This value is the number of workers that form batches and send them to the database.\n"+
 			"For Aerospike Database versions prior to 6.0, 'batches' are only a logical grouping of records,\n"+
 			"and each record is uploaded individually.\n"+
 			"The true max number of async Aerospike calls would then be <max-async-batches> * <batch-size>.\n")
+
 	flagSet.IntVar(&f.WarmUp, "warm-up",
-		0,
+		models.DefaultRestoreWarmUp,
 		"Warm Up fills the connection pool with connections for all nodes. This is necessary for batch restore.\n"+
 			"By default is calculated as (--max-async-batches + 1), as one connection per node is reserved\n"+
 			"for tend operations and is not used for transactions.\n")
-	flagSet.IntVar(&f.BatchSize, "batch-size", 128,
+
+	flagSet.IntVar(&f.BatchSize, "batch-size",
+		models.DefaultRestoreBatchSize,
 		"The max allowed number of records to simultaneously upload to Aerospike.\n"+
 			"Default is 128 with batch writes enabled. If you disable batch writes,\n"+
 			"this flag is superseded because each worker sends writes one by one.\n"+
@@ -94,12 +105,14 @@ func (f *Restore) NewFlagSet() *pflag.FlagSet {
 			"asrestore uses batch write workers to send data to the database.\n"+
 			"Asrestore creates a number of workers equal to --max-async-batches that work in parallel,\n"+
 			"and form and send a number of records equal to --batch-size to the database.\n")
+
 	flagSet.Int64Var(&f.ExtraTTL, "extra-ttl",
-		0,
+		models.DefaultRestoreExtraTTL,
 		"For records with expirable void-times, add N seconds of extra-ttl to the\n"+
 			"recorded void-time.\n")
+
 	flagSet.Int64Var(&f.RetryBaseInterval, "retry-base-interval",
-		1000,
+		models.DefaultRestoreRetryBaseInterval,
 		"Set the initial interval for a retry in milliseconds when data is sent to the Aerospike database\n"+
 			"during a restore. This retry sequence is triggered by the following non-critical errors:\n"+
 			"AEROSPIKE_NO_AVAILABLE_CONNECTIONS_TO_NODE,\n"+
@@ -111,12 +124,14 @@ func (f *Restore) NewFlagSet() *pflag.FlagSet {
 			"AEROSPIKE_MAX_ERROR_RATE.\n"+
 			"This base timeout value is also used as the interval multiplied by --retry-multiplier to increase\n"+
 			"the timeout value between retry attempts.")
+
 	flagSet.Float64Var(&f.RetryMultiplier, "retry-multiplier",
-		1,
+		models.DefaultRestoreRetryMultiplier,
 		"Increases the delay between subsequent retry attempts for the errors listed under --retry-base-interval.\n"+
 			"The actual delay is calculated as: retry-base-interval * (retry-multiplier ^ attemptNumber)")
+
 	flagSet.UintVar(&f.RetryMaxAttempts, "retry-max-attempts",
-		0,
+		models.DefaultRestoreRetryMaxAttempts,
 		"Set the maximum number of retry attempts for the errors listed under --retry-base-interval.\n"+
 			"The default is 0, indicating no retries will be performed")
 
@@ -129,11 +144,11 @@ func (f *Restore) NewFlagSet() *pflag.FlagSet {
 	// 		"asbx - restore only .asbx backup files.")
 
 	flagSet.BoolVar(&f.ValidateOnly, "validate",
-		false,
+		models.DefaultRestoreValidateOnly,
 		"Validate backup files without restoring.")
 
 	flagSet.BoolVar(&f.ApplyMetadataLast, "apply-metadata-last",
-		false,
+		models.DefaultRestoreApplyMetadataLast,
 		"Defines when to restore metadata (secondary indexes and UDFs).\n"+
 			"If set to true, metadata from separate file will be restored after all records have been processed.")
 
