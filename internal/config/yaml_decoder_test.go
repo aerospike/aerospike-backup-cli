@@ -300,6 +300,8 @@ func TestDecodeFromFile(t *testing.T) {
 }
 
 func TestDumpFile(t *testing.T) {
+	logLevel := "info"
+
 	tests := []struct {
 		name     string
 		filename string
@@ -310,8 +312,8 @@ func TestDumpFile(t *testing.T) {
 			name:     "valid struct dump",
 			filename: "valid_dump.yaml",
 			params: dto.Backup{
-				App: dto.App{
-					LogLevel: "info",
+				App: &dto.App{
+					LogLevel: &logLevel,
 				},
 			},
 			wantErr: "",
@@ -365,6 +367,10 @@ func TestDumpFile(t *testing.T) {
 func TestDtoToBackupServiceConfig(t *testing.T) {
 	t.Parallel()
 
+	logLevel := "info"
+	cMode := "zstd"
+	eMode := "none"
+
 	tests := []struct {
 		name      string
 		dtoBackup *dto.Backup
@@ -373,15 +379,15 @@ func TestDtoToBackupServiceConfig(t *testing.T) {
 		{
 			name: "valid dto backup",
 			dtoBackup: &dto.Backup{
-				App: dto.App{
-					LogLevel: "info",
+				App: &dto.App{
+					LogLevel: &logLevel,
 				},
-				Cluster: dto.Cluster{},
-				Compression: dto.Compression{
-					Mode: "zstd",
+				Cluster: &dto.Cluster{},
+				Compression: &dto.Compression{
+					Mode: &cMode,
 				},
-				Encryption: dto.Encryption{
-					Mode: "none",
+				Encryption: &dto.Encryption{
+					Mode: &eMode,
 				},
 			},
 			wantErr: "",
@@ -421,6 +427,10 @@ func TestDtoToBackupServiceConfig(t *testing.T) {
 func TestDtoToRestoreServiceConfig(t *testing.T) {
 	t.Parallel()
 
+	logLevel := "info"
+	cMode := "zstd"
+	eMode := "none"
+
 	tests := []struct {
 		name       string
 		dtoRestore *dto.Restore
@@ -429,15 +439,15 @@ func TestDtoToRestoreServiceConfig(t *testing.T) {
 		{
 			name: "valid dto restore",
 			dtoRestore: &dto.Restore{
-				App: dto.App{
-					LogLevel: "info",
+				App: &dto.App{
+					LogLevel: &logLevel,
 				},
-				Cluster: dto.Cluster{},
-				Compression: dto.Compression{
-					Mode: "zstd",
+				Cluster: &dto.Cluster{},
+				Compression: &dto.Compression{
+					Mode: &cMode,
 				},
-				Encryption: dto.Encryption{
-					Mode: "none",
+				Encryption: &dto.Encryption{
+					Mode: &eMode,
 				},
 			},
 			wantErr: "",

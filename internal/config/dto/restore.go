@@ -22,21 +22,42 @@ import (
 
 // Restore is used to map yaml config.
 type Restore struct {
-	App         App           `yaml:"app"`
-	Cluster     Cluster       `yaml:"cluster"`
-	Restore     RestoreConfig `yaml:"restore"`
-	Compression Compression   `yaml:"compression"`
-	Encryption  Encryption    `yaml:"encryption"`
-	SecretAgent SecretAgent   `yaml:"secret-agent"`
+	App         *App           `yaml:"app"`
+	Cluster     *Cluster       `yaml:"cluster"`
+	Restore     *RestoreConfig `yaml:"restore"`
+	Compression *Compression   `yaml:"compression"`
+	Encryption  *Encryption    `yaml:"encryption"`
+	SecretAgent *SecretAgent   `yaml:"secret-agent"`
 	Aws         struct {
-		S3 AwsS3 `yaml:"s3"`
+		S3 *AwsS3 `yaml:"s3"`
 	} `yaml:"aws"`
 	Gcp struct {
-		Storage GcpStorage `yaml:"storage"`
+		Storage *GcpStorage `yaml:"storage"`
 	} `yaml:"gcp"`
 	Azure struct {
-		Blob AzureBlob `yaml:"blob"`
+		Blob *AzureBlob `yaml:"blob"`
 	} `yaml:"azure"`
+}
+
+// DefaultRestore returns a Restore with default values.
+func DefaultRestore() *Restore {
+	return &Restore{
+		App:         defaultApp(),
+		Cluster:     defaultCluster(),
+		Restore:     defaultRestoreConfig(),
+		Compression: defaultCompression(),
+		Encryption:  defaultEncryption(),
+		SecretAgent: defaultSecretAgent(),
+		Aws: struct {
+			S3 *AwsS3 `yaml:"s3"`
+		}{S3: defaultAwsS3()},
+		Gcp: struct {
+			Storage *GcpStorage `yaml:"storage"`
+		}{Storage: defaultGcpStorage()},
+		Azure: struct {
+			Blob *AzureBlob `yaml:"blob"`
+		}{Blob: defaultAzureBlob()},
+	}
 }
 
 func (r *Restore) ToModelRestore() *models.Restore {
@@ -64,20 +85,20 @@ func (r *Restore) ToModelRestore() *models.Restore {
 		InputFile:          derefString(r.Restore.InputFile),
 		DirectoryList:      strings.Join(r.Restore.DirectoryList, ","),
 		ParentDirectory:    derefString(r.Restore.ParentDirectory),
-		DisableBatchWrites: r.Restore.DisableBatchWrites,
-		BatchSize:          r.Restore.BatchSize,
-		MaxAsyncBatches:    r.Restore.MaxAsyncBatches,
-		WarmUp:             r.Restore.WarmUp,
-		ExtraTTL:           r.Restore.ExtraTTL,
-		IgnoreRecordError:  r.Restore.IgnoreRecordError,
-		Uniq:               r.Restore.Uniq,
-		Replace:            r.Restore.Replace,
-		NoGeneration:       r.Restore.NoGeneration,
-		RetryBaseInterval:  r.Restore.RetryBaseInterval,
-		RetryMultiplier:    r.Restore.RetryMultiplier,
-		RetryMaxAttempts:   r.Restore.RetryMaxAttempts,
-		ValidateOnly:       r.Restore.ValidateOnly,
-		ApplyMetadataLast:  r.Restore.ApplyMetadataLast,
+		DisableBatchWrites: derefBool(r.Restore.DisableBatchWrites),
+		BatchSize:          derefInt(r.Restore.BatchSize),
+		MaxAsyncBatches:    derefInt(r.Restore.MaxAsyncBatches),
+		WarmUp:             derefInt(r.Restore.WarmUp),
+		ExtraTTL:           derefInt64(r.Restore.ExtraTTL),
+		IgnoreRecordError:  derefBool(r.Restore.IgnoreRecordError),
+		Uniq:               derefBool(r.Restore.Uniq),
+		Replace:            derefBool(r.Restore.Replace),
+		NoGeneration:       derefBool(r.Restore.NoGeneration),
+		RetryBaseInterval:  derefInt64(r.Restore.RetryBaseInterval),
+		RetryMultiplier:    derefFloat64(r.Restore.RetryMultiplier),
+		RetryMaxAttempts:   derefUint(r.Restore.RetryMaxAttempts),
+		ValidateOnly:       derefBool(r.Restore.ValidateOnly),
+		ApplyMetadataLast:  derefBool(r.Restore.ApplyMetadataLast),
 	}
 }
 
@@ -110,7 +131,7 @@ type RestoreConfig struct {
 	RetryBaseInterval             *int64   `yaml:"retry-base-interval"`
 	RetryMultiplier               *float64 `yaml:"retry-multiplier"`
 	RetryMaxAttempts              *uint    `yaml:"retry-max-attempts"`
-	ValidateOnly                  *bool    `yaml:"validate-only"`
+	ValidateOnly                  *bool    `yaml:"validate"`
 	InfoTimeout                   *int64   `yaml:"info-timeout"`
 	InfoMaxRetries                *uint    `yaml:"info-max-retries"`
 	InfoRetriesMultiplier         *float64 `yaml:"info-retry-multiplier"`
@@ -140,7 +161,7 @@ func defaultRestoreConfig() *RestoreConfig {
 		TotalTimeout:                  int64Ptr(models.DefaultRestoreTotalTimeout),
 		Parallel:                      intPtr(models.DefaultRestoreParallel),
 		InputFile:                     stringPtr(models.DefaultRestoreInputFile),
-		DirectoryList:                 []string,
+		DirectoryList:                 []string{},
 		ParentDirectory:               stringPtr(models.DefaultRestoreParentDirectory),
 		DisableBatchWrites:            boolPtr(models.DefaultRestoreDisableBatchWrites),
 		BatchSize:                     intPtr(models.DefaultRestoreBatchSize),

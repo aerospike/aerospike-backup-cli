@@ -527,7 +527,7 @@ restore:
   # The default is 0, indicating no retries will be performed
   retry-max-attempts: 1
   # Validate backup files without restoring.
-  validate-only: false
+  validate: false
   # Defines when to restore metadata (secondary indexes and UDFs).
   # If set to true, metadata from separate file will be restored after all records have been processed.
   apply-metadata-last: false
