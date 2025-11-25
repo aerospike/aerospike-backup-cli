@@ -385,6 +385,8 @@ cluster:
   client-idle-timeout: 10000
   # Specifies the login operation timeout for external authentication methods such as LDAP.
   client-login-timeout: 10000
+  # Determines if the client should use "services-alternate" instead of "services" in info request during cluster tending.
+  service-alternate: false
   tls:
     # TLS name used to authenticate each TLS socket connection to a database.
     name: ""
@@ -503,7 +505,7 @@ restore:
   info-max-retries: 3
   # Increases the delay between subsequent retry attempts.
   # The actual delay is calculated as: info-retry-interval * (info-retry-multiplier ^ attemptNumber)
-  info-retries-multiplier: 1
+  info-retry-multiplier: 1
   # Set the initial interval for a retry in milliseconds when info commands are sent.
   info-retry-interval: 1000
   # Set the initial interval for a retry in milliseconds when data is sent to the Aerospike database
@@ -523,7 +525,7 @@ restore:
   retry-multiplier: 1
   # Set the maximum number of retry attempts for the errors listed under retry-base-interval.
   # The default is 0, indicating no retries will be performed
-  retry-max-retries: 1
+  retry-max-attempts: 1
   # Validate backup files without restoring.
   validate-only: false
   # Defines when to restore metadata (secondary indexes and UDFs).
@@ -598,6 +600,14 @@ aws:
       retry-read-multiplier: 2.0
       # The maximum number of retry attempts that will be made. If set to 0, no retries will be performed.
       retry-read-max-attempts: 3
+      # MaxConnsPerHost optionally limits the total number of connections per host, 
+      # including connections in the dialing, active, and idle states. On limit violation, dials will block.
+      # Zero means no limit.
+      max-conns-per-host: 0
+      # Timeout specifies a time limit for requests made by this Client.
+      # The timeout includes connection time, any redirects, and reading the response body.
+      # Zero means no limit.
+      request-timeout: 600
 gcp:
   storage:
       # Path to file containing service account JSON key.
@@ -622,6 +632,14 @@ gcp:
       retry-read-multiplier: 2.0
       # The maximum number of retry attempts that will be made. If set to 0, no retries will be performed.
       retry-read-max-attempts: 3
+      # MaxConnsPerHost optionally limits the total number of connections per host, 
+      # including connections in the dialing, active, and idle states. On limit violation, dials will block.
+      # Zero means no limit.
+      max-conns-per-host: 0
+      # Timeout specifies a time limit for requests made by this Client.
+      # The timeout includes connection time, any redirects, and reading the response body.
+      # Zero means no limit.
+      request-timeout: 600
 azure:
   blob:
       # Azure account name for account name, key authorization.
@@ -640,6 +658,7 @@ azure:
       container-name: ""
       # Tiers are: Archive, Cold, Cool, Hot, P10, P15, P20, P30, P4, P40, P50, P6, P60, P70, P80, Premium.
       access-tier: ""
+      # How often (in milliseconds) a backup client checks object status when restoring an archived object.
       rehydrate-poll-duration: 100
       # Max retries specifies the maximum number of attempts a failed operation will be retried before producing an error.
       retry-max-attempts: 100
@@ -662,4 +681,12 @@ azure:
       retry-read-multiplier: 2.0
       # The maximum number of retry attempts that will be made. If set to 0, no retries will be performed.
       retry-read-max-attempts: 3
+      # MaxConnsPerHost optionally limits the total number of connections per host, 
+      # including connections in the dialing, active, and idle states. On limit violation, dials will block.
+      # Zero means no limit.
+      max-conns-per-host: 0
+      # Timeout specifies a time limit for requests made by this Client.
+      # The timeout includes connection time, any redirects, and reading the response body.
+      # Zero means no limit.
+      request-timeout: 600
 ```

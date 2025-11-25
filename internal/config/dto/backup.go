@@ -63,7 +63,7 @@ type Backup struct {
 		RackList                      []string `yaml:"rack-list"`
 		InfoTimeout                   int64    `yaml:"info-timeout"`
 		InfoMaxRetries                uint     `yaml:"info-max-retries"`
-		InfoRetriesMultiplier         float64  `yaml:"info-retries-multiplier"`
+		InfoRetriesMultiplier         float64  `yaml:"info-retry-multiplier"`
 		InfoRetryIntervalMilliseconds int64    `yaml:"info-retry-interval"`
 		StdBufferSize                 int      `yaml:"std-buffer-size"`
 	} `yaml:"backup"`

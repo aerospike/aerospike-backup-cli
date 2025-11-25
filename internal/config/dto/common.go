@@ -52,6 +52,7 @@ type Cluster struct {
 	ClientTimeout      int64  `yaml:"client-timeout"`
 	ClientIdleTimeout  int64  `yaml:"client-idle-timeout"`
 	ClientLoginTimeout int64  `yaml:"client-login-timeout"`
+	ServiceAlternate   bool   `yaml:"service-alternate"`
 	TLS                struct {
 		Name            string `yaml:"name"`
 		Protocols       string `yaml:"protocols"`
@@ -182,6 +183,8 @@ func (c *Cluster) ToAerospikeConfig() (*client.AerospikeConfig, error) {
 		f.TLSEnable = true
 	}
 
+	f.UseServicesAlternate = c.ServiceAlternate
+
 	return f.NewAerospikeConfig(), nil
 }
 
@@ -257,6 +260,7 @@ type AwsS3 struct {
 	EndpointOverride        string  `yaml:"endpoint-override"`
 	AccessKeyID             string  `yaml:"access-key-id"`
 	SecretAccessKey         string  `yaml:"secret-access-key"`
+	RestorePollDuration     int64   `yaml:"restore-poll-duration"`
 	StorageClass            string  `yaml:"storage-class"`
 	AccessTier              string  `yaml:"access-tier"`
 	RetryMaxAttempts        int     `yaml:"retry-max-attempts"`
@@ -287,6 +291,7 @@ func (a *AwsS3) ToModelAwsS3() *models.AwsS3 {
 		RetryBackoffSeconds:    a.RetryBackoff,
 		ChunkSize:              a.ChunkSize,
 		UploadConcurrency:      a.UploadConcurrency,
+		RestorePollDuration:    a.RestorePollDuration,
 		StorageCommon: models.StorageCommon{
 			CalculateChecksum:       a.CalculateChecksum,
 			RetryReadBackoffSeconds: a.RetryReadBackoffSeconds,
@@ -345,6 +350,7 @@ type AzureBlob struct {
 	EndpointOverride        string  `yaml:"endpoint-override"`
 	ContainerName           string  `yaml:"container-name"`
 	AccessTier              string  `yaml:"access-tier"`
+	RestorePollDuration     int64   `yaml:"rehydrate-poll-duration"`
 	RetryMaxAttempts        int     `yaml:"retry-max-attempts"`
 	RetryTimeout            int     `yaml:"retry-timeout"`
 	RetryDelay              int     `yaml:"retry-delay"`
@@ -356,6 +362,7 @@ type AzureBlob struct {
 	RetryReadMaxAttempts    uint    `yaml:"retry-read-max-attempts"`
 	MaxConnsPerHost         int     `yaml:"max-conns-per-host"`
 	RequestTimeoutSeconds   int     `yaml:"request-timeout"`
+	BlockSize               int     `yaml:"block-size"`
 }
 
 func (a *AzureBlob) ToModelAzureBlob() *models.AzureBlob {
@@ -373,6 +380,8 @@ func (a *AzureBlob) ToModelAzureBlob() *models.AzureBlob {
 		RetryDelaySeconds:    a.RetryDelay,
 		RetryMaxDelaySeconds: a.RetryMaxDelay,
 		UploadConcurrency:    a.UploadConcurrency,
+		RestorePollDuration:  a.RestorePollDuration,
+		BlockSize:            a.BlockSize,
 		StorageCommon: models.StorageCommon{
 			CalculateChecksum:       a.CalculateChecksum,
 			RetryReadBackoffSeconds: a.RetryReadBackoffSeconds,
