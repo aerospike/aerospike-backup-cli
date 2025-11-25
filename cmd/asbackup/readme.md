@@ -269,10 +269,10 @@ Any AWS parameter can be retrieved from Secret Agent.
       --s3-retry-backoff int          Provides the backoff, in seconds, that the retryer will use to determine the delay between retry attempts. (default 60)
       --s3-max-conns-per-host int     MaxConnsPerHost optionally limits the total number of connections per host,
                                       including connections in the dialing, active, and idle states. On limit violation, dials will block.
-                                      Zero means no limit.
+                                      0 means no limit.
       --s3-request-timeout int        Timeout in seconds specifies a time limit for requests made by this Client.
                                       The timeout includes connection time, any redirects, and reading the response body.
-                                      Zero means no limit. (default 600)
+                                      0 means no limit. (default 600)
 
 GCP Storage Flags:
 For GCP storage, the bucket name must be set with --gcp-bucket-name flag.
@@ -294,10 +294,10 @@ Any GCP parameter can be retrieved from Secret Agent.
                                              It should be greater than 1. (default 2)
       --gcp-max-conns-per-host int           MaxConnsPerHost optionally limits the total number of connections per host,
                                              including connections in the dialing, active, and idle states. On limit violation, dials will block.
-                                             Zero means no limit.
+                                             0 means no limit.
       --gcp-request-timeout int              Timeout in seconds specifies a time limit for requests made by this Client.
                                              The timeout includes connection time, any redirects, and reading the response body.
-                                             Zero means no limit. (default 600)
+                                             0 means no limit. (default 600)
 
 Azure Storage Flags:
 For Azure storage, the container name must be set with --azure-storage-container-name flag.
@@ -331,10 +331,10 @@ Any Azure parameter can be retrieved from Secret Agent.
                                        NOTE: Setting this to a small value might cause premature HTTP request time-outs.
       --azure-max-conns-per-host int   MaxConnsPerHost optionally limits the total number of connections per host,
                                        including connections in the dialing, active, and idle states. On limit violation, dials will block.
-                                       Zero means no limit.
+                                       0 means no limit.
       --azure-request-timeout int      Timeout in seconds specifies a time limit for requests made by this Client.
                                        The timeout includes connection time, any redirects, and reading the response body.
-                                       Zero means no limit. (default 600)
+                                       0 means no limit. (default 600)
 ```
 
 ## Unsupported flags
@@ -642,11 +642,11 @@ aws:
     calculate-checksum: false
     # MaxConnsPerHost optionally limits the total number of connections per host, 
     # including connections in the dialing, active, and idle states. On limit violation, dials will block.
-    # Zero means no limit.
+    # 0 means no limit.
     max-conns-per-host: 0
     # Timeout specifies a time limit for requests made by this Client.
     # The timeout includes connection time, any redirects, and reading the response body.
-    # Zero means no limit.
+    # 0 means no limit.
     request-timeout: 600
 gcp:
   storage:
@@ -672,11 +672,11 @@ gcp:
     calculate-checksum: false
     # MaxConnsPerHost optionally limits the total number of connections per host, 
     # including connections in the dialing, active, and idle states. On limit violation, dials will block.
-    # Zero means no limit.
+    # 0 means no limit.
     max-conns-per-host: 0
     # Timeout specifies a time limit for requests made by this Client.
     # The timeout includes connection time, any redirects, and reading the response body.
-    # Zero means no limit.
+    # 0 means no limit.
     request-timeout: 600
 azure:
   blob:
@@ -718,11 +718,11 @@ azure:
     calculate-checksum: false
     # MaxConnsPerHost optionally limits the total number of connections per host, 
     # including connections in the dialing, active, and idle states. On limit violation, dials will block.
-    # Zero means no limit.
+    # 0 means no limit.
     max-conns-per-host: 0
     # Timeout specifies a time limit for requests made by this Client.
     # The timeout includes connection time, any redirects, and reading the response body.
-    # Zero means no limit.
+    # 0 means no limit.
     request-timeout: 600
 local:
   disk:
