@@ -277,6 +277,15 @@ func TestValidateBackup(t *testing.T) {
 			wantErr:     true,
 			expectedErr: "continue and state-file-dst are mutually exclusive",
 		},
+		{
+			name: "File limit != 0 and output file set",
+			backup: &Backup{
+				FileLimit:  10,
+				OutputFile: testFile,
+			},
+			wantErr:     true,
+			expectedErr: "output-file can be used only with file-limit = 0",
+		},
 	}
 
 	for _, tt := range tests {
