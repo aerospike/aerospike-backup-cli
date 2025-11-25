@@ -8,17 +8,15 @@ After you define the scope, `asbackup` scans the database and fetches the record
 
 As `asbackup` identifies records for backup, it serializes the data into a predefined format and writes it to a backup file or directory. Serialization converts the in-memory representation of records into a stable format that can be safely stored on disk.
 
-`asbackup` supports backing up locally, to an Amazon S3 bucket, to an Azure container or GCP bucket.
+`asbackup` supports backing up locally or to an Amazon S3 bucket, an Azure container, or a GCP bucket.
 
 ## `asbackup` limitations
 `asbackup` has the following limitations:
 
 - `asbackup` requires read privileges or higher. See [Configuring Access Control in EE and FE](https://aerospike.com/docs/database/manage/security/rbac/#privileges) for more information.
-- Direct backups are supported to S3, Azure Blob, GCP Storage, also you can use other services for storing the backup files after creating them locally.
-- When running in directory mode, each parallel worker creates its own backup file.
-- You can control the size of backup files created by `asbackup` with the `--file-limit` option. After a backup file reaches the predefined size, `asbackup` creates another file. `asbackup` does not have an upper limit for the size of a backup file.
+- Direct backups are supported to S3, Azure, GCP, or you can use other services for storing the backup files after creating them locally.
 - ZSTD is the only compression algorithm available with `asbackup`. 
-- ZSTD at compression levels 1-2 may produce uncompressed (raw) blocks when the algorithm determines that compression would not reduce the data size, as per [RFC 8878](https://datatracker.ietf.org/doc/html/rfc8878) specification which recommends sending uncompressed blocks when compressed output would be larger than the original.
+- At compression levels 1–2, ZSTD may produce uncompressed (raw) blocks when the algorithm determines that compression would not reduce the data size, as per RFC 8878, which recommends sending uncompressed blocks when the compressed output would be larger than the original.
 
 ## Default backup content
 `asbackup` backs up the following data by default:
@@ -40,7 +38,7 @@ As `asbackup` identifies records for backup, it serializes the data into a prede
 make build
 ```
 ### Release
-Version artifacts are automatically built and uploaded under releases in GitHub.
+Release artifacts are automatically built and uploaded under GitHub Releases.
 
 ## Supported flags
 ```bash
@@ -58,9 +56,8 @@ General Flags:
 Aerospike Client Flags:
   -h, --host host[:tls-name][:port][,...]                                                           The Aerospike host. (default 127.0.0.1)
   -p, --port int                                                                                    The default Aerospike port. (default 3000)
-  -U, --user string                                                                                 The Aerospike user to use to connect to the Aerospike cluster.
-  -P, --password "env-b64:<env-var>,b64:<b64-pass>,file:<pass-file>,<clear-pass>"                   The Aerospike password to use to connect to the Aerospike 
-                                                                                                    cluster.
+  -U, --user string                                                                                 The Aerospike user for the connection to the Aerospike cluster.
+  -P, --password "env-b64:<env-var>,b64:<b64-pass>,file:<pass-file>,<clear-pass>"                   The Aerospike password for the connection to the Aerospike cluster.
       --auth INTERNAL,EXTERNAL,PKI                                                                  The authentication mode used by the Aerospike server. INTERNAL 
                                                                                                     uses standard user/pass. EXTERNAL uses external methods (like LDAP) 
                                                                                                     which are configured on the server. EXTERNAL requires TLS. PKI allows 
@@ -68,8 +65,7 @@ Aerospike Client Flags:
                                                                                                     username needs to be configured. (default INTERNAL)
       --tls-enable                                                                                  Enable TLS authentication with Aerospike. If false, other TLS 
                                                                                                     options are ignored.
-      --tls-name string                                                                             The server TLS context to use to authenticate the connection to 
-                                                                                                    Aerospike.
+      --tls-name string                                                                             The server TLS context to use to authenticate the connection to Aerospike.
       --tls-cafile env-b64:<cert>,b64:<cert>,<cert-file-name>                                       The CA used when connecting to Aerospike.
       --tls-capath <cert-path-name>                                                                 A path containing CAs for connecting to Aerospike.
       --tls-certfile env-b64:<cert>,b64:<cert>,<cert-file-name>                                     The certificate file for mutual TLS authentication with 
@@ -78,7 +74,7 @@ Aerospike Client Flags:
       --tls-keyfile-password "env-b64:<env-var>,b64:<b64-pass>,file:<pass-file>,<clear-pass>"       The password used to decrypt the key file if encrypted.
       --tls-protocols "[[+][-]all] [[+][-]TLSv1] [[+][-]TLSv1.1] [[+][-]TLSv1.2] [[+][-]TLSv1.3]"   Set the TLS protocol selection criteria. This format is the same 
                                                                                                     as Apache's SSLProtocol documented at 
-                                                                                                    https://httpd.apache.org/docs/current/mod/mod_ssl.html#ssl protocol. (default +TLSv1.2)
+                                                                                                    https://httpd.apache.org/docs/current/mod/mod_ssl.html#sslprotocol. (default +TLSv1.2)
       --services-alternate                                                                          Determines if the client should use "services-alternate" instead 
                                                                                                     of "services" in info request during cluster tending.
       --client-timeout int         Initial host connection timeout duration. The timeout when opening a connection
@@ -87,10 +83,10 @@ Aerospike Client Flags:
                                    deadline will be extended by this duration. When this deadline is reached,
                                    the connection will be closed and discarded from the connection pool.
                                    The value is limited to 24 hours (86400s).
-                                   It's important to set this value to a few seconds less than the server's proto-fd-idle-ms
+                                   Set this value to a few seconds less than the server's proto-fd-idle-ms
                                    (default 60000 milliseconds or 1 minute), so the client does not attempt to use a socket
                                    that has already been reaped by the server.
-                                   Connection pools are now implemented by a LIFO stack. Connections at the tail of the
+                                   Connection pools are implemented by a LIFO stack. Connections at the tail of the
                                    stack will always be the least used. These connections are checked for IdleTimeout
                                    on every tend (usually 1 second).
                                    
@@ -113,40 +109,37 @@ Backup Flags:
                                       of partitions will be evenly divided by this number to be processed in parallel. Otherwise, each
                                       filter cannot be parallelized individually, so you may only achieve as much parallelism as there are
                                       partition filters. Accepts values from 1-1024 inclusive. (default 1)
-  -L, --records-per-second int        Limit total returned records per second (rps).
-                                      Do not apply rps limit if records-per-second is zero.
+  -L, --records-per-second int        Limit total returned records per second (RPS). If 0, no limit is applied.
       --max-retries int               Maximum number of retries before aborting the current transaction. (default 5)
-      --total-timeout int             Total transaction timeout in milliseconds. 0 - no timeout.
-      --socket-timeout int            Socket timeout in milliseconds. If this value is 0, it's set to --total-timeout.
+      --total-timeout int             Total transaction timeout in milliseconds. If 0, no timeout is applied. 
+      --socket-timeout int            Socket timeout in milliseconds. If 0, the value for --total-timeout is used.
                                       If both this and --total-timeout are 0, there is no socket idle time limit. (default 10000)
       --nice int                      The limits for read/write storage bandwidth in MiB/s.
                                       Default is 0 (no limit). (DEPRECATED: use --bandwidth instead)
   -N, --bandwidth int                 The limits for read/write storage bandwidth in MiB/s.
                                       Default is 0 (no limit).
-  -T, --info-timeout int              Set the timeout (ms) for asinfo commands sent from asrestore to the database.
+  -T, --info-timeout int              Set the timeout (in ms) for asinfo commands sent from asrestore to the database.
                                       The info commands are to check version, get indexes, get udfs, count records, and check batch write support. (default 10000)
-      --info-retry-interval int       Set the initial interval for a retry in milliseconds when info commands are sent. (default 1000)
+      --info-retry-interval int       Set the initial interval for a retry (in ms) when info commands are sent. (default 1000)
       --info-retry-multiplier float   Increases the delay between subsequent retry attempts.
                                       The actual delay is calculated as: info-retry-interval * (info-retry-multiplier ^ attemptNumber) (default 1)
-      --info-max-retries uint         How many times to retry to send info commands before failing.  (default 3)
-      --std-buffer int                Buffer size in MiB for stdin and stdout operations. Is used for pipelining. (default 4)
+      --info-max-retries uint         Number of retries to send info commands before failing.  (default 3)
+      --std-buffer int                Buffer size in MiB for stdin and stdout operations. Used for pipelining. (default 4)
   -r, --remove-files                Remove an existing backup file (-o) or entire directory (-d) and replace with the new backup.
       --remove-artifacts            Remove existing backup file (-o) or files (-d) without performing a backup.
-  -o, --output-file string          Backup to a single backup file. Use '-' for stdout. Required, unless -d or -e is used.
+  -o, --output-file string          Back up to a single backup file. Use '-' for stdout. Required, unless -d or -e is used.
                                     Should be used with --file-limit = 0. Metadata will be written to the separate file.
   -q, --output-file-prefix string   When using directory parameter, prepend a prefix to the names of the generated files.
   -F, --file-limit uint             Rotate backup files when their size crosses the given
-                                    value (in MiB). Only used when backing up to a directory.
-                                     (default 250)
+                                    value (in MiB). Only used when backing up to a directory. (default 250)
   -x, --no-bins                     Do not include bin data in the backup. Use this flag for data sampling or troubleshooting.
-                                    On restore all records, that don't contain bin data will be skipped.
-      --no-ttl-only                 Only include records that have no ttl set (persistent records).
+                                    On restore, all records not containing bin data will be skipped.
+      --no-ttl-only                 Only include records that have no TTL set (persistent records).
   -D, --after-digest string         Backup records after record digest in record's partition plus all succeeding
                                     partitions. Used to resume backup with last record received from previous
                                     incomplete backup.
                                     This argument is mutually exclusive with partition-list.
                                     Format: Base64 encoded string
-                                    Example: EjRWeJq83vEjRRI0VniavN7xI0U=
                                     
   -a, --modified-after string       <YYYY-MM-DD_HH:MM:SS>
                                     Perform an incremental backup; only include records 
@@ -158,22 +151,22 @@ Backup Flags:
   -b, --modified-before string      <YYYY-MM-DD_HH:MM:SS>
                                     Only include records that last changed before the given
                                     date and time. May combined with --modified-after to specify a range.
-  -f, --filter-exp string           Base64 encoded expression. Use the encoded filter expression in each scan call,
+  -f, --filter-exp string           Base64 encoded filter expression. Use the encoded filter expression in each scan call,
                                     which can be used to do a partial backup. The expression to be used can be Base64 
                                     encoded through any client. This argument is mutually exclusive with multi-set backup.
                                     
   -l, --node-list string            <addr 1>:<port 1>[,<addr 2>:<port 2>[,...]]
                                     <node name 1>[,<node name 2>[,...]]
-                                    To get the correct node address, use 'service-tls-std' if a database configured to use TLS
-                                    and 'service-clear-std' info command if no TLS is configured.
+                                    To get the correct node address, use the info command 'service-tls-std' if the database is configured to use TLS
+                                    or 'service-clear-std' if no TLS is configured.
                                     To get the node name, use the 'node:' info command.
                                     Back up the given cluster nodes only.
-                                    The job is parallelized by number of nodes unless --parallel is set less than nodes number.
+                                    The job is parallelized by the number of nodes unless --parallel is lower than the number of nodes.
                                     This argument is mutually exclusive with --partition-list, --after-digest, --rack-list, --prefer-racks arguments.
-                                    Default: backup all nodes in the cluster
+                                    Default: back up all nodes in the cluster
   -X, --partition-list string       List of partitions <filter[,<filter>[...]]> to back up. Partition filters can be ranges,
                                     individual partitions, or records after a specific digest within a single partition.
-                                    To use this argument --parallel value must be set to the number of elements in partition list or greater
+                                    To use this argument, --parallel must be set equal to or greater than the number of elements in the partition list
                                     This argument is mutually exclusive with after-digest.
                                     Filter: <begin partition>[-<partition count>]|<digest>
                                     begin partition: 0-4095
@@ -192,7 +185,7 @@ Backup Flags:
   -M, --max-records int             The number of records approximately to back up. 0 - all records
       --sleep-between-retries int   The amount of milliseconds to sleep between retries after an error.
                                     This field is ignored when --max-retries is zero. (default 5)
-  -C, --compact                     If true, do not apply base-64 encoding to BLOBs and instead write raw binary data,
+  -C, --compact                     If true, do not apply Base64 encoding to BLOBs and instead write raw binary data,
                                     resulting in smaller backup files.
                                     Deprecated.
   -e, --estimate                    Estimate the backed-up record size from a random sample of 
@@ -213,26 +206,26 @@ Backup Flags:
 
 Compression Flags:
   -z, --compress string         Enables compressing of backup files using the specified compression algorithm.
-                                Supported compression algorithms are: zstd, none
-                                Set the zstd compression level via the --compression-level option. (default "NONE")
-      --compression-level int   zstd compression level. (default 3)
+                                Supported compression algorithms are: ZSTD, NONE
+                                Set the ZSTD compression level via the --compression-level option. (default "NONE")
+      --compression-level int   ZSTD compression level. (default 3)
 
 Encryption Flags:
       --encrypt string                 Enables encryption of backup files using the specified encryption algorithm.
-                                       Supported encryption algorithms are: none, aes128, aes256.
-                                       A private key must be given, either via the --encryption-key-file option or
+                                       Supported encryption algorithms are: NONE, AES128, AES256.
+                                       A private key must be given, either with the --encryption-key-file option or
                                        the --encryption-key-env option or the --encryption-key-secret. (default "NONE")
-      --encryption-key-file string     Grabs the encryption key from the given file, which must be in PEM format.
-      --encryption-key-env string      Grabs the encryption key from the given environment variable, which must be base-64 encoded.
-      --encryption-key-secret string   Grabs the encryption key from secret-agent.
+      --encryption-key-file string     Gets the encryption key from the given file, which must be in PEM format.
+      --encryption-key-env string      Gets the encryption key from the given environment variable, which must be Base64 encoded.
+      --encryption-key-secret string   Gets the encryption key from secret-agent.
 
 Secret Agent Flags:
 Options pertaining to the Aerospike Secret Agent.
 See documentation here: https://aerospike.com/docs/tools/secret-agent.
-Both asbackup and asrestore support getting all the cloud config parameters from the Aerospike Secret Agent.
+Both asbackup and asrestore support getting all the cloud configuration parameters from the Aerospike Secret Agent.
 To use a secret as an option, use this format: 'secrets:<resource_name>:<secret_name>' 
 Example: asbackup --azure-account-name secret:resource1:azaccount
-      --sa-connection-type string   Secret Agent connection type, supported types: tcp, unix. (default "tcp")
+      --sa-connection-type string   Secret Agent connection type. Supported types: TCP, UNIX. (default "TCP")
       --sa-address string           Secret Agent host for TCP connection or socket file path for UDS connection.
       --sa-port int                 Secret Agent port (only for TCP connection).
       --sa-timeout int              Secret Agent connection and reading timeout.
@@ -243,16 +236,16 @@ Local Storage Flags:
       --local-buffer-size int   Buffer size in megabytes for local file writes. (default 5)
 
 AWS Storage Flags:
-For S3 storage bucket name is mandatory, and is set with --s3-bucket-name flag.
-So --directory path will only contain folder name.
---s3-endpoint-override is used in case you want to use minio, instead of AWS.
+For S3, the storage bucket name must be set with the --s3-bucket-name flag.
+--directory path will only contain the folder name.
+--s3-endpoint-override is used for MinIO storage instead of AWS.
 Any AWS parameter can be retrieved from Secret Agent.
       --s3-bucket-name string         Existing S3 bucket name
       --s3-region string              The S3 region that the bucket(s) exist in.
       --s3-profile string             The S3 profile to use for credentials.
-      --s3-access-key-id string       S3 access key id. If not set, profile auth info will be used.
+      --s3-access-key-id string       S3 access key ID. If not set, profile auth info will be used.
       --s3-secret-access-key string   S3 secret access key. If not set, profile auth info will be used.
-      --s3-endpoint-override string   An alternate url endpoint to send S3 API calls to.
+      --s3-endpoint-override string   An alternate URL endpoint to send S3 API calls to.
       --s3-storage-class string       Apply storage class to backup files. Storage classes are:
                                       STANDARD,
                                       REDUCED_REDUNDANCY,
@@ -273,7 +266,7 @@ Any AWS parameter can be retrieved from Secret Agent.
       --s3-calculate-checksum         Calculate checksum for each uploaded object.
       --s3-retry-max-attempts int     Maximum number of attempts that should be made in case of an error. (default 10)
       --s3-retry-max-backoff int      Max backoff duration in seconds between retried attempts. (default 90)
-      --s3-retry-backoff int          Provides the backoff in seconds strategy the retryer will use to determine the delay between retry attempts. (default 60)
+      --s3-retry-backoff int          Provides the backoff, in seconds, that the retryer will use to determine the delay between retry attempts. (default 60)
       --s3-max-conns-per-host int     MaxConnsPerHost optionally limits the total number of connections per host,
                                       including connections in the dialing, active, and idle states. On limit violation, dials will block.
                                       Zero means no limit.
@@ -282,9 +275,9 @@ Any AWS parameter can be retrieved from Secret Agent.
                                       Zero means no limit. (default 600)
 
 GCP Storage Flags:
-For GCP storage bucket name is mandatory, and is set with --gcp-bucket-name flag.
-So --directory path will only contain folder name.
-Flag --gcp-endpoint-override is mandatory, as each storage account has different service address.
+For GCP storage, the bucket name must be set with --gcp-bucket-name flag.
+--directory path will only contain the folder name.
+The flag --gcp-endpoint-override is also mandatory, as each storage account has different service address.
 Any GCP parameter can be retrieved from Secret Agent.
       --gcp-key-path string                  Path to file containing service account JSON key.
       --gcp-bucket-name string               Name of the Google cloud storage bucket.
@@ -307,11 +300,11 @@ Any GCP parameter can be retrieved from Secret Agent.
                                              Zero means no limit. (default 600)
 
 Azure Storage Flags:
-For Azure storage container name is mandatory, and is set with --azure-storage-container-name flag.
-So --directory path will only contain folder name.
-Flag --azure-endpoint is optional, and is used for tests with Azurit or any other Azure emulator.
-For authentication you can use --azure-account-name and --azure-account-key, or 
---azure-tenant-id, --azure-client-id and azure-client-secret.
+For Azure storage, the container name must be set with --azure-storage-container-name flag.
+--directory path will only contain folder name.
+The flag --azure-endpoint is optional, and is used for tests with Azurit or any other Azure emulator.
+For authentication, use --azure-account-name and --azure-account-key, or 
+--azure-tenant-id, --azure-client-id and --azure-client-secret.
 Any Azure parameter can be retrieved from Secret Agent.
       --azure-account-name string      Azure account name for account name, key authorization.
       --azure-account-key string       Azure account key for account name, key authorization.
@@ -449,8 +442,8 @@ backup:
   no-indexes: false
   # Will not back up any UDFs if set to true.
   no-udfs: false
-  # Limit total returned records per second (rps).
-  # Do not apply rps limit if records-per-second is zero.
+  # Limit total returned records per second (RPS).
+  # Do not apply RPS limit if records-per-second is zero.
   records-per-second: 0
   # Maximum number of retries before aborting the current transaction.
   max-retries: 5
@@ -465,14 +458,14 @@ backup:
   remove-files: true
   # Remove existing backup file `output-file` or files `directory` without performing a backup.
   remove-artifacts: false
-  # Backup to a single backup file. Use - for stdout. Required, unless `directory` or `estimate` is used.
+  # Back up to a single backup file. Use - for stdout. Required, unless `directory` or `estimate` is used.
   output-file: ""
   # When using directory parameter, prepend a prefix to the names of the generated files.
   output-file-prefix: ""
   # Rotate backup files when their size crosses the given value (in bytes). Only used when backing up to a directory.
   file-limit: 262144000
   # Do not include bin data in the backup. Use this flag for data sampling or troubleshooting.
-  # On restore all records, that don't contain bin data will be skipped.
+  # On restore, all records not containing bin data will be skipped.
   no-bins: false
   # Only include records that have no ttl set (persistent records).
   no-ttl-only: false
@@ -548,7 +541,7 @@ backup:
   estimate: false
   # The number of samples to take when running a backup estimate.
   estimate-samples: 10000
-  # Name of a state file that will be saved in backup directory.
+  # Name of a state file that will be saved in the backup directory.
   # Works only with file-limit parameter. As file-limit is reached and the file is closed,
   # the current state will be saved. Works only for default and/or partition backup.
   # Not work with parallel-nodes or nodelist
@@ -575,7 +568,7 @@ backup:
   std-buffer-size: 4
 compression:
   # Enables compressing of backup files using the specified compression algorithm.
-  # Supported compression algorithms are: zstd, none\n"+
+  # Supported compression algorithms are: zstd, none
   # Set the zstd compression level via the compression-level option.
   mode: zstd
   # zstd compression level.
@@ -636,7 +629,7 @@ aws:
     retry-max-attempts: 100
     # Max backoff duration in seconds between retried attempts.
     retry-max-backoff: 90
-    # Provides the backoff in seconds strategy the retryer will use to determine the delay between retry attempts.
+    # Provides the backoff, in seconds, that the retryer will use to determine the delay between retry attempts.
     retry-backoff: 60
     # Chunk size controls the maximum number of megabytes of the object that the app will attempt to send to
     # the storage in a single request. Objects smaller than the size will be sent in a single request,
