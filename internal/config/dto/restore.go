@@ -52,12 +52,12 @@ type Restore struct {
 		NoGeneration                  bool     `yaml:"no-generation"`
 		RetryBaseInterval             int64    `yaml:"retry-base-interval"`
 		RetryMultiplier               float64  `yaml:"retry-multiplier"`
-		RetryMaxRetries               uint     `yaml:"retry-max-retries"`
+		RetryMaxAttempts              uint     `yaml:"retry-max-attempts"`
 		Mode                          string   `yaml:"mode"`
 		ValidateOnly                  bool     `yaml:"validate-only"`
 		InfoTimeout                   int64    `yaml:"info-timeout"`
 		InfoMaxRetries                uint     `yaml:"info-max-retries"`
-		InfoRetriesMultiplier         float64  `yaml:"info-retries-multiplier"`
+		InfoRetriesMultiplier         float64  `yaml:"info-retry-multiplier"`
 		InfoRetryIntervalMilliseconds int64    `yaml:"info-retry-interval"`
 		ApplyMetadataLast             bool     `yaml:"apply-metadata-last"`
 		StdBufferSize                 int      `yaml:"std-buffer-size"`
@@ -112,7 +112,7 @@ func (r *Restore) ToModelRestore() *models.Restore {
 		NoGeneration:       r.Restore.NoGeneration,
 		RetryBaseInterval:  r.Restore.RetryBaseInterval,
 		RetryMultiplier:    r.Restore.RetryMultiplier,
-		RetryMaxAttempts:   r.Restore.RetryMaxRetries,
+		RetryMaxAttempts:   r.Restore.RetryMaxAttempts,
 		Mode:               r.Restore.Mode,
 		ValidateOnly:       r.Restore.ValidateOnly,
 		ApplyMetadataLast:  r.Restore.ApplyMetadataLast,

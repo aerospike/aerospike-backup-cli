@@ -405,6 +405,8 @@ cluster:
   client-idle-timeout: 10000
   # Specifies the login operation timeout for external authentication methods such as LDAP.
   client-login-timeout: 10000
+  # Determines if the client should use "services-alternate" instead of "services" in info request during cluster tending.
+  service-alternate: false
   tls:
     # TLS name used to authenticate each TLS socket connection to a database.
     name: ""
@@ -460,7 +462,7 @@ backup:
   # If both this and total-timeout are 0, there is no socket idle time limit.
   socket-timeout: 10000
   # The limits for read/write storage bandwidth in MiB/s.
-  storage-bandwidth-limit: 0
+  bandwidth: 0
   # Remove an existing backup file `output-file` or entire directory `directory` and replace with the new backup.
   remove-files: true
   # Remove existing backup file `output-file` or files `directory` without performing a backup.
@@ -469,8 +471,8 @@ backup:
   output-file: ""
   # When using directory parameter, prepend a prefix to the names of the generated files.
   output-file-prefix: ""
-  # Rotate backup files when their size crosses the given value (in bytes). Only used when backing up to a directory.
-  file-limit: 262144000
+  # Rotate backup files when their size crosses the given value (in megabytes). Only used when backing up to a directory.
+  file-limit: 250
   # Do not include bin data in the backup. Use this flag for data sampling or troubleshooting.
   # On restore all records, that don't contain bin data will be skipped.
   no-bins: false
@@ -541,6 +543,8 @@ backup:
   # The amount of milliseconds to sleep between retries after an error.
   # This field is ignored when `max-retries` is zero.
   sleep-between-retries: 5
+  # If true, do not apply base-64 encoding to BLOBs and instead write raw binary data, resulting in smaller backup files.
+  compact: false
   # Estimate the backed-up record size from a random sample of
   # 10,000 (default) records at 99.9999% confidence to estimate the full backup size.
   # It ignores any filter: filter-exp, node-list, modified-after, modified-before, no-ttl-only,
