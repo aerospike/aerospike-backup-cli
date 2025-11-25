@@ -133,8 +133,9 @@ Backup Flags:
   -r, --remove-files                Remove an existing backup file (-o) or entire directory (-d) and replace with the new backup.
       --remove-artifacts            Remove existing backup file (-o) or files (-d) without performing a backup.
   -o, --output-file string          Backup to a single backup file. Use '-' for stdout. Required, unless -d or -e is used.
-                                    Should be used with --file-limit = 0. Metadata will be written to the separate file.
+                                    --file-limit will be ignored if this parameter is used.
   -q, --output-file-prefix string   When using directory parameter, prepend a prefix to the names of the generated files.
+                                    Not applicable when --output-file is used. 
   -F, --file-limit uint             Rotate backup files when their size crosses the given
                                     value (in MiB). Only used when backing up to a directory.
                                      (default 250)

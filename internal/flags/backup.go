@@ -39,11 +39,11 @@ func (f *Backup) NewFlagSet() *pflag.FlagSet {
 	flagSet.StringVarP(&f.OutputFile, "output-file", "o",
 		"",
 		"Backup to a single backup file. Use '-' for stdout. Required, unless -d or -e is used.\n"+
-			"Should be used with --file-limit = 0. Metadata will be written to the separate file.")
+			"--file-limit will be ignored if this parameter is used.")
 	flagSet.StringVarP(&f.OutputFilePrefix, "output-file-prefix", "q",
 		"",
-		"When using directory parameter, prepend a prefix to the names of the generated files.")
-
+		"When using directory parameter, prepend a prefix to the names of the generated files.\n"+
+			"Not applicable when --output-file is used. ")
 	flagSet.Uint64VarP(&f.FileLimit, "file-limit", "F",
 		250,
 		"Rotate backup files when their size crosses the given\n"+

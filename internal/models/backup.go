@@ -72,8 +72,12 @@ func (b *Backup) Validate() error {
 		return fmt.Errorf("only one of output-file and directory may be configured at the same time")
 	}
 
-	if b.OutputFile != "" && b.FileLimit != 0 {
-		return fmt.Errorf("output-file can be used only with file-limit = 0")
+	if err := validateFilePrefix(b.OutputFilePrefix); err != nil {
+		return fmt.Errorf("invalid output-file-prefix: %w", err)
+	}
+
+	if b.OutputFile != "" && b.OutputFilePrefix != "" {
+		return fmt.Errorf("using output-file-prefix is not allowed with output-file")
 	}
 
 	// Only one filter is allowed.
@@ -141,6 +145,51 @@ func (b *Backup) validateSingleFilter() error {
 
 	if filtersSet > 1 {
 		return fmt.Errorf("only one of %s can be configured", strings.Join(setFilters, " or "))
+	}
+
+	return nil
+}
+
+func validateFilePrefix(prefix string) error {
+	if prefix == "" {
+		return nil
+	}
+
+	invalidChars := `\/:*?"<>|`
+
+	// Check for invalid characters
+	for i, char := range prefix {
+		if strings.ContainsRune(invalidChars, char) {
+			return fmt.Errorf(
+				"file prefix contains invalid character '%c' at position %d: %q",
+				char, i, prefix,
+			)
+		}
+
+		// Check for controlling symbols (ASCII 0-31)
+		if char < 32 {
+			return fmt.Errorf(
+				"file prefix contains control character (0x%02X) at position %d: %q",
+				char, i, prefix,
+			)
+		}
+
+		// Check for DEL symbol (127)
+		if char == 127 {
+			return fmt.Errorf(
+				"file prefix contains DEL character at position %d: %q",
+				i, prefix,
+			)
+		}
+	}
+
+	// Check for whitespace at start/end
+	trimmed := strings.TrimSpace(prefix)
+	if trimmed != prefix {
+		return fmt.Errorf(
+			"file prefix cannot start or end with whitespace: %q",
+			prefix,
+		)
 	}
 
 	return nil

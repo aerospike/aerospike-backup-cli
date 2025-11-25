@@ -198,8 +198,8 @@ func newBackupConfig(params *BackupServiceConfig) (*backup.ConfigBackup, error) 
 	c.OutputFilePrefix = params.Backup.OutputFilePrefix
 	c.MetricsEnabled = true
 
-	// Reconfigure params for stdout.
-	if params.IsStdout() {
+	// Reconfigure params for stdout or single file backup.
+	if params.IsStdout() || params.Backup.OutputFile != "" {
 		// If we back up to stdout, file limit can break the input stream because it will file headers and close descriptors.
 		// So the file limit is disabled for stdout.
 		c.FileLimit = 0

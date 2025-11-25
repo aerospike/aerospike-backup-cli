@@ -18,6 +18,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 const (
@@ -286,6 +287,15 @@ func TestValidateBackup(t *testing.T) {
 			wantErr:     true,
 			expectedErr: "output-file can be used only with file-limit = 0",
 		},
+		{
+			name: "File limit != 0 and output file set",
+			backup: &Backup{
+				OutputFilePrefix: testFile,
+				OutputFile:       testFile,
+			},
+			wantErr:     true,
+			expectedErr: "using output-file-prefix is not allowed with output-file",
+		},
 	}
 
 	for _, tt := range tests {
@@ -431,6 +441,126 @@ func TestBackup_validateSingleFilter(t *testing.T) {
 				}
 			} else {
 				assert.NoError(t, err)
+			}
+		})
+	}
+}
+
+func TestValidateFilePrefix(t *testing.T) {
+	tests := []struct {
+		name      string
+		prefix    string
+		wantError bool
+	}{
+		{
+			name:      "empty prefix is valid",
+			prefix:    "",
+			wantError: false,
+		},
+		{
+			name:      "valid alphanumeric prefix",
+			prefix:    "backup123",
+			wantError: false,
+		},
+		{
+			name:      "valid prefix with dash and underscore",
+			prefix:    "backup-2024_v1",
+			wantError: false,
+		},
+		{
+			name:      "valid prefix with dot",
+			prefix:    "backup.v1",
+			wantError: false,
+		},
+		{
+			name:      "invalid forward slash",
+			prefix:    "backup/test",
+			wantError: true,
+		},
+		{
+			name:      "invalid backslash",
+			prefix:    "backup\\test",
+			wantError: true,
+		},
+		{
+			name:      "backslash at start",
+			prefix:    "\\backup",
+			wantError: true,
+		},
+		{
+			name:      "invalid colon",
+			prefix:    "backup:test",
+			wantError: true,
+		},
+		{
+			name:      "invalid asterisk",
+			prefix:    "backup*",
+			wantError: true,
+		},
+		{
+			name:      "invalid question mark",
+			prefix:    "backup?",
+			wantError: true,
+		},
+		{
+			name:      "invalid double quote",
+			prefix:    "backup\"test",
+			wantError: true,
+		},
+		{
+			name:      "invalid less than",
+			prefix:    "backup<test",
+			wantError: true,
+		},
+		{
+			name:      "invalid greater than",
+			prefix:    "backup>test",
+			wantError: true,
+		},
+		{
+			name:      "invalid pipe",
+			prefix:    "backup|test",
+			wantError: true,
+		},
+		{
+			name:      "invalid null character",
+			prefix:    "backup\x00test",
+			wantError: true,
+		},
+		{
+			name:      "invalid control character tab",
+			prefix:    "backup\ttest",
+			wantError: true,
+		},
+		{
+			name:      "invalid control character newline",
+			prefix:    "backup\ntest",
+			wantError: true,
+		},
+		{
+			name:      "leading whitespace",
+			prefix:    " backup",
+			wantError: true,
+		},
+		{
+			name:      "trailing whitespace",
+			prefix:    "backup ",
+			wantError: true,
+		},
+		{
+			name:      "valid with internal space",
+			prefix:    "backup test",
+			wantError: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := validateFilePrefix(tt.prefix)
+			if tt.wantError {
+				require.Error(t, err, "expected error for prefix: %q", tt.prefix)
+			} else {
+				require.NoError(t, err, "unexpected error for prefix: %q", tt.prefix)
 			}
 		})
 	}
