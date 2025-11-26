@@ -94,13 +94,13 @@ func (f *GcpStorage) NewFlagSet() *pflag.FlagSet {
 		models.DefaultCloudMaxConnsPerHost,
 		"MaxConnsPerHost optionally limits the total number of connections per host,\n"+
 			"including connections in the dialing, active, and idle states. On limit violation, dials will block.\n"+
-			"Zero means no limit.")
+			"0 means no limit.")
 
 	flagSet.IntVar(&f.RequestTimeoutSeconds, "gcp-request-timeout",
 		models.DefaultCloudRequestTimeoutSeconds,
 		"Timeout in seconds specifies a time limit for requests made by this Client.\n"+
 			"The timeout includes connection time, any redirects, and reading the response body.\n"+
-			"Zero means no limit.")
+			"0 means no limit.")
 
 	return flagSet
 }

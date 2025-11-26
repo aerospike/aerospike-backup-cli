@@ -16,8 +16,8 @@ When using `asrestore`, be aware of the following considerations:
 The privileges required to run `asrestore` depend on the type of objects in the namespace.
 
 - If the namespace does not contain [user-defined functions](https://aerospike.com/docs/database/learn/architecture/udf) or [secondary indexes](https://aerospike.com/docs/database/learn/architecture/data-storage/secondary-index), `read-write` is the minimum necessary privilege.
-- If the namespace contains [user-defined functions](https://aerospike.com/docs/database/learn/architecture/udf), `udf-admin` is the minimum necessary privilege to restore UDFs for Database 6.0 or newer. Otherwise, use `data-admin`.
-- If the namespace contains [secondary indexes](https://aerospike.com/docs/database/learn/architecture/data-storage/secondary-index), `sindex-admin` is the minimum necessary privilege to restore secondary indexes for Database 6.0 or newer. Otherwise, use `data-admin`.
+- If the namespace contains [user-defined functions](https://aerospike.com/docs/database/learn/architecture/udf), `udf-admin` is the minimum necessary privilege to restore UDFs for Database 6.0 or later. Otherwise, use `data-admin`.
+- If the namespace contains [secondary indexes](https://aerospike.com/docs/database/learn/architecture/data-storage/secondary-index), `sindex-admin` is the minimum necessary privilege to restore secondary indexes for Database 6.0 or later. Otherwise, use `data-admin`.
 
 For more information about Aerospike’s role-based access control system, see [Configuring Access Control in EE and FE](https://aerospike.com/docs/database/manage/security/rbac/#privileges).
 
@@ -97,23 +97,22 @@ Restore Flags:
       --no-udfs                       Don't restore any UDFs.
   -w, --parallel int                  The number of restore threads. Accepts values from 1-1024 inclusive.
                                       If not set, the default value is automatically calculated and appears as the number of CPUs on your machine.
-  -L, --records-per-second int        Limit total returned records per second (rps).
-                                      Do not apply rps limit if records-per-second is zero.
+  -L, --records-per-second int        Limit total returned records per second (RPS). If 0, no limit is applied.
       --max-retries int               Maximum number of retries before aborting the current transaction. (default 5)
-      --total-timeout int             Total transaction timeout in milliseconds. 0 - no timeout. (default 10000)
-      --socket-timeout int            Socket timeout in milliseconds. If this value is 0, it's set to --total-timeout.
+      --total-timeout int             Total transaction timeout in milliseconds. If 0, no timeout is applied.  (default 10000)
+      --socket-timeout int            Socket timeout in milliseconds. If 0, the value for --total-timeout is used.
                                       If both this and --total-timeout are 0, there is no socket idle time limit. (default 10000)
       --nice int                      The limits for read/write storage bandwidth in MiB/s.
                                       Default is 0 (no limit). (DEPRECATED: use --bandwidth instead)
   -N, --bandwidth int                 The limits for read/write storage bandwidth in MiB/s.
                                       Default is 0 (no limit).
-  -T, --info-timeout int              Set the timeout (ms) for asinfo commands sent from asrestore to the database.
+  -T, --info-timeout int              Set the timeout (in ms) for asinfo commands sent from asrestore to the database.
                                       The info commands are to check version, get indexes, get udfs, count records, and check batch write support. (default 10000)
-      --info-retry-interval int       Set the initial interval for a retry in milliseconds when info commands are sent. (default 1000)
+      --info-retry-interval int       Set the initial interval for a retry (in ms) when info commands are sent. (default 1000)
       --info-retry-multiplier float   Increases the delay between subsequent retry attempts.
                                       The actual delay is calculated as: info-retry-interval * (info-retry-multiplier ^ attemptNumber) (default 1)
-      --info-max-retries uint         How many times to retry to send info commands before failing.  (default 3)
-      --std-buffer int                Buffer size in MiB for stdin and stdout operations. Is used for pipelining. (default 4)
+      --info-max-retries uint         Number of retries to send info commands before failing. (default 3)
+      --std-buffer int                Buffer size in MiB for stdin and stdout operations. Used for pipelining. (default 4)
   -i, --input-file string         Restore from a single backup file. Use '-' for stdin.
                                   Required, unless --directory or --directory-list is used.
                                   
@@ -189,27 +188,28 @@ Restore Flags:
 Compression Flags:
   -z, --compress string         Enables decompressing of backup files using the specified compression algorithm.
                                 This must match the compression mode used when backing up the data.
-                                Supported compression algorithms are: zstd, none
-                                Set the zstd compression level via the --compression-level option. (default "NONE")
-      --compression-level int   zstd compression level. (default 3)
+                                Supported compression algorithms are: ZSTD, NONE
+                                Set the ZSTD compression level via the --compression-level option. (default "NONE")
+      --compression-level int   ZSTD compression level. (default 3)
 
 Encryption Flags:
       --encrypt string                 Enables decryption of backup files using the specified encryption algorithm.
                                        This must match the encryption mode used when backing up the data.
-                                       Supported encryption algorithms are: none, aes128, aes256.
-                                       A private key must be given, either via the --encryption-key-file option or
+                                       Supported encryption algorithms are: NONE, AES128, AES256.
+                                       A private key must be given, either with the --encryption-key-file option or
                                        the --encryption-key-env option or the --encryption-key-secret. (default "NONE")
-      --encryption-key-file string     Grabs the encryption key from the given file, which must be in PEM format.
-      --encryption-key-env string      Grabs the encryption key from the given environment variable, which must be base-64 encoded.
-      --encryption-key-secret string   Grabs the encryption key from secret-agent.
+      --encryption-key-file string     Gets the encryption key from the given file, which must be in PEM format.
+      --encryption-key-env string      Gets the encryption key from the given environment variable, which must be Base64 encoded.
+      --encryption-key-secret string   Gets the encryption key from secret-agent.
 
 Secret Agent Flags:
 Options pertaining to the Aerospike Secret Agent.
 See documentation here: https://aerospike.com/docs/tools/secret-agent.
-Both asbackup and asrestore support getting all the cloud config parameters from the Aerospike Secret Agent.
+Both asbackup and asrestore support getting all the cloud configuration parameters
+from the Aerospike Secret Agent.
 To use a secret as an option, use this format: 'secrets:<resource_name>:<secret_name>' 
 Example: asbackup --azure-account-name secret:resource1:azaccount
-      --sa-connection-type string   Secret Agent connection type, supported types: tcp, unix. (default "tcp")
+      --sa-connection-type string   Secret Agent connection type. Supported types: TCP, UNIX. (default "TCP")
       --sa-address string           Secret Agent host for TCP connection or socket file path for UDS connection.
       --sa-port int                 Secret Agent port (only for TCP connection).
       --sa-timeout int              Secret Agent connection and reading timeout.
@@ -217,16 +217,16 @@ Example: asbackup --azure-account-name secret:resource1:azaccount
       --sa-is-base64                Whether Secret Agent responses are Base64 encoded.
 
 AWS Storage Flags:
-For S3 storage bucket name is mandatory, and is set with --s3-bucket-name flag.
-So --directory path will only contain folder name.
---s3-endpoint-override is used in case you want to use minio, instead of AWS.
+For S3, the storage bucket name must be set with the --s3-bucket-name flag.
+--directory path will only contain the folder name.
+--s3-endpoint-override is used for MinIO storage instead of AWS.
 Any AWS parameter can be retrieved from Secret Agent.
       --s3-bucket-name string             Existing S3 bucket name
       --s3-region string                  The S3 region that the bucket(s) exist in.
       --s3-profile string                 The S3 profile to use for credentials.
-      --s3-access-key-id string           S3 access key id. If not set, profile auth info will be used.
+      --s3-access-key-id string           S3 access key ID. If not set, profile auth info will be used.
       --s3-secret-access-key string       S3 secret access key. If not set, profile auth info will be used.
-      --s3-endpoint-override string       An alternate url endpoint to send S3 API calls to.
+      --s3-endpoint-override string       An alternate URL endpoint to send S3 API calls to.
       --s3-tier string                    If is set, tool will try to restore archived files to the specified tier.
                                           Tiers are: Standard, Bulk, Expedited.
       --s3-restore-poll-duration int      How often (in milliseconds) a backup client checks object status when restoring an archived object. (default 60000)
@@ -237,18 +237,18 @@ Any AWS parameter can be retrieved from Secret Agent.
       --s3-retry-read-max-attempts uint   The maximum number of retry attempts that will be made. If set to 0, no retries will be performed. (default 3)
       --s3-retry-max-attempts int         Maximum number of attempts that should be made in case of an error. (default 10)
       --s3-retry-max-backoff int          Max backoff duration in seconds between retried attempts. (default 90)
-      --s3-retry-backoff int              Provides the backoff in seconds strategy the retryer will use to determine the delay between retry attempts. (default 60)
+      --s3-retry-backoff int              Provides the backoff, in seconds, that the retryer will use to determine the delay between retry attempts. (default 60)
       --s3-max-conns-per-host int         MaxConnsPerHost optionally limits the total number of connections per host,
                                           including connections in the dialing, active, and idle states. On limit violation, dials will block.
-                                          Zero means no limit.
+                                          0 means no limit.
       --s3-request-timeout int            Timeout in seconds specifies a time limit for requests made by this Client.
                                           The timeout includes connection time, any redirects, and reading the response body.
-                                          Zero means no limit. (default 600)
+                                          0 means no limit. (default 600)
 
 GCP Storage Flags:
-For GCP storage bucket name is mandatory, and is set with --gcp-bucket-name flag.
-So --directory path will only contain folder name.
-Flag --gcp-endpoint-override is mandatory, as each storage account has different service address.
+For GCP storage, the bucket name must be set with --gcp-bucket-name flag.
+--directory path will only contain the folder name.
+The flag --gcp-endpoint-override is also mandatory, as each storage account has different service address.
 Any GCP parameter can be retrieved from Secret Agent.
       --gcp-key-path string                  Path to file containing service account JSON key.
       --gcp-bucket-name string               Name of the Google cloud storage bucket.
@@ -266,17 +266,17 @@ Any GCP parameter can be retrieved from Secret Agent.
                                              It should be greater than 1. (default 2)
       --gcp-max-conns-per-host int           MaxConnsPerHost optionally limits the total number of connections per host,
                                              including connections in the dialing, active, and idle states. On limit violation, dials will block.
-                                             Zero means no limit.
+                                             0 means no limit.
       --gcp-request-timeout int              Timeout in seconds specifies a time limit for requests made by this Client.
                                              The timeout includes connection time, any redirects, and reading the response body.
-                                             Zero means no limit. (default 600)
+                                             0 means no limit. (default 600)
 
 Azure Storage Flags:
-For Azure storage container name is mandatory, and is set with --azure-storage-container-name flag.
-So --directory path will only contain folder name.
-Flag --azure-endpoint is optional, and is used for tests with Azurit or any other Azure emulator.
-For authentication you can use --azure-account-name and --azure-account-key, or 
---azure-tenant-id, --azure-client-id and azure-client-secret.
+For Azure storage, the container name must be set with --azure-storage-container-name flag.
+--directory path will only contain folder name.
+The flag --azure-endpoint is optional, and is used for tests with Azurit or any other Azure emulator.
+For authentication, use --azure-account-name and --azure-account-key, or 
+--azure-tenant-id, --azure-client-id and --azure-client-secret.
 Any Azure parameter can be retrieved from Secret Agent.
       --azure-account-name string            Azure account name for account name, key authorization.
       --azure-account-key string             Azure account key for account name, key authorization.
@@ -305,10 +305,10 @@ Any Azure parameter can be retrieved from Secret Agent.
                                              NOTE: Setting this to a small value might cause premature HTTP request time-outs.
       --azure-max-conns-per-host int         MaxConnsPerHost optionally limits the total number of connections per host,
                                              including connections in the dialing, active, and idle states. On limit violation, dials will block.
-                                             Zero means no limit.
+                                             0 means no limit.
       --azure-request-timeout int            Timeout in seconds specifies a time limit for requests made by this Client.
                                              The timeout includes connection time, any redirects, and reading the response body.
-                                             Zero means no limit. (default 600)
+                                             0 means no limit. (default 600)
 ```
 
 ## Unsupported flags

@@ -47,7 +47,7 @@ func (f *AwsS3) NewFlagSet() *pflag.FlagSet {
 
 	flagSet.StringVar(&f.AccessKeyID, "s3-access-key-id",
 		models.DefaultS3AccessKeyID,
-		"S3 access key id. If not set, profile auth info will be used.")
+		"S3 access key ID. If not set, profile auth info will be used.")
 
 	flagSet.StringVar(&f.SecretAccessKey, "s3-secret-access-key",
 		models.DefaultS3SecretAccessKey,
@@ -55,7 +55,7 @@ func (f *AwsS3) NewFlagSet() *pflag.FlagSet {
 
 	flagSet.StringVar(&f.Endpoint, "s3-endpoint-override",
 		models.DefaultS3Endpoint,
-		"An alternate url endpoint to send S3 API calls to.")
+		"An alternate URL endpoint to send S3 API calls to.")
 
 	switch f.operation {
 	case OperationBackup:
@@ -124,19 +124,19 @@ func (f *AwsS3) NewFlagSet() *pflag.FlagSet {
 
 	flagSet.IntVar(&f.RetryBackoffSeconds, "s3-retry-backoff",
 		models.DefaultS3RetryBackoffSeconds,
-		"Provides the backoff in seconds strategy the retryer will use to determine the delay between retry attempts.")
+		"Provides the backoff, in seconds, that the retryer will use to determine the delay between retry attempts.")
 
 	flagSet.IntVar(&f.MaxConnsPerHost, "s3-max-conns-per-host",
 		models.DefaultCloudMaxConnsPerHost,
 		"MaxConnsPerHost optionally limits the total number of connections per host,\n"+
 			"including connections in the dialing, active, and idle states. On limit violation, dials will block.\n"+
-			"Zero means no limit.")
+			"0 means no limit.")
 
 	flagSet.IntVar(&f.RequestTimeoutSeconds, "s3-request-timeout",
 		models.DefaultCloudRequestTimeoutSeconds,
 		"Timeout in seconds specifies a time limit for requests made by this Client.\n"+
 			"The timeout includes connection time, any redirects, and reading the response body.\n"+
-			"Zero means no limit.")
+			"0 means no limit.")
 
 	return flagSet
 }

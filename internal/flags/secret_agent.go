@@ -32,7 +32,7 @@ func (f *SecretAgent) NewFlagSet() *pflag.FlagSet {
 
 	flagSet.StringVar(&f.ConnectionType, "sa-connection-type",
 		models.DefaultSecretAgentConnectionType,
-		"Secret Agent connection type, supported types: tcp, unix.")
+		"Secret Agent connection type. Supported types: TCP, UNIX.")
 
 	flagSet.StringVar(&f.Address, "sa-address",
 		models.DefaultSecretAgentAddress,

@@ -273,34 +273,35 @@ func newHelpFunction(
 		fmt.Println("\nSecret Agent Flags:\n" +
 			"Options pertaining to the Aerospike Secret Agent.\n" +
 			"See documentation here: https://aerospike.com/docs/tools/secret-agent.\n" +
-			"Both asbackup and asrestore support getting all the cloud config parameters from the Aerospike Secret Agent.\n" +
+			"Both asbackup and asrestore support getting all the cloud configuration parameters\n" +
+			"from the Aerospike Secret Agent.\n" +
 			"To use a secret as an option, use this format: 'secrets:<resource_name>:<secret_name>' \n" +
 			"Example: asbackup --azure-account-name secret:resource1:azaccount")
 		secretAgentFlagSet.PrintDefaults()
 
 		// Print section: AWS Flags
 		fmt.Println("\nAWS Storage Flags:\n" +
-			"For S3 storage bucket name is mandatory, and is set with --s3-bucket-name flag.\n" +
-			"So --directory path will only contain folder name.\n" +
-			"--s3-endpoint-override is used in case you want to use minio, instead of AWS.\n" +
+			"For S3, the storage bucket name must be set with the --s3-bucket-name flag.\n" +
+			"--directory path will only contain the folder name.\n" +
+			"--s3-endpoint-override is used for MinIO storage instead of AWS.\n" +
 			"Any AWS parameter can be retrieved from Secret Agent.")
 		awsFlagSet.PrintDefaults()
 
 		// Print section: GCP Flags
 		fmt.Println("\nGCP Storage Flags:\n" +
-			"For GCP storage bucket name is mandatory, and is set with --gcp-bucket-name flag.\n" +
-			"So --directory path will only contain folder name.\n" +
-			"Flag --gcp-endpoint-override is mandatory, as each storage account has different service address.\n" +
+			"For GCP storage, the bucket name must be set with --gcp-bucket-name flag.\n" +
+			"--directory path will only contain the folder name.\n" +
+			"The flag --gcp-endpoint-override is also mandatory, as each storage account has different service address.\n" +
 			"Any GCP parameter can be retrieved from Secret Agent.")
 		gcpFlagSet.PrintDefaults()
 
 		// Print section: Azure Flags
 		fmt.Println("\nAzure Storage Flags:\n" +
-			"For Azure storage container name is mandatory, and is set with --azure-storage-container-name flag.\n" +
-			"So --directory path will only contain folder name.\n" +
-			"Flag --azure-endpoint is optional, and is used for tests with Azurit or any other Azure emulator.\n" +
-			"For authentication you can use --azure-account-name and --azure-account-key, or \n" +
-			"--azure-tenant-id, --azure-client-id and azure-client-secret.\n" +
+			"For Azure storage, the container name must be set with --azure-storage-container-name flag.\n" +
+			"--directory path will only contain folder name.\n" +
+			"The flag --azure-endpoint is optional, and is used for tests with Azurit or any other Azure emulator.\n" +
+			"For authentication, use --azure-account-name and --azure-account-key, or \n" +
+			"--azure-tenant-id, --azure-client-id and --azure-client-secret.\n" +
 			"Any Azure parameter can be retrieved from Secret Agent.")
 		azureFlagSet.PrintDefaults()
 	}
