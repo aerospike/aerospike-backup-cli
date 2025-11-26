@@ -17,6 +17,7 @@ package flags
 import (
 	"testing"
 
+	"github.com/aerospike/aerospike-backup-cli/internal/models"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -57,7 +58,7 @@ func TestEncryption_NewFlagSet_DefaultValues(t *testing.T) {
 
 	result := encryption.GetEncryption()
 
-	assert.Equal(t, defaultNoneVal, result.Mode, "The default value for encrypt should be an empty string")
+	assert.Equal(t, models.DefaultEncryptionMode, result.Mode, "The default value for encrypt should be an empty string")
 	assert.Equal(t, "", result.KeyFile, "The default value for encryption-key-file should be an empty string")
 	assert.Equal(t, "", result.KeyEnv, "The default value for encryption-key-env should be an empty string")
 	assert.Equal(t, "", result.KeySecret, "The default value for encryption-key-secret should be an empty string")

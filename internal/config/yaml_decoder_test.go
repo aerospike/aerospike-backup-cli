@@ -300,6 +300,8 @@ func TestDecodeFromFile(t *testing.T) {
 }
 
 func TestDumpFile(t *testing.T) {
+	logLevel := "info"
+
 	tests := []struct {
 		name     string
 		filename string
@@ -310,8 +312,8 @@ func TestDumpFile(t *testing.T) {
 			name:     "valid struct dump",
 			filename: "valid_dump.yaml",
 			params: dto.Backup{
-				App: dto.App{
-					LogLevel: "info",
+				App: &dto.App{
+					LogLevel: &logLevel,
 				},
 			},
 			wantErr: "",
@@ -358,118 +360,6 @@ func TestDumpFile(t *testing.T) {
 			info, err := os.Stat(tt.filename)
 			require.NoError(t, err)
 			require.True(t, info.Size() > 0)
-		})
-	}
-}
-
-func TestDtoToBackupServiceConfig(t *testing.T) {
-	t.Parallel()
-
-	tests := []struct {
-		name      string
-		dtoBackup *dto.Backup
-		wantErr   string
-	}{
-		{
-			name: "valid dto backup",
-			dtoBackup: &dto.Backup{
-				App: dto.App{
-					LogLevel: "info",
-				},
-				Cluster: dto.Cluster{},
-				Compression: dto.Compression{
-					Mode: "zstd",
-				},
-				Encryption: dto.Encryption{
-					Mode: "none",
-				},
-			},
-			wantErr: "",
-		},
-		{
-			name:      "nil dto backup",
-			dtoBackup: nil,
-			wantErr:   "dto is nil",
-		},
-		{
-			name:      "empty dto backup",
-			dtoBackup: &dto.Backup{},
-			wantErr:   "",
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-
-			config, err := dtoToBackupServiceConfig(tt.dtoBackup)
-
-			if tt.wantErr != "" {
-				require.Error(t, err)
-				require.Contains(t, err.Error(), tt.wantErr)
-				require.Nil(t, config)
-
-				return
-			}
-
-			require.NoError(t, err)
-			require.NotNil(t, config)
-		})
-	}
-}
-
-func TestDtoToRestoreServiceConfig(t *testing.T) {
-	t.Parallel()
-
-	tests := []struct {
-		name       string
-		dtoRestore *dto.Restore
-		wantErr    string
-	}{
-		{
-			name: "valid dto restore",
-			dtoRestore: &dto.Restore{
-				App: dto.App{
-					LogLevel: "info",
-				},
-				Cluster: dto.Cluster{},
-				Compression: dto.Compression{
-					Mode: "zstd",
-				},
-				Encryption: dto.Encryption{
-					Mode: "none",
-				},
-			},
-			wantErr: "",
-		},
-		{
-			name:       "nil dto restore",
-			dtoRestore: nil,
-			wantErr:    "dto is nil",
-		},
-		{
-			name:       "empty dto restore",
-			dtoRestore: &dto.Restore{},
-			wantErr:    "",
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-
-			config, err := dtoToRestoreServiceConfig(tt.dtoRestore)
-
-			if tt.wantErr != "" {
-				require.Error(t, err)
-				require.Contains(t, err.Error(), tt.wantErr)
-				require.Nil(t, config)
-
-				return
-			}
-
-			require.NoError(t, err)
-			require.NotNil(t, config)
 		})
 	}
 }

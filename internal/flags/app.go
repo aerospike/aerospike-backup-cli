@@ -30,21 +30,21 @@ func NewApp() *App {
 func (f *App) NewFlagSet() *pflag.FlagSet {
 	flagSet := &pflag.FlagSet{}
 
-	flagSet.BoolP("help", "Z", false, "Display help information.")
+	flagSet.BoolP("help", "Z", models.DefaultAppHelp, "Display help information.")
 	flagSet.BoolVarP(&f.Version, "version", "V",
-		false,
+		models.DefaultAppVersion,
 		"Display version information.")
 	flagSet.BoolVarP(&f.Verbose, "verbose", "v",
-		false,
+		models.DefaultAppVerbose,
 		"Enable more detailed logging.")
 	flagSet.StringVar(&f.LogLevel, "log-level",
-		"debug",
+		models.DefaultAppLogLevel,
 		"Determine log level for --verbose output. Log levels are: debug, info, warn, error.")
 	flagSet.BoolVar(&f.LogJSON, "log-json",
-		false,
+		models.DefaultAppLogJSON,
 		"Set output in JSON format for parsing by external tools.")
 	flagSet.StringVar(&f.ConfigFilePath, "config",
-		"",
+		models.DefaultAppConfigFilePath,
 		"Path to YAML configuration file.")
 
 	return flagSet
