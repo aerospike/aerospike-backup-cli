@@ -22,112 +22,189 @@ import (
 
 // Backup is used to map yaml config.
 type Backup struct {
-	App     App     `yaml:"app"`
-	Cluster Cluster `yaml:"cluster"`
-	Backup  struct {
-		Directory                     string   `yaml:"directory"`
-		Namespace                     string   `yaml:"namespace"`
-		SetList                       []string `yaml:"set-list"`
-		BinList                       []string `yaml:"bin-list"`
-		Parallel                      int      `yaml:"parallel"`
-		NoRecords                     bool     `yaml:"no-records"`
-		NoIndexes                     bool     `yaml:"no-indexes"`
-		NoUDFs                        bool     `yaml:"no-udfs"`
-		RecordsPerSecond              int      `yaml:"records-per-second"`
-		MaxRetries                    int      `yaml:"max-retries"`
-		TotalTimeout                  int64    `yaml:"total-timeout"`
-		SocketTimeout                 int64    `yaml:"socket-timeout"`
-		Bandwidth                     int64    `yaml:"bandwidth"`
-		OutputFile                    string   `yaml:"output-file"`
-		RemoveFiles                   bool     `yaml:"remove-files"`
-		ModifiedBefore                string   `yaml:"modified-before"`
-		ModifiedAfter                 string   `yaml:"modified-after"`
-		FileLimit                     uint64   `yaml:"file-limit"`
-		AfterDigest                   string   `yaml:"after-digest"`
-		MaxRecords                    int64    `yaml:"max-records"`
-		NoBins                        bool     `yaml:"no-bins"`
-		SleepBetweenRetries           int      `yaml:"sleep-between-retries"`
-		FilterExpression              string   `yaml:"filter-exp"`
-		RemoveArtifacts               bool     `yaml:"remove-artifacts"`
-		Compact                       bool     `yaml:"compact"`
-		NodeList                      []string `yaml:"node-list"`
-		NoTTLOnly                     bool     `yaml:"no-ttl-only"`
-		PreferRacks                   []string `yaml:"prefer-racks"`
-		PartitionList                 []string `yaml:"partition-list"`
-		Estimate                      bool     `yaml:"estimate"`
-		EstimateSamples               int64    `yaml:"estimate-samples"`
-		StateFileDst                  string   `yaml:"state-file-dst"`
-		Continue                      string   `yaml:"continue"`
-		ScanPageSize                  int64    `yaml:"scan-page-size"`
-		OutputFilePrefix              string   `yaml:"output-file-prefix"`
-		RackList                      []string `yaml:"rack-list"`
-		InfoTimeout                   int64    `yaml:"info-timeout"`
-		InfoMaxRetries                uint     `yaml:"info-max-retries"`
-		InfoRetriesMultiplier         float64  `yaml:"info-retries-multiplier"`
-		InfoRetryIntervalMilliseconds int64    `yaml:"info-retry-interval"`
-		StdBufferSize                 int      `yaml:"std-buffer-size"`
-	} `yaml:"backup"`
-	Compression Compression `yaml:"compression"`
-	Encryption  Encryption  `yaml:"encryption"`
-	SecretAgent SecretAgent `yaml:"secret-agent"`
+	App         *App          `yaml:"app"`
+	Cluster     *Cluster      `yaml:"cluster"`
+	Backup      *BackupConfig `yaml:"backup"`
+	Compression *Compression  `yaml:"compression"`
+	Encryption  *Encryption   `yaml:"encryption"`
+	SecretAgent *SecretAgent  `yaml:"secret-agent"`
 	Aws         struct {
-		S3 AwsS3 `yaml:"s3"`
+		S3 *AwsS3 `yaml:"s3"`
 	} `yaml:"aws"`
 	Gcp struct {
-		Storage GcpStorage `yaml:"storage"`
+		Storage *GcpStorage `yaml:"storage"`
 	} `yaml:"gcp"`
 	Azure struct {
-		Blob AzureBlob `yaml:"blob"`
+		Blob *AzureBlob `yaml:"blob"`
 	} `yaml:"azure"`
 	Local struct {
-		Disk Local `yaml:"disk"`
+		Disk *Local `yaml:"disk"`
 	} `yaml:"local"`
 }
 
+// DefaultBackup returns a Backup with default values.
+func DefaultBackup() *Backup {
+	return &Backup{
+		App:         defaultApp(),
+		Cluster:     defaultCluster(),
+		Backup:      defaultBackupConfig(),
+		Compression: defaultCompression(),
+		Encryption:  defaultEncryption(),
+		SecretAgent: defaultSecretAgent(),
+		Aws: struct {
+			S3 *AwsS3 `yaml:"s3"`
+		}{S3: defaultAwsS3()},
+		Gcp: struct {
+			Storage *GcpStorage `yaml:"storage"`
+		}{Storage: defaultGcpStorage()},
+		Azure: struct {
+			Blob *AzureBlob `yaml:"blob"`
+		}{Blob: defaultAzureBlob()},
+		Local: struct {
+			Disk *Local `yaml:"disk"`
+		}{Disk: defaultLocal()},
+	}
+}
+
 func (b *Backup) ToModelBackup() *models.Backup {
+	if b == nil || b.Backup == nil {
+		return nil
+	}
+
 	return &models.Backup{
+		//nolint:dupl // Mappings looks the same for common values.
 		Common: models.Common{
-			Directory:                     b.Backup.Directory,
-			Namespace:                     b.Backup.Namespace,
+			Directory:                     derefString(b.Backup.Directory),
+			Namespace:                     derefString(b.Backup.Namespace),
 			SetList:                       strings.Join(b.Backup.SetList, ","),
 			BinList:                       strings.Join(b.Backup.BinList, ","),
-			Parallel:                      b.Backup.Parallel,
-			NoRecords:                     b.Backup.NoRecords,
-			NoIndexes:                     b.Backup.NoIndexes,
-			NoUDFs:                        b.Backup.NoUDFs,
-			RecordsPerSecond:              b.Backup.RecordsPerSecond,
-			MaxRetries:                    b.Backup.MaxRetries,
-			TotalTimeout:                  b.Backup.TotalTimeout,
-			SocketTimeout:                 b.Backup.SocketTimeout,
-			Bandwidth:                     b.Backup.Bandwidth,
-			InfoTimeout:                   b.Backup.InfoTimeout,
-			InfoMaxRetries:                b.Backup.InfoMaxRetries,
-			InfoRetriesMultiplier:         b.Backup.InfoRetriesMultiplier,
-			InfoRetryIntervalMilliseconds: b.Backup.InfoRetryIntervalMilliseconds,
-			StdBufferSize:                 b.Backup.StdBufferSize,
+			Parallel:                      derefInt(b.Backup.Parallel),
+			NoRecords:                     derefBool(b.Backup.NoRecords),
+			NoIndexes:                     derefBool(b.Backup.NoIndexes),
+			NoUDFs:                        derefBool(b.Backup.NoUDFs),
+			RecordsPerSecond:              derefInt(b.Backup.RecordsPerSecond),
+			MaxRetries:                    derefInt(b.Backup.MaxRetries),
+			TotalTimeout:                  derefInt64(b.Backup.TotalTimeout),
+			SocketTimeout:                 derefInt64(b.Backup.SocketTimeout),
+			Bandwidth:                     derefInt64(b.Backup.Bandwidth),
+			InfoTimeout:                   derefInt64(b.Backup.InfoTimeout),
+			InfoMaxRetries:                derefUint(b.Backup.InfoMaxRetries),
+			InfoRetriesMultiplier:         derefFloat64(b.Backup.InfoRetriesMultiplier),
+			InfoRetryIntervalMilliseconds: derefInt64(b.Backup.InfoRetryIntervalMilliseconds),
+			StdBufferSize:                 derefInt(b.Backup.StdBufferSize),
 		},
-		OutputFile:          b.Backup.OutputFile,
-		RemoveFiles:         b.Backup.RemoveFiles,
-		ModifiedBefore:      b.Backup.ModifiedBefore,
-		ModifiedAfter:       b.Backup.ModifiedAfter,
-		FileLimit:           b.Backup.FileLimit,
-		AfterDigest:         b.Backup.AfterDigest,
-		MaxRecords:          b.Backup.MaxRecords,
-		NoBins:              b.Backup.NoBins,
-		SleepBetweenRetries: b.Backup.SleepBetweenRetries,
-		FilterExpression:    b.Backup.FilterExpression,
-		RemoveArtifacts:     b.Backup.RemoveArtifacts,
-		Compact:             b.Backup.Compact,
+		OutputFile:          derefString(b.Backup.OutputFile),
+		RemoveFiles:         derefBool(b.Backup.RemoveFiles),
+		ModifiedBefore:      derefString(b.Backup.ModifiedBefore),
+		ModifiedAfter:       derefString(b.Backup.ModifiedAfter),
+		FileLimit:           derefUint64(b.Backup.FileLimit),
+		AfterDigest:         derefString(b.Backup.AfterDigest),
+		MaxRecords:          derefInt64(b.Backup.MaxRecords),
+		NoBins:              derefBool(b.Backup.NoBins),
+		SleepBetweenRetries: derefInt(b.Backup.SleepBetweenRetries),
+		FilterExpression:    derefString(b.Backup.FilterExpression),
+		RemoveArtifacts:     derefBool(b.Backup.RemoveArtifacts),
+		Compact:             derefBool(b.Backup.Compact),
 		NodeList:            strings.Join(b.Backup.NodeList, ","),
-		NoTTLOnly:           b.Backup.NoTTLOnly,
+		NoTTLOnly:           derefBool(b.Backup.NoTTLOnly),
 		PreferRacks:         strings.Join(b.Backup.PreferRacks, ","),
 		PartitionList:       strings.Join(b.Backup.PartitionList, ","),
-		Estimate:            b.Backup.Estimate,
-		EstimateSamples:     b.Backup.EstimateSamples,
-		StateFileDst:        b.Backup.StateFileDst,
-		Continue:            b.Backup.Continue,
-		ScanPageSize:        b.Backup.ScanPageSize,
-		OutputFilePrefix:    b.Backup.OutputFilePrefix,
+		Estimate:            derefBool(b.Backup.Estimate),
+		EstimateSamples:     derefInt64(b.Backup.EstimateSamples),
+		StateFileDst:        derefString(b.Backup.StateFileDst),
+		Continue:            derefString(b.Backup.Continue),
+		ScanPageSize:        derefInt64(b.Backup.ScanPageSize),
+		OutputFilePrefix:    derefString(b.Backup.OutputFilePrefix),
 		RackList:            strings.Join(b.Backup.RackList, ","),
+	}
+}
+
+type BackupConfig struct {
+	Directory                     *string  `yaml:"directory"`
+	Namespace                     *string  `yaml:"namespace"`
+	SetList                       []string `yaml:"set-list"`
+	BinList                       []string `yaml:"bin-list"`
+	Parallel                      *int     `yaml:"parallel"`
+	NoRecords                     *bool    `yaml:"no-records"`
+	NoIndexes                     *bool    `yaml:"no-indexes"`
+	NoUDFs                        *bool    `yaml:"no-udfs"`
+	RecordsPerSecond              *int     `yaml:"records-per-second"`
+	MaxRetries                    *int     `yaml:"max-retries"`
+	TotalTimeout                  *int64   `yaml:"total-timeout"`
+	SocketTimeout                 *int64   `yaml:"socket-timeout"`
+	Bandwidth                     *int64   `yaml:"bandwidth"`
+	OutputFile                    *string  `yaml:"output-file"`
+	RemoveFiles                   *bool    `yaml:"remove-files"`
+	ModifiedBefore                *string  `yaml:"modified-before"`
+	ModifiedAfter                 *string  `yaml:"modified-after"`
+	FileLimit                     *uint64  `yaml:"file-limit"`
+	AfterDigest                   *string  `yaml:"after-digest"`
+	MaxRecords                    *int64   `yaml:"max-records"`
+	NoBins                        *bool    `yaml:"no-bins"`
+	SleepBetweenRetries           *int     `yaml:"sleep-between-retries"`
+	FilterExpression              *string  `yaml:"filter-exp"`
+	RemoveArtifacts               *bool    `yaml:"remove-artifacts"`
+	Compact                       *bool    `yaml:"compact"`
+	NodeList                      []string `yaml:"node-list"`
+	NoTTLOnly                     *bool    `yaml:"no-ttl-only"`
+	PreferRacks                   []string `yaml:"prefer-racks"`
+	PartitionList                 []string `yaml:"partition-list"`
+	Estimate                      *bool    `yaml:"estimate"`
+	EstimateSamples               *int64   `yaml:"estimate-samples"`
+	StateFileDst                  *string  `yaml:"state-file-dst"`
+	Continue                      *string  `yaml:"continue"`
+	ScanPageSize                  *int64   `yaml:"scan-page-size"`
+	OutputFilePrefix              *string  `yaml:"output-file-prefix"`
+	RackList                      []string `yaml:"rack-list"`
+	InfoTimeout                   *int64   `yaml:"info-timeout"`
+	InfoMaxRetries                *uint    `yaml:"info-max-retries"`
+	InfoRetriesMultiplier         *float64 `yaml:"info-retry-multiplier"`
+	InfoRetryIntervalMilliseconds *int64   `yaml:"info-retry-interval"`
+	StdBufferSize                 *int     `yaml:"std-buffer-size"`
+}
+
+func defaultBackupConfig() *BackupConfig {
+	return &BackupConfig{
+		Directory:                     stringPtr(models.DefaultCommonDirectory),
+		Namespace:                     stringPtr(models.DefaultCommonNamespace),
+		SetList:                       []string{},
+		BinList:                       []string{},
+		NoRecords:                     boolPtr(models.DefaultCommonNoRecords),
+		NoIndexes:                     boolPtr(models.DefaultCommonNoIndexes),
+		NoUDFs:                        boolPtr(models.DefaultCommonNoUDFs),
+		RecordsPerSecond:              intPtr(models.DefaultCommonRecordsPerSecond),
+		MaxRetries:                    intPtr(models.DefaultCommonMaxRetries),
+		SocketTimeout:                 int64Ptr(models.DefaultCommonSocketTimeout),
+		InfoTimeout:                   int64Ptr(models.DefaultCommonInfoTimeout),
+		InfoMaxRetries:                uintPtr(models.DefaultCommonInfoMaxRetries),
+		InfoRetriesMultiplier:         float64Ptr(models.DefaultCommonInfoRetriesMultiplier),
+		InfoRetryIntervalMilliseconds: int64Ptr(models.DefaultCommonInfoRetryIntervalMilliseconds),
+		Bandwidth:                     int64Ptr(models.DefaultCommonBandwidth),
+		StdBufferSize:                 intPtr(models.DefaultCommonStdBufferSize),
+		OutputFile:                    stringPtr(models.DefaultBackupOutputFile),
+		RemoveFiles:                   boolPtr(models.DefaultBackupRemoveFiles),
+		ModifiedBefore:                stringPtr(models.DefaultBackupModifiedBefore),
+		ModifiedAfter:                 stringPtr(models.DefaultBackupModifiedAfter),
+		FileLimit:                     uint64Ptr(models.DefaultBackupFileLimit),
+		AfterDigest:                   stringPtr(models.DefaultBackupAfterDigest),
+		MaxRecords:                    int64Ptr(models.DefaultBackupMaxRecords),
+		NoBins:                        boolPtr(models.DefaultBackupNoBins),
+		SleepBetweenRetries:           intPtr(models.DefaultBackupSleepBetweenRetries),
+		FilterExpression:              stringPtr(models.DefaultBackupFilterExpression),
+		RemoveArtifacts:               boolPtr(models.DefaultBackupRemoveArtifacts),
+		Compact:                       boolPtr(models.DefaultBackupCompact),
+		NodeList:                      []string{},
+		NoTTLOnly:                     boolPtr(models.DefaultBackupNoTTLOnly),
+		PreferRacks:                   []string{},
+		PartitionList:                 []string{},
+		Estimate:                      boolPtr(models.DefaultBackupEstimate),
+		EstimateSamples:               int64Ptr(models.DefaultBackupEstimateSamples),
+		StateFileDst:                  stringPtr(models.DefaultBackupStateFileDst),
+		Continue:                      stringPtr(models.DefaultBackupContinue),
+		ScanPageSize:                  int64Ptr(models.DefaultBackupScanPageSize),
+		OutputFilePrefix:              stringPtr(models.DefaultBackupOutputFilePrefix),
+		RackList:                      []string{},
+		TotalTimeout:                  int64Ptr(models.DefaultBackupTotalTimeout),
+		Parallel:                      intPtr(models.DefaultBackupParallel),
 	}
 }

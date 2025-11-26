@@ -59,9 +59,6 @@ const (
 		"partition filters. Accepts values from 1-1024 inclusive."
 	descParallelRestore = "The number of restore threads. Accepts values from 1-1024 inclusive.\n" +
 		"If not set, the default value is automatically calculated and appears as the number of CPUs on your machine."
-
-	defaultTotalTimeoutBackup  = 0
-	defaultTotalTimeoutRestore = 10000
 )
 
 type Common struct {
@@ -97,8 +94,8 @@ func (f *Common) NewFlagSet() *pflag.FlagSet {
 		descNoIndexes = descNoIndexesBackup
 		descNoUDFs = descNoUDFsBackup
 		descParallel = descParallelBackup
-		defaultTotalTimeout = defaultTotalTimeoutBackup
-		defaultParallel = 1
+		defaultTotalTimeout = models.DefaultBackupTotalTimeout
+		defaultParallel = models.DefaultBackupParallel
 	case OperationRestore:
 		descNamespace = descNamespaceRestore
 		descDirectory = descDirectoryRestore
@@ -108,71 +105,90 @@ func (f *Common) NewFlagSet() *pflag.FlagSet {
 		descNoIndexes = descNoIndexesRestore
 		descNoUDFs = descNoUDFsRestore
 		descParallel = descParallelRestore
-		defaultTotalTimeout = defaultTotalTimeoutRestore
-		defaultParallel = 0
+		defaultTotalTimeout = models.DefaultRestoreTotalTimeout
+		defaultParallel = models.DefaultRestoreParallel
 	}
 
 	flagSet.StringVarP(&f.fields.Directory, "directory", "d",
-		"",
+		models.DefaultCommonDirectory,
 		descDirectory)
+
 	flagSet.StringVarP(&f.fields.Namespace, "namespace", "n",
-		"",
+		models.DefaultCommonNamespace,
 		descNamespace)
+
 	flagSet.StringVarP(&f.fields.SetList, "set", "s",
-		"",
+		models.DefaultCommonSetList,
 		descSetList)
+
 	flagSet.StringVarP(&f.fields.BinList, "bin-list", "B",
-		"",
+		models.DefaultCommonBinList,
 		descBinList)
+
 	flagSet.BoolVarP(&f.fields.NoRecords, "no-records", "R",
-		false,
+		models.DefaultCommonNoRecords,
 		descNoRecords)
+
 	flagSet.BoolVarP(&f.fields.NoIndexes, "no-indexes", "I",
-		false,
+		models.DefaultCommonNoIndexes,
 		descNoIndexes)
+
 	flagSet.BoolVar(&f.fields.NoUDFs, "no-udfs",
-		false,
+		models.DefaultCommonNoUDFs,
 		descNoUDFs)
+
 	flagSet.IntVarP(&f.fields.Parallel, "parallel", "w",
 		defaultParallel,
 		descParallel)
+
 	flagSet.IntVarP(&f.fields.RecordsPerSecond, "records-per-second", "L",
-		0,
-		"Limit total returned records per second (rps).\n"+
-			"Do not apply rps limit if records-per-second is zero.")
+		models.DefaultCommonRecordsPerSecond,
+		"Limit total returned records per second (RPS). If 0, no limit is applied.")
+
 	flagSet.IntVar(&f.fields.MaxRetries, "max-retries",
-		5,
+		models.DefaultCommonMaxRetries,
 		"Maximum number of retries before aborting the current transaction.")
+
 	flagSet.Int64Var(&f.fields.TotalTimeout, "total-timeout",
 		defaultTotalTimeout,
-		"Total transaction timeout in milliseconds. 0 - no timeout.")
+		"Total transaction timeout in milliseconds. If 0, no timeout is applied. ")
+
 	flagSet.Int64Var(&f.fields.SocketTimeout, "socket-timeout",
-		10000,
-		"Socket timeout in milliseconds. If this value is 0, it's set to --total-timeout.\n"+
+		models.DefaultCommonSocketTimeout,
+		"Socket timeout in milliseconds. If 0, the value for --total-timeout is used.\n"+
 			"If both this and --total-timeout are 0, there is no socket idle time limit.")
+
 	flagSet.Int64Var(&f.fields.Bandwidth, "nice",
-		0,
+		models.DefaultCommonBandwidth,
 		"The limits for read/write storage bandwidth in MiB/s.\n"+
 			"Default is 0 (no limit).")
+
 	flagSet.Int64VarP(&f.fields.Bandwidth, "bandwidth", "N",
-		0,
+		models.DefaultCommonBandwidth,
 		"The limits for read/write storage bandwidth in MiB/s.\n"+
 			"Default is 0 (no limit).")
+
 	flagSet.Int64VarP(&f.fields.InfoTimeout, "info-timeout", "T",
-		10000,
-		"Set the timeout (ms) for asinfo commands sent from asrestore to the database.\n"+
+		models.DefaultCommonInfoTimeout,
+		"Set the timeout (in ms) for asinfo commands sent from asrestore to the database.\n"+
 			"The info commands are to check version, get indexes, get udfs, count records, and check batch write support.")
-	flagSet.Int64Var(&f.fields.InfoRetryIntervalMilliseconds, "info-retry-interval", 1000,
-		"Set the initial interval for a retry in milliseconds when info commands are sent.")
+
+	flagSet.Int64Var(&f.fields.InfoRetryIntervalMilliseconds, "info-retry-interval",
+		models.DefaultCommonInfoRetryIntervalMilliseconds,
+		"Set the initial interval for a retry (in ms) when info commands are sent.")
+
 	flagSet.Float64Var(&f.fields.InfoRetriesMultiplier, "info-retry-multiplier",
-		1,
+		models.DefaultCommonInfoRetriesMultiplier,
 		"Increases the delay between subsequent retry attempts.\n"+
 			"The actual delay is calculated as: info-retry-interval * (info-retry-multiplier ^ attemptNumber)")
-	flagSet.UintVar(&f.fields.InfoMaxRetries, "info-max-retries", 3,
-		"How many times to retry to send info commands before failing. ")
+
+	flagSet.UintVar(&f.fields.InfoMaxRetries, "info-max-retries",
+		models.DefaultCommonInfoMaxRetries,
+		"Number of retries to send info commands before failing.")
+
 	flagSet.IntVar(&f.fields.StdBufferSize, "std-buffer",
-		4,
-		"Buffer size in MiB for stdin and stdout operations. Is used for pipelining.")
+		models.DefaultCommonStdBufferSize,
+		"Buffer size in MiB for stdin and stdout operations. Used for pipelining.")
 
 	return flagSet
 }

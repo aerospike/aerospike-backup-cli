@@ -31,11 +31,12 @@ func (f *ClientPolicy) NewFlagSet() *pflag.FlagSet {
 	flagSet := &pflag.FlagSet{}
 
 	flagSet.Int64Var(&f.Timeout, "client-timeout",
-		30000,
+		models.DefaultClientPolicyTimeout,
 		"Initial host connection timeout duration. The timeout when opening a connection\n"+
 			"to the server host for the first time.")
+
 	flagSet.Int64Var(&f.IdleTimeout, "client-idle-timeout",
-		0,
+		models.DefaultClientPolicyIdleTimeout,
 		"Idle timeout. Every time a connection is used, its idle\n"+
 			"deadline will be extended by this duration. When this deadline is reached,\n"+
 			"the connection will be closed and discarded from the connection pool.\n"+
@@ -46,8 +47,9 @@ func (f *ClientPolicy) NewFlagSet() *pflag.FlagSet {
 			"Connection pools are now implemented by a LIFO stack. Connections at the tail of the\n"+
 			"stack will always be the least used. These connections are checked for IdleTimeout\n"+
 			"on every tend (usually 1 second).\n")
+
 	flagSet.Int64Var(&f.LoginTimeout, "client-login-timeout",
-		10000,
+		models.DefaultClientPolicyLoginTimeout,
 		"Specifies the login operation timeout for external authentication methods such as LDAP.")
 
 	return flagSet

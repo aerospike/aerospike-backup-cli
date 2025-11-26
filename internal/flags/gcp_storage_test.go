@@ -96,13 +96,13 @@ func TestGcpStorage_NewFlagSet_DefaultValuesBackup(t *testing.T) {
 	assert.Equal(t, "", result.KeyFile, "The default value for gcp-key-path should be an empty string")
 	assert.Equal(t, "", result.BucketName, "The default value for gcp-bucket-name should be an empty string")
 	assert.Equal(t, "", result.Endpoint, "The default value for gcp-endpoint-override should be an empty string")
-	assert.Equal(t, models.DefaultChunkSize, result.ChunkSize, "The default value for gcp-chunk-size should be 5MB")
-	assert.Equal(t, cloudMaxRetries, result.RetryMaxAttempts, "The default value for gcp-retry-max-attempts should be 100")
-	assert.Equal(t, cloudMaxBackoff, result.RetryBackoffMaxSeconds, "The default value for gcp-retry-max-backoff should be 90")
-	assert.Equal(t, cloudBackoff, result.RetryBackoffInitSeconds, "The default value for gcp-retry-init-backoff should be 60")
-	assert.Equal(t, float64(2), result.RetryBackoffMultiplier, "The default value for gcp-retry-backoff-multiplier should be 2")
-	assert.Equal(t, 0, result.MaxConnsPerHost, "The default value for gcp-max-conns-per-host should be 0")
-	assert.Equal(t, cloudRequestTimeout, result.RequestTimeoutSeconds, "The default value for gcp-request-timeout should be 0")
+	assert.Equal(t, models.DefaultGcpChunkSize, result.ChunkSize, "The default value for gcp-chunk-size should be 5MB")
+	assert.Equal(t, models.DefaultGcpRetryMaxAttempts, result.RetryMaxAttempts, "The default value for gcp-retry-max-attempts should be 100")
+	assert.Equal(t, models.DefaultGcpRetryBackoffMaxSeconds, result.RetryBackoffMaxSeconds, "The default value for gcp-retry-max-backoff should be 90")
+	assert.Equal(t, models.DefaultGcpRetryBackoffInitSeconds, result.RetryBackoffInitSeconds, "The default value for gcp-retry-init-backoff should be 60")
+	assert.Equal(t, models.DefaultGcpRetryBackoffMultiplier, result.RetryBackoffMultiplier, "The default value for gcp-retry-backoff-multiplier should be 2")
+	assert.Equal(t, models.DefaultCloudMaxConnsPerHost, result.MaxConnsPerHost, "The default value for gcp-max-conns-per-host should be 0")
+	assert.Equal(t, models.DefaultCloudRequestTimeoutSeconds, result.RequestTimeoutSeconds, "The default value for gcp-request-timeout should be 0")
 }
 
 func TestGcpStorage_NewFlagSet_DefaultValuesRestore(t *testing.T) {
@@ -117,7 +117,7 @@ func TestGcpStorage_NewFlagSet_DefaultValuesRestore(t *testing.T) {
 
 	result := gcpStorage.GetGcpStorage()
 
-	assert.Equal(t, cloudRetryReadBackoff, result.RetryReadBackoffSeconds, "The default value for gcp-retry-read-backoff should be 0")
-	assert.Equal(t, cloudRetryReadMultiplier, result.RetryReadMultiplier, "The default value for gcp-retry-read-multiplier should be 0")
-	assert.Equal(t, cloudRetryReadMaxAttempts, result.RetryReadMaxAttempts, "The default value for gcp-retry-read-max-attempts should be 0")
+	assert.Equal(t, models.DefaultCloudRetryReadBackoffSeconds, result.RetryReadBackoffSeconds, "The default value for gcp-retry-read-backoff should be 0")
+	assert.Equal(t, models.DefaultCloudRetryReadMultiplier, result.RetryReadMultiplier, "The default value for gcp-retry-read-multiplier should be 0")
+	assert.Equal(t, models.DefaultCloudRetryReadMaxAttempts, result.RetryReadMaxAttempts, "The default value for gcp-retry-read-max-attempts should be 0")
 }

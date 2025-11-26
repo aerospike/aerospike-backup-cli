@@ -31,22 +31,27 @@ func (f *SecretAgent) NewFlagSet() *pflag.FlagSet {
 	flagSet := &pflag.FlagSet{}
 
 	flagSet.StringVar(&f.ConnectionType, "sa-connection-type",
-		"tcp",
-		"Secret Agent connection type, supported types: tcp, unix.")
+		models.DefaultSecretAgentConnectionType,
+		"Secret Agent connection type. Supported types: TCP, UNIX.")
+
 	flagSet.StringVar(&f.Address, "sa-address",
-		"",
+		models.DefaultSecretAgentAddress,
 		"Secret Agent host for TCP connection or socket file path for UDS connection.")
+
 	flagSet.IntVar(&f.Port, "sa-port",
-		0,
+		models.DefaultSecretAgentPort,
 		"Secret Agent port (only for TCP connection).")
+
 	flagSet.IntVar(&f.TimeoutMillisecond, "sa-timeout",
-		0,
+		models.DefaultSecretAgentTimeoutMillisecond,
 		"Secret Agent connection and reading timeout.")
+
 	flagSet.StringVar(&f.CaFile, "sa-cafile",
-		"",
+		models.DefaultSecretAgentCaFile,
 		"Path to ca file for encrypted connections.")
+
 	flagSet.BoolVar(&f.IsBase64, "sa-is-base64",
-		false,
+		models.DefaultSecretAgentIsBase64,
 		"Whether Secret Agent responses are Base64 encoded.")
 
 	return flagSet

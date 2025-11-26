@@ -56,8 +56,9 @@ General Flags:
 Aerospike Client Flags:
   -h, --host host[:tls-name][:port][,...]                                                           The Aerospike host. (default 127.0.0.1)
   -p, --port int                                                                                    The default Aerospike port. (default 3000)
-  -U, --user string                                                                                 The Aerospike user for the connection to the Aerospike cluster.
-  -P, --password "env-b64:<env-var>,b64:<b64-pass>,file:<pass-file>,<clear-pass>"                   The Aerospike password for the connection to the Aerospike cluster.
+  -U, --user string                                                                                 The Aerospike user to use to connect to the Aerospike cluster.
+  -P, --password "env-b64:<env-var>,b64:<b64-pass>,file:<pass-file>,<clear-pass>"                   The Aerospike password to use to connect to the Aerospike 
+                                                                                                    cluster.
       --auth INTERNAL,EXTERNAL,PKI                                                                  The authentication mode used by the Aerospike server. INTERNAL 
                                                                                                     uses standard user/pass. EXTERNAL uses external methods (like LDAP) 
                                                                                                     which are configured on the server. EXTERNAL requires TLS. PKI allows 
@@ -65,7 +66,8 @@ Aerospike Client Flags:
                                                                                                     username needs to be configured. (default INTERNAL)
       --tls-enable                                                                                  Enable TLS authentication with Aerospike. If false, other TLS 
                                                                                                     options are ignored.
-      --tls-name string                                                                             The server TLS context to use to authenticate the connection to Aerospike.
+      --tls-name string                                                                             The server TLS context to use to authenticate the connection to 
+                                                                                                    Aerospike.
       --tls-cafile env-b64:<cert>,b64:<cert>,<cert-file-name>                                       The CA used when connecting to Aerospike.
       --tls-capath <cert-path-name>                                                                 A path containing CAs for connecting to Aerospike.
       --tls-certfile env-b64:<cert>,b64:<cert>,<cert-file-name>                                     The certificate file for mutual TLS authentication with 
@@ -74,7 +76,7 @@ Aerospike Client Flags:
       --tls-keyfile-password "env-b64:<env-var>,b64:<b64-pass>,file:<pass-file>,<clear-pass>"       The password used to decrypt the key file if encrypted.
       --tls-protocols "[[+][-]all] [[+][-]TLSv1] [[+][-]TLSv1.1] [[+][-]TLSv1.2] [[+][-]TLSv1.3]"   Set the TLS protocol selection criteria. This format is the same 
                                                                                                     as Apache's SSLProtocol documented at 
-                                                                                                    https://httpd.apache.org/docs/current/mod/mod_ssl.html#sslprotocol. (default +TLSv1.2)
+                                                                                                    https://httpd.apache.org/docs/current/mod/mod_ssl.html#ssl protocol. (default +TLSv1.2)
       --services-alternate                                                                          Determines if the client should use "services-alternate" instead 
                                                                                                     of "services" in info request during cluster tending.
       --client-timeout int         Initial host connection timeout duration. The timeout when opening a connection
@@ -83,10 +85,10 @@ Aerospike Client Flags:
                                    deadline will be extended by this duration. When this deadline is reached,
                                    the connection will be closed and discarded from the connection pool.
                                    The value is limited to 24 hours (86400s).
-                                   Set this value to a few seconds less than the server's proto-fd-idle-ms
+                                   It's important to set this value to a few seconds less than the server's proto-fd-idle-ms
                                    (default 60000 milliseconds or 1 minute), so the client does not attempt to use a socket
                                    that has already been reaped by the server.
-                                   Connection pools are implemented by a LIFO stack. Connections at the tail of the
+                                   Connection pools are now implemented by a LIFO stack. Connections at the tail of the
                                    stack will always be the least used. These connections are checked for IdleTimeout
                                    on every tend (usually 1 second).
                                    
@@ -123,15 +125,17 @@ Backup Flags:
       --info-retry-interval int       Set the initial interval for a retry (in ms) when info commands are sent. (default 1000)
       --info-retry-multiplier float   Increases the delay between subsequent retry attempts.
                                       The actual delay is calculated as: info-retry-interval * (info-retry-multiplier ^ attemptNumber) (default 1)
-      --info-max-retries uint         Number of retries to send info commands before failing.  (default 3)
+      --info-max-retries uint         Number of retries to send info commands before failing. (default 3)
       --std-buffer int                Buffer size in MiB for stdin and stdout operations. Used for pipelining. (default 4)
   -r, --remove-files                Remove an existing backup file (-o) or entire directory (-d) and replace with the new backup.
       --remove-artifacts            Remove existing backup file (-o) or files (-d) without performing a backup.
-  -o, --output-file string          Back up to a single backup file. Use '-' for stdout. Required, unless -d or -e is used.
-                                    Should be used with --file-limit = 0. Metadata will be written to the separate file.
+  -o, --output-file string          Backup to a single backup file. Use '-' for stdout. Required, unless -d or -e is used.
+                                    --file-limit will be ignored if this parameter is used.
   -q, --output-file-prefix string   When using directory parameter, prepend a prefix to the names of the generated files.
+                                    Not applicable when --output-file is used. 
   -F, --file-limit uint             Rotate backup files when their size crosses the given
-                                    value (in MiB). Only used when backing up to a directory. (default 250)
+                                    value (in MiB). Only used when backing up to a directory.
+                                     (default 250)
   -x, --no-bins                     Do not include bin data in the backup. Use this flag for data sampling or troubleshooting.
                                     On restore, all records not containing bin data will be skipped.
       --no-ttl-only                 Only include records that have no TTL set (persistent records).
@@ -140,6 +144,7 @@ Backup Flags:
                                     incomplete backup.
                                     This argument is mutually exclusive with partition-list.
                                     Format: Base64 encoded string
+                                    Example: EjRWeJq83vEjRRI0VniavN7xI0U=
                                     
   -a, --modified-after string       <YYYY-MM-DD_HH:MM:SS>
                                     Perform an incremental backup; only include records 
@@ -166,7 +171,8 @@ Backup Flags:
                                     Default: back up all nodes in the cluster
   -X, --partition-list string       List of partitions <filter[,<filter>[...]]> to back up. Partition filters can be ranges,
                                     individual partitions, or records after a specific digest within a single partition.
-                                    To use this argument, --parallel must be set equal to or greater than the number of elements in the partition list
+                                    To use this argument, --parallel must be set equal to or greater
+                                    than the number of elements in the partition list
                                     This argument is mutually exclusive with after-digest.
                                     Filter: <begin partition>[-<partition count>]|<digest>
                                     begin partition: 0-4095
@@ -222,7 +228,8 @@ Encryption Flags:
 Secret Agent Flags:
 Options pertaining to the Aerospike Secret Agent.
 See documentation here: https://aerospike.com/docs/tools/secret-agent.
-Both asbackup and asrestore support getting all the cloud configuration parameters from the Aerospike Secret Agent.
+Both asbackup and asrestore support getting all the cloud configuration parameters
+from the Aerospike Secret Agent.
 To use a secret as an option, use this format: 'secrets:<resource_name>:<secret_name>' 
 Example: asbackup --azure-account-name secret:resource1:azaccount
       --sa-connection-type string   Secret Agent connection type. Supported types: TCP, UNIX. (default "TCP")
@@ -398,6 +405,8 @@ cluster:
   client-idle-timeout: 10000
   # Specifies the login operation timeout for external authentication methods such as LDAP.
   client-login-timeout: 10000
+  # Determines if the client should use "services-alternate" instead of "services" in info request during cluster tending.
+  service-alternate: false
   tls:
     # TLS name used to authenticate each TLS socket connection to a database.
     name: ""
@@ -453,17 +462,17 @@ backup:
   # If both this and total-timeout are 0, there is no socket idle time limit.
   socket-timeout: 10000
   # The limits for read/write storage bandwidth in MiB/s.
-  storage-bandwidth-limit: 0
+  bandwidth: 0
   # Remove an existing backup file `output-file` or entire directory `directory` and replace with the new backup.
-  remove-files: true
+  remove-files: false
   # Remove existing backup file `output-file` or files `directory` without performing a backup.
   remove-artifacts: false
   # Back up to a single backup file. Use - for stdout. Required, unless `directory` or `estimate` is used.
   output-file: ""
   # When using directory parameter, prepend a prefix to the names of the generated files.
   output-file-prefix: ""
-  # Rotate backup files when their size crosses the given value (in bytes). Only used when backing up to a directory.
-  file-limit: 262144000
+  # Rotate backup files when their size crosses the given value (in megabytes). Only used when backing up to a directory.
+  file-limit: 250
   # Do not include bin data in the backup. Use this flag for data sampling or troubleshooting.
   # On restore, all records not containing bin data will be skipped.
   no-bins: false
@@ -534,6 +543,8 @@ backup:
   # The amount of milliseconds to sleep between retries after an error.
   # This field is ignored when `max-retries` is zero.
   sleep-between-retries: 5
+  # If true, do not apply base-64 encoding to BLOBs and instead write raw binary data, resulting in smaller backup files.
+  compact: false
   # Estimate the backed-up record size from a random sample of
   # 10,000 (default) records at 99.9999% confidence to estimate the full backup size.
   # It ignores any filter: filter-exp, node-list, modified-after, modified-before, no-ttl-only,

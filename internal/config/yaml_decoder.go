@@ -25,12 +25,12 @@ import (
 // decodeBackupServiceConfig reads a backup configuration file and decodes it into BackupServiceConfig.
 // Returns an error on failure.
 func decodeBackupServiceConfig(filename string) (*BackupServiceConfig, error) {
-	var backupDto dto.Backup
+	backupDto := dto.DefaultBackup()
 	if err := decodeFromFile(filename, &backupDto); err != nil {
 		return nil, err
 	}
 
-	serviceConfig, err := dtoToBackupServiceConfig(&backupDto)
+	serviceConfig, err := dtoToBackupServiceConfig(backupDto)
 	if err != nil {
 		return nil, err
 	}
@@ -66,12 +66,12 @@ func dtoToBackupServiceConfig(dtoBackup *dto.Backup) (*BackupServiceConfig, erro
 // decodeRestoreServiceConfig reads a restore configuration file and decodes it into RestoreServiceConfig.
 // Returns an error on failure.
 func decodeRestoreServiceConfig(filename string) (*RestoreServiceConfig, error) {
-	var restoreDto dto.Restore
-	if err := decodeFromFile(filename, &restoreDto); err != nil {
+	restoreDto := dto.DefaultRestore()
+	if err := decodeFromFile(filename, restoreDto); err != nil {
 		return nil, err
 	}
 
-	serviceConfig, err := dtoToRestoreServiceConfig(&restoreDto)
+	serviceConfig, err := dtoToRestoreServiceConfig(restoreDto)
 	if err != nil {
 		return nil, err
 	}
