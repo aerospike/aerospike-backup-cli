@@ -61,7 +61,12 @@ func DefaultRestore() *Restore {
 }
 
 func (r *Restore) ToModelRestore() *models.Restore {
+	if r == nil || r.Restore == nil {
+		return nil
+	}
+
 	return &models.Restore{
+		//nolint:dupl // Mappings looks the same for common values.
 		Common: models.Common{
 			Directory:                     derefString(r.Restore.Directory),
 			Namespace:                     derefString(r.Restore.Namespace),

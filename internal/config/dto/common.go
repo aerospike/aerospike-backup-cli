@@ -87,6 +87,7 @@ type ClusterTLS struct {
 
 func defaultClusterTLS() *ClusterTLS {
 	flag := flags.NewDefaultTLSProtocolsFlag()
+
 	return &ClusterTLS{
 		Name:            stringPtr(""),
 		Protocols:       stringPtr(flag.String()),
@@ -112,123 +113,23 @@ func defaultCluster() *Cluster {
 	}
 }
 
-//nolint:gocyclo // This is a long mapping function, no need to brake it into small ones.
 func (c *Cluster) ToAerospikeConfig() (*client.AerospikeConfig, error) {
+	if c == nil {
+		return nil, fmt.Errorf("cluster cannot be nil")
+	}
+
 	var f flags.AerospikeFlags
 
-	hosts := make([]string, 0, len(c.Seeds))
-
-	for i := range c.Seeds {
-		hostStr := *c.Seeds[i].Host
-		if c.Seeds[i].TLSName != nil {
-			hostStr = fmt.Sprintf("%s:%s", hostStr, *c.Seeds[i].TLSName)
-		}
-
-		if c.Seeds[i].Port != nil {
-			hostStr = fmt.Sprintf("%s:%v", hostStr, *c.Seeds[i].Port)
-		}
-
-		hosts = append(hosts, hostStr)
+	if err := c.applySeeds(&f); err != nil {
+		return nil, err
 	}
 
-	hostPorts := strings.Join(hosts, ",")
-
-	if hostPorts != "" {
-		var seeds flags.HostTLSPortSliceFlag
-		if err := seeds.Set(hostPorts); err != nil {
-			return nil, fmt.Errorf("failed to set seeds: %w", err)
-		}
-
-		f.Seeds = seeds
+	if err := c.applyAuthAndUser(&f); err != nil {
+		return nil, err
 	}
 
-	if c.User != nil {
-		f.User = *c.User
-	}
-
-	if c.Password != nil {
-		var psw flags.PasswordFlag
-		if err := psw.Set(*c.Password); err != nil {
-			return nil, fmt.Errorf("failed to set password: %w", err)
-		}
-
-		f.Password = psw
-	}
-
-	if c.Auth != nil {
-		var authMode flags.AuthModeFlag
-		if err := authMode.Set(*c.Auth); err != nil {
-			return nil, fmt.Errorf("failed to set auth mode: %w", err)
-		}
-
-		f.AuthMode = authMode
-	}
-
-	if c.TLS.Name != nil {
-		f.TLSEnable = true
-	}
-
-	f.TLSName = *c.TLS.Name
-
-	if c.TLS.Protocols != nil {
-		var tlsProtocols flags.TLSProtocolsFlag
-		if err := tlsProtocols.Set(*c.TLS.Protocols); err != nil {
-			return nil, fmt.Errorf("failed to set tls protocols: %w", err)
-		}
-
-		f.TLSEnable = true
-		f.TLSProtocols = tlsProtocols
-	}
-
-	if c.TLS.CaFile != nil {
-		var tlsRootCaFile flags.CertFlag
-
-		if err := tlsRootCaFile.Set(*c.TLS.CaFile); err != nil {
-			return nil, fmt.Errorf("failed to set tls root ca file: %w", err)
-		}
-
-		f.TLSEnable = true
-		f.TLSRootCAFile = tlsRootCaFile
-	}
-
-	if c.TLS.CaPath != nil {
-		var tlsRootCaPath flags.CertPathFlag
-
-		if err := tlsRootCaPath.Set(*c.TLS.CaPath); err != nil {
-			return nil, fmt.Errorf("failed to set tls root ca path: %w", err)
-		}
-
-		f.TLSEnable = true
-		f.TLSRootCAPath = tlsRootCaPath
-	}
-
-	if c.TLS.CertFile != nil {
-		var tlsCertFile flags.CertFlag
-
-		if err := tlsCertFile.Set(*c.TLS.CertFile); err != nil {
-			return nil, fmt.Errorf("failed to set tls cert file: %w", err)
-		}
-
-		f.TLSEnable = true
-		f.TLSCertFile = tlsCertFile
-	}
-
-	if c.TLS.KeyFile != nil {
-		var tlsKeyFile flags.CertFlag
-		if err := tlsKeyFile.Set(*c.TLS.KeyFile); err != nil {
-			return nil, fmt.Errorf("failed to set tls key file: %w", err)
-		}
-
-		f.TLSEnable = true
-	}
-
-	if c.TLS.KeyFilePassword != nil {
-		var tlsKeyFilePass flags.PasswordFlag
-		if err := tlsKeyFilePass.Set(*c.TLS.KeyFilePassword); err != nil {
-			return nil, fmt.Errorf("failed to set tls key file password: %w", err)
-		}
-
-		f.TLSEnable = true
+	if err := c.applyTLS(&f); err != nil {
+		return nil, err
 	}
 
 	f.UseServicesAlternate = derefBool(c.ServiceAlternate)
@@ -236,7 +137,155 @@ func (c *Cluster) ToAerospikeConfig() (*client.AerospikeConfig, error) {
 	return f.NewAerospikeConfig(), nil
 }
 
+func (c *Cluster) applySeeds(f *flags.AerospikeFlags) error {
+	if c.Seeds == nil {
+		return nil
+	}
+
+	hosts := make([]string, 0, len(c.Seeds))
+
+	for i := range c.Seeds {
+		seed := c.Seeds[i]
+
+		hostStr := derefString(seed.Host)
+
+		if seed.TLSName != nil && *seed.TLSName != "" {
+			hostStr = fmt.Sprintf("%s:%s", hostStr, derefString(seed.TLSName))
+		}
+
+		if seed.Port != nil && *seed.Port != 0 {
+			hostStr = fmt.Sprintf("%s:%d", hostStr, *seed.Port)
+		}
+
+		hosts = append(hosts, hostStr)
+	}
+
+	hostPorts := strings.Join(hosts, ",")
+	if hostPorts == "" {
+		return nil
+	}
+
+	var seeds flags.HostTLSPortSliceFlag
+	if err := seeds.Set(hostPorts); err != nil {
+		return fmt.Errorf("failed to set seeds: %w", err)
+	}
+
+	f.Seeds = seeds
+
+	return nil
+}
+
+func (c *Cluster) applyAuthAndUser(f *flags.AerospikeFlags) error {
+	if c.User != nil && *c.User != "" {
+		f.User = *c.User
+	}
+
+	if c.Password != nil && *c.Password != "" {
+		var psw flags.PasswordFlag
+		if err := psw.Set(*c.Password); err != nil {
+			return fmt.Errorf("failed to set password: %w", err)
+		}
+
+		f.Password = psw
+	}
+
+	if c.Auth != nil && *c.Auth != "" {
+		var authMode flags.AuthModeFlag
+		if err := authMode.Set(*c.Auth); err != nil {
+			return fmt.Errorf("failed to set auth mode: %w", err)
+		}
+
+		f.AuthMode = authMode
+	}
+
+	return nil
+}
+
+//nolint:gocyclo // Long mapping function.
+func (c *Cluster) applyTLS(f *flags.AerospikeFlags) error {
+	if c.TLS == nil {
+		return nil
+	}
+
+	// Name (also toggles enable if non-empty)
+	if c.TLS.Name != nil && *c.TLS.Name != "" {
+		f.TLSEnable = true
+	}
+
+	f.TLSName = derefString(c.TLS.Name)
+
+	// Protocols
+	if c.TLS.Protocols != nil && *c.TLS.Protocols != "" {
+		var tlsProtocols flags.TLSProtocolsFlag
+		if err := tlsProtocols.Set(*c.TLS.Protocols); err != nil {
+			return fmt.Errorf("failed to set tls protocols: %w", err)
+		}
+
+		f.TLSEnable = true
+		f.TLSProtocols = tlsProtocols
+	}
+
+	// CA file
+	if c.TLS.CaFile != nil && *c.TLS.CaFile != "" {
+		var tlsRootCaFile flags.CertFlag
+		if err := tlsRootCaFile.Set(*c.TLS.CaFile); err != nil {
+			return fmt.Errorf("failed to set tls root ca file: %w", err)
+		}
+
+		f.TLSEnable = true
+		f.TLSRootCAFile = tlsRootCaFile
+	}
+
+	// CA path
+	if c.TLS.CaPath != nil && *c.TLS.CaPath != "" {
+		var tlsRootCaPath flags.CertPathFlag
+		if err := tlsRootCaPath.Set(*c.TLS.CaPath); err != nil {
+			return fmt.Errorf("failed to set tls root ca path: %w", err)
+		}
+
+		f.TLSEnable = true
+		f.TLSRootCAPath = tlsRootCaPath
+	}
+
+	// Cert file
+	if c.TLS.CertFile != nil && *c.TLS.CertFile != "" {
+		var tlsCertFile flags.CertFlag
+		if err := tlsCertFile.Set(*c.TLS.CertFile); err != nil {
+			return fmt.Errorf("failed to set tls cert file: %w", err)
+		}
+
+		f.TLSEnable = true
+		f.TLSCertFile = tlsCertFile
+	}
+
+	// Key file
+	if c.TLS.KeyFile != nil && *c.TLS.KeyFile != "" {
+		var tlsKeyFile flags.CertFlag
+		if err := tlsKeyFile.Set(*c.TLS.KeyFile); err != nil {
+			return fmt.Errorf("failed to set tls key file: %w", err)
+		}
+
+		f.TLSEnable = true
+	}
+
+	// Key password
+	if c.TLS.KeyFilePassword != nil && *c.TLS.KeyFilePassword != "" {
+		var tlsKeyFilePass flags.PasswordFlag
+		if err := tlsKeyFilePass.Set(*c.TLS.KeyFilePassword); err != nil {
+			return fmt.Errorf("failed to set tls key file password: %w", err)
+		}
+
+		f.TLSEnable = true
+	}
+
+	return nil
+}
+
 func (c *Cluster) ToModelClientPolicy() *models.ClientPolicy {
+	if c == nil {
+		return nil
+	}
+
 	return &models.ClientPolicy{
 		Timeout:      derefInt64(c.ClientTimeout),
 		IdleTimeout:  derefInt64(c.ClientIdleTimeout),
@@ -259,6 +308,10 @@ func defaultCompression() *Compression {
 }
 
 func (c *Compression) ToModelCompression() *models.Compression {
+	if c == nil {
+		return nil
+	}
+
 	return &models.Compression{
 		Mode:  derefString(c.Mode),
 		Level: derefInt(c.Level),
@@ -285,6 +338,10 @@ func defaultEncryption() *Encryption {
 }
 
 func (e *Encryption) ToModelEncryption() *models.Encryption {
+	if e == nil {
+		return nil
+	}
+
 	return &models.Encryption{
 		Mode:      derefString(e.Mode),
 		KeyFile:   derefString(e.KeyFile),
@@ -316,6 +373,10 @@ func defaultSecretAgent() *SecretAgent {
 }
 
 func (s *SecretAgent) ToModelSecretAgent() *models.SecretAgent {
+	if s == nil {
+		return nil
+	}
+
 	return &models.SecretAgent{
 		ConnectionType:     derefString(s.ConnectionType),
 		Address:            derefString(s.Address),
@@ -377,6 +438,10 @@ func defaultAwsS3() *AwsS3 {
 }
 
 func (a *AwsS3) ToModelAwsS3() *models.AwsS3 {
+	if a == nil {
+		return nil
+	}
+
 	return &models.AwsS3{
 		BucketName:             derefString(a.BucketName),
 		Region:                 derefString(a.Region),
@@ -440,6 +505,10 @@ func defaultGcpStorage() *GcpStorage {
 }
 
 func (g *GcpStorage) ToModelGcpStorage() *models.GcpStorage {
+	if g == nil {
+		return nil
+	}
+
 	return &models.GcpStorage{
 		KeyFile:                 derefString(g.KeyFile),
 		BucketName:              derefString(g.BucketName),
@@ -511,6 +580,10 @@ func defaultAzureBlob() *AzureBlob {
 }
 
 func (a *AzureBlob) ToModelAzureBlob() *models.AzureBlob {
+	if a == nil {
+		return nil
+	}
+
 	return &models.AzureBlob{
 		AccountName:          derefString(a.AccountName),
 		AccountKey:           derefString(a.AccountKey),
@@ -549,6 +622,10 @@ func defaultLocal() *Local {
 }
 
 func (l *Local) ToModelLocal() *models.Local {
+	if l == nil {
+		return nil
+	}
+
 	return &models.Local{
 		BufferSize: l.BufferSize,
 	}

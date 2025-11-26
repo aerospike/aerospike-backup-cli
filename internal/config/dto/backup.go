@@ -67,7 +67,12 @@ func DefaultBackup() *Backup {
 }
 
 func (b *Backup) ToModelBackup() *models.Backup {
+	if b == nil || b.Backup == nil {
+		return nil
+	}
+
 	return &models.Backup{
+		//nolint:dupl // Mappings looks the same for common values.
 		Common: models.Common{
 			Directory:                     derefString(b.Backup.Directory),
 			Namespace:                     derefString(b.Backup.Namespace),
