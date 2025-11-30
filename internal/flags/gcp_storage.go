@@ -57,8 +57,8 @@ func (f *GcpStorage) NewFlagSet() *pflag.FlagSet {
 			models.DefaultCloudCalculateChecksum,
 			"Calculate checksum for each uploaded object.")
 	case OperationRestore:
-		flagSet.IntVar(&f.RetryReadBackoffSeconds, "gcp-retry-read-backoff",
-			models.DefaultCloudRetryReadBackoffSeconds,
+		flagSet.IntVar(&f.RetryReadBackoff, "gcp-retry-read-backoff",
+			models.DefaultCloudRetryReadBackoff,
 			"The initial delay in seconds between retry attempts. In case of connection errors\n"+
 				"tool will retry reading the object from the last known position.")
 
@@ -77,12 +77,12 @@ func (f *GcpStorage) NewFlagSet() *pflag.FlagSet {
 		"Max retries specifies the maximum number of attempts a failed operation will be retried\n"+
 			"before producing an error.")
 
-	flagSet.IntVar(&f.RetryBackoffMaxSeconds, "gcp-retry-max-backoff",
-		models.DefaultGcpRetryBackoffMaxSeconds,
+	flagSet.IntVar(&f.RetryBackoffMax, "gcp-retry-max-backoff",
+		models.DefaultGcpRetryBackoffMax,
 		"Max backoff is the maximum value in seconds of the retry period.")
 
-	flagSet.IntVar(&f.RetryBackoffInitSeconds, "gcp-retry-init-backoff",
-		models.DefaultGcpRetryBackoffInitSeconds,
+	flagSet.IntVar(&f.RetryBackoffInit, "gcp-retry-init-backoff",
+		models.DefaultGcpRetryBackoffInit,
 		"Initial backoff is the initial value in seconds of the retry period.")
 
 	flagSet.Float64Var(&f.RetryBackoffMultiplier, "gcp-retry-backoff-multiplier",
@@ -96,8 +96,8 @@ func (f *GcpStorage) NewFlagSet() *pflag.FlagSet {
 			"including connections in the dialing, active, and idle states. On limit violation, dials will block.\n"+
 			"Zero means no limit.")
 
-	flagSet.IntVar(&f.RequestTimeoutSeconds, "gcp-request-timeout",
-		models.DefaultCloudRequestTimeoutSeconds,
+	flagSet.IntVar(&f.RequestTimeout, "gcp-request-timeout",
+		models.DefaultCloudRequestTimeout,
 		"Timeout in seconds specifies a time limit for requests made by this Client.\n"+
 			"The timeout includes connection time, any redirects, and reading the response body.\n"+
 			"Zero means no limit.")

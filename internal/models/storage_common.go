@@ -17,14 +17,14 @@ package models
 import "fmt"
 
 type StorageCommon struct {
-	MaxConnsPerHost       int
-	RequestTimeoutSeconds int
+	MaxConnsPerHost int
+	RequestTimeout  int
 
 	CalculateChecksum bool
 
-	RetryReadBackoffSeconds int
-	RetryReadMultiplier     float64
-	RetryReadMaxAttempts    uint
+	RetryReadBackoff     int
+	RetryReadMultiplier  float64
+	RetryReadMaxAttempts uint
 }
 
 func (s *StorageCommon) Validate(isBackup bool) error {
@@ -32,7 +32,7 @@ func (s *StorageCommon) Validate(isBackup bool) error {
 		return fmt.Errorf("max connections per host must be non-negative")
 	}
 
-	if s.RequestTimeoutSeconds < 0 {
+	if s.RequestTimeout < 0 {
 		return fmt.Errorf("request timeout must be non-negative")
 	}
 
@@ -41,7 +41,7 @@ func (s *StorageCommon) Validate(isBackup bool) error {
 			return fmt.Errorf("retry read multiplier must be positive")
 		}
 
-		if s.RetryReadBackoffSeconds < 1 {
+		if s.RetryReadBackoff < 1 {
 			return fmt.Errorf("retry read timeout must be positive")
 		}
 	}

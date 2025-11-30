@@ -56,11 +56,11 @@ func TestAwsS3_NewFlagSet(t *testing.T) {
 	assert.Equal(t, "my-storage-class", result.StorageClass, "The s3-storage-class flag should be parsed correctly")
 	assert.Equal(t, 1, result.ChunkSize, "The s3-chunk-size flag should be parsed correctly")
 	assert.Equal(t, 10, result.RetryMaxAttempts, "The s3-retry-max-attempts flag should be parsed correctly")
-	assert.Equal(t, 10, result.RetryMaxBackoffSeconds, "The s3-retry-max-backoff flag should be parsed correctly")
-	assert.Equal(t, 10, result.RetryBackoffSeconds, "The s3-retry-backoff flag should be parsed correctly")
+	assert.Equal(t, 10, result.RetryMaxBackoff, "The s3-retry-max-backoff flag should be parsed correctly")
+	assert.Equal(t, 10, result.RetryBackoff, "The s3-retry-backoff flag should be parsed correctly")
 	assert.Equal(t, 10, result.UploadConcurrency, "The s3-upload-concurrency flag should be parsed correctly")
 	assert.Equal(t, 10, result.MaxConnsPerHost, "The s3-max-conns-per-host flag should be parsed correctly")
-	assert.Equal(t, 10, result.RequestTimeoutSeconds, "The s3-request-timeout flag should be parsed correctly")
+	assert.Equal(t, 10, result.RequestTimeout, "The s3-request-timeout flag should be parsed correctly")
 
 	awsS3 = NewAwsS3(OperationRestore)
 	flagSet = awsS3.NewFlagSet()
@@ -75,7 +75,7 @@ func TestAwsS3_NewFlagSet(t *testing.T) {
 
 	result = awsS3.GetAwsS3()
 
-	assert.Equal(t, 900, result.RetryReadBackoffSeconds, "The s3-retry-read-backoff flag should be parsed correctly")
+	assert.Equal(t, 900, result.RetryReadBackoff, "The s3-retry-read-backoff flag should be parsed correctly")
 	assert.Equal(t, 1.5, result.RetryReadMultiplier, "The s3-retry-read-multiplier flag should be parsed correctly")
 	assert.Equal(t, uint(5), result.RetryReadMaxAttempts, "The s3-retry-read-max-attempts flag should be parsed correctly")
 }
@@ -99,11 +99,11 @@ func TestAwsS3_NewFlagSet_DefaultValues(t *testing.T) {
 	assert.Equal(t, "", result.StorageClass, "The default value for s3-storage-class should be an empty string")
 	assert.Equal(t, models.DefaultS3ChunkSize, result.ChunkSize, "The default value for s3-chunk-size should be 5mb")
 	assert.Equal(t, models.DefaultS3RetryMaxAttempts, result.RetryMaxAttempts, "The default value for s3-retry-max-attempts should be 100")
-	assert.Equal(t, models.DefaultS3RetryMaxBackoffSeconds, result.RetryMaxBackoffSeconds, "The default value for s3-retry-max-backoff should be 90")
-	assert.Equal(t, models.DefaultS3RetryBackoffSeconds, result.RetryBackoffSeconds, "The default value for s3-retry-backoff should be 60")
+	assert.Equal(t, models.DefaultS3RetryMaxBackoff, result.RetryMaxBackoff, "The default value for s3-retry-max-backoff should be 90")
+	assert.Equal(t, models.DefaultS3RetryBackoff, result.RetryBackoff, "The default value for s3-retry-backoff should be 60")
 	assert.Equal(t, models.DefaultS3UploadConcurrency, result.UploadConcurrency, "The default value for s3-upload-concurrency should be 1")
 	assert.Equal(t, models.DefaultCloudMaxConnsPerHost, result.MaxConnsPerHost, "The default value for s3-max-conns-per-host should be 0")
-	assert.Equal(t, models.DefaultCloudRequestTimeoutSeconds, result.RequestTimeoutSeconds, "The default value for s3-request-timeout should be 0")
+	assert.Equal(t, models.DefaultCloudRequestTimeout, result.RequestTimeout, "The default value for s3-request-timeout should be 0")
 
 	awsS3 = NewAwsS3(OperationRestore)
 	flagSet = awsS3.NewFlagSet()
@@ -112,7 +112,7 @@ func TestAwsS3_NewFlagSet_DefaultValues(t *testing.T) {
 	result = awsS3.GetAwsS3()
 
 	assert.Equal(t, models.DefaultS3RestorePollDuration, result.RestorePollDuration, "The default value for s3-retry-backoff should be 6000")
-	assert.Equal(t, models.DefaultCloudRetryReadBackoffSeconds, result.RetryReadBackoffSeconds, "The default value for s3-retry-read-backoff should be 0")
+	assert.Equal(t, models.DefaultCloudRetryReadBackoff, result.RetryReadBackoff, "The default value for s3-retry-read-backoff should be 0")
 	assert.Equal(t, models.DefaultCloudRetryReadMultiplier, result.RetryReadMultiplier, "The default value for s3-retry-read-multiplier should be 0")
 	assert.Equal(t, models.DefaultCloudRetryReadMaxAttempts, result.RetryReadMaxAttempts, "The default value for s3-retry-read-max-attempts should be 0")
 }

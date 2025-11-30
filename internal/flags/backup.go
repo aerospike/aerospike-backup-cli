@@ -141,8 +141,7 @@ func (f *Backup) NewFlagSet() *pflag.FlagSet {
 	flagSet.BoolVarP(&f.Compact, "compact", "C",
 		models.DefaultBackupCompact,
 		"If true, do not apply base-64 encoding to BLOBs and instead write raw binary data,\n"+
-			"resulting in smaller backup files.\n"+
-			"Deprecated.")
+			"resulting in smaller backup files.")
 
 	flagSet.BoolVarP(&f.Estimate, "estimate", "e",
 		models.DefaultBackupEstimate,
