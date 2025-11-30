@@ -392,8 +392,9 @@ func TestNewBackupConfigs_RegularBackup(t *testing.T) {
 	serviceConfig := &BackupServiceConfig{
 		Backup: &models.Backup{
 			Common: models.Common{
-				Namespace:    "test-namespace",
-				ParallelRead: 4,
+				Namespace:     "test-namespace",
+				ParallelRead:  4,
+				ParallelWrite: 4,
 			},
 		},
 		BackupXDR:   nil,
@@ -536,6 +537,7 @@ func TestNewBackupConfigs_AllFlags(t *testing.T) {
 				NoUDFs:           true,
 				RecordsPerSecond: 5000,
 				ParallelRead:     8,
+				ParallelWrite:    8,
 				Bandwidth:        100,
 				Directory:        "/tmp",
 			},

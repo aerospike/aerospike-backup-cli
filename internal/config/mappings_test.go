@@ -74,6 +74,7 @@ func TestMapBackupConfig_Success(t *testing.T) {
 				RecordsPerSecond: 1000,
 				Bandwidth:        10,
 				ParallelRead:     5,
+				ParallelWrite:    5,
 			},
 		},
 		Compression: testCompression(),
