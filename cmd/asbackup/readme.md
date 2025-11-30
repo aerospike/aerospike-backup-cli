@@ -295,14 +295,14 @@ Any GCP parameter can be retrieved from Secret Agent.
       --gcp-calculate-checksum               Calculate checksum for each uploaded object.
       --gcp-retry-max-attempts int           Max retries specifies the maximum number of attempts a failed operation will be retried
                                              before producing an error. (default 10)
-      --gcp-retry-max-backoff int            Max backoff is the maximum value in seconds of the retry period. (default 90000)
-      --gcp-retry-init-backoff int           Initial backoff is the initial value in seconds of the retry period. (default 60000)
+      --gcp-retry-max-backoff int            Max backoff is the maximum value in milliseconds of the retry period. (default 90000)
+      --gcp-retry-init-backoff int           Initial backoff is the initial value in milliseconds of the retry period. (default 60000)
       --gcp-retry-backoff-multiplier float   Multiplier is the factor by which the retry period increases.
                                              It should be greater than 1. (default 2)
       --gcp-max-conns-per-host int           MaxConnsPerHost optionally limits the total number of connections per host,
                                              including connections in the dialing, active, and idle states. On limit violation, dials will block.
                                              Zero means no limit.
-      --gcp-request-timeout int              Timeout in seconds specifies a time limit for requests made by this Client.
+      --gcp-request-timeout int              Timeout in milliseconds specifies a time limit for requests made by this Client.
                                              The timeout includes connection time, any redirects, and reading the response body.
                                              Zero means no limit. (default 600000)
 
@@ -328,18 +328,18 @@ Any Azure parameter can be retrieved from Secret Agent.
       --azure-calculate-checksum       Calculate checksum for each uploaded object.
       --azure-retry-max-attempts int   Max retries specifies the maximum number of attempts a failed operation will be retried
                                        before producing an error. (default 10)
-      --azure-retry-max-delay int      Max retry delay specifies the maximum delay in seconds allowed before retrying an operation.
+      --azure-retry-max-delay int      Max retry delay specifies the maximum delay in milliseconds allowed before retrying an operation.
                                        Typically the value is greater than or equal to the value specified in azure-retry-delay. (default 90000)
-      --azure-retry-delay int          Retry delay specifies the initial amount of delay in seconds to use before retrying an operation.
+      --azure-retry-delay int          Retry delay specifies the initial amount of delay in milliseconds to use before retrying an operation.
                                        The value is used only if the HTTP response does not contain a Retry-After header.
                                        The delay increases exponentially with each retry up to the maximum specified by azure-retry-max-delay. (default 60000)
-      --azure-retry-timeout int        Retry timeout in seconds indicates the maximum time allowed for any single try of an HTTP request.
+      --azure-retry-timeout int        Retry timeout in milliseconds indicates the maximum time allowed for any single try of an HTTP request.
                                        This is disabled by default. Specify a value greater than zero to enable.
                                        NOTE: Setting this to a small value might cause premature HTTP request time-outs.
       --azure-max-conns-per-host int   MaxConnsPerHost optionally limits the total number of connections per host,
                                        including connections in the dialing, active, and idle states. On limit violation, dials will block.
                                        Zero means no limit.
-      --azure-request-timeout int      Timeout in seconds specifies a time limit for requests made by this Client.
+      --azure-request-timeout int      Timeout in milliseconds specifies a time limit for requests made by this Client.
                                        The timeout includes connection time, any redirects, and reading the response body.
                                        Zero means no limit. (default 600000)
 ```
@@ -638,9 +638,9 @@ aws:
     storage-class: ""
     # Maximum number of attempts that should be made in case of an error.
     retry-max-attempts: 100
-    # Max backoff duration in seconds between retried attempts.
+    # Max backoff duration in milliseconds between retried attempts.
     retry-max-backoff: 90
-    # Provides the backoff in seconds strategy the retryer will use to determine the delay between retry attempts.
+    # Provides the backoff in milliseconds strategy the retryer will use to determine the delay between retry attempts.
     retry-backoff: 60
     # Chunk size controls the maximum number of megabytes of the object that the app will attempt to send to
     # the storage in a single request. Objects smaller than the size will be sent in a single request,
@@ -669,9 +669,9 @@ gcp:
     endpoint-override: ""
     # Max retries specifies the maximum number of attempts a failed operation will be retried before producing an error.
     retry-max-attempts: 100
-    # Max backoff is the maximum value in seconds of the retry period.
+    # Max backoff is the maximum value in milliseconds of the retry period.
     retry-max-backoff: 90
-    # Initial backoff is the initial value in seconds of the retry period.
+    # Initial backoff is the initial value in milliseconds of the retry period.
     retry-init-backoff: 60
     # Multiplier is the factor by which the retry period increases. It should be greater than 1.
     retry-backoff-multiplier: 2
@@ -709,15 +709,15 @@ azure:
     access-tier: ""
     # Max retries specifies the maximum number of attempts a failed operation will be retried before producing an error.
     retry-max-attempts: 100
-    # Retry timeout in seconds indicates the maximum time allowed for any single try of an HTTP request.
+    # Retry timeout in milliseconds indicates the maximum time allowed for any single try of an HTTP request.
     # This is disabled by default. Specify a value greater than zero to enable.
     # NOTE: Setting this to a small value might cause premature HTTP request time-outs.
     retry-timeout: 10
-    # Retry delay specifies the initial amount of delay in seconds to use before retrying an operation.
+    # Retry delay specifies the initial amount of delay in milliseconds to use before retrying an operation.
     # The value is used only if the HTTP response does not contain a Retry-After header.
     # The delay increases exponentially with each retry up to the maximum specified by azure-retry-max-delay.
     retry-delay: 60
-    # Max retry delay specifies the maximum delay in seconds allowed before retrying an operation.
+    # Max retry delay specifies the maximum delay in milliseconds allowed before retrying an operation.
     # Typically the value is greater than or equal to the value specified in azure-retry-delay.
     retry-max-delay: 90
     # Block size defines the size of the buffer in MiB used during upload.

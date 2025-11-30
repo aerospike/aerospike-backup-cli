@@ -56,7 +56,7 @@ func TestGcpStorage_Validate(t *testing.T) {
 			wantErr: "retry maximum attempts must be non-negative",
 		},
 		{
-			name: "negative retry backoff max seconds",
+			name: "negative retry backoff max milliseconds",
 			gcp: &GcpStorage{
 				BucketName:       testBucketName,
 				RetryMaxAttempts: 3,
@@ -65,7 +65,7 @@ func TestGcpStorage_Validate(t *testing.T) {
 			wantErr: "retry max backoff must be non-negative",
 		},
 		{
-			name: "negative retry backoff init seconds",
+			name: "negative retry backoff init milliseconds",
 			gcp: &GcpStorage{
 				BucketName:       testBucketName,
 				RetryMaxAttempts: 3,

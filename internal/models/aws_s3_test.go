@@ -81,7 +81,7 @@ func TestAwsS3_Validate(t *testing.T) {
 			wantErr:  "retry maximum attempts must be non-negative",
 		},
 		{
-			name: "negative retry max backoff seconds",
+			name: "negative retry max backoff milliseconds",
 			aws: &AwsS3{
 				BucketName:       testBucketName,
 				RetryMaxAttempts: 3,
@@ -91,7 +91,7 @@ func TestAwsS3_Validate(t *testing.T) {
 			wantErr:  "retry max backoff must be non-negative",
 		},
 		{
-			name: "negative retry backoff seconds",
+			name: "negative retry backoff milliseconds",
 			aws: &AwsS3{
 				BucketName:       testBucketName,
 				RetryMaxAttempts: 3,

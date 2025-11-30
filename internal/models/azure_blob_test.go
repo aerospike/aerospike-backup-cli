@@ -79,7 +79,7 @@ func TestAzureBlob_Validate(t *testing.T) {
 			wantErr:  "retry maximum attempts must be non-negative",
 		},
 		{
-			name: "negative retry timeout seconds",
+			name: "negative retry timeout milliseconds",
 			azure: &AzureBlob{
 				ContainerName:    testBucketName,
 				RetryMaxAttempts: 3,
@@ -89,7 +89,7 @@ func TestAzureBlob_Validate(t *testing.T) {
 			wantErr:  "retry try timeout must be non-negative",
 		},
 		{
-			name: "negative retry delay seconds",
+			name: "negative retry delay milliseconds",
 			azure: &AzureBlob{
 				ContainerName:    testBucketName,
 				RetryMaxAttempts: 3,
@@ -100,7 +100,7 @@ func TestAzureBlob_Validate(t *testing.T) {
 			wantErr:  "retry delay must be non-negative",
 		},
 		{
-			name: "negative retry max delay seconds",
+			name: "negative retry max delay milliseconds",
 			azure: &AzureBlob{
 				ContainerName:    testBucketName,
 				RetryMaxAttempts: 3,
