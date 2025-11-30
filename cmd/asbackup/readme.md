@@ -195,7 +195,6 @@ Backup Flags:
                                     This field is ignored when --max-retries is zero. (default 5)
   -C, --compact                     If true, do not apply base-64 encoding to BLOBs and instead write raw binary data,
                                     resulting in smaller backup files.
-                                    Deprecated.
   -e, --estimate                    Estimate the backed-up record size from a random sample of 
                                     10,000 (default) records at 99.9999% confidence to estimate the full backup size.
                                     It ignores any filter:  --filter-exp, --node-list, --modified-after, --modified-before, --no-ttl-only,
@@ -273,14 +272,14 @@ Any AWS parameter can be retrieved from Secret Agent.
                                       Each concurrent upload will create a buffer of size s3-block-size.
       --s3-calculate-checksum         Calculate checksum for each uploaded object.
       --s3-retry-max-attempts int     Maximum number of attempts that should be made in case of an error. (default 10)
-      --s3-retry-max-backoff int      Max backoff duration in seconds between retried attempts. (default 90)
-      --s3-retry-backoff int          Provides the backoff in seconds strategy the retryer will use to determine the delay between retry attempts. (default 60)
+      --s3-retry-max-backoff int      Max backoff duration in milliseconds between retried attempts. (default 90000)
+      --s3-retry-backoff int          Provides the backoff in milliseconds strategy the retryer will use to determine the delay between retry attempts. (default 60000)
       --s3-max-conns-per-host int     MaxConnsPerHost optionally limits the total number of connections per host,
                                       including connections in the dialing, active, and idle states. On limit violation, dials will block.
                                       Zero means no limit.
-      --s3-request-timeout int        Timeout in seconds specifies a time limit for requests made by this Client.
+      --s3-request-timeout int        Timeout in milliseconds specifies a time limit for requests made by this Client.
                                       The timeout includes connection time, any redirects, and reading the response body.
-                                      Zero means no limit. (default 600)
+                                      Zero means no limit. (default 600000)
 
 GCP Storage Flags:
 For GCP storage bucket name is mandatory, and is set with --gcp-bucket-name flag.
@@ -296,8 +295,8 @@ Any GCP parameter can be retrieved from Secret Agent.
       --gcp-calculate-checksum               Calculate checksum for each uploaded object.
       --gcp-retry-max-attempts int           Max retries specifies the maximum number of attempts a failed operation will be retried
                                              before producing an error. (default 10)
-      --gcp-retry-max-backoff int            Max backoff is the maximum value in seconds of the retry period. (default 90)
-      --gcp-retry-init-backoff int           Initial backoff is the initial value in seconds of the retry period. (default 60)
+      --gcp-retry-max-backoff int            Max backoff is the maximum value in seconds of the retry period. (default 90000)
+      --gcp-retry-init-backoff int           Initial backoff is the initial value in seconds of the retry period. (default 60000)
       --gcp-retry-backoff-multiplier float   Multiplier is the factor by which the retry period increases.
                                              It should be greater than 1. (default 2)
       --gcp-max-conns-per-host int           MaxConnsPerHost optionally limits the total number of connections per host,
@@ -305,7 +304,7 @@ Any GCP parameter can be retrieved from Secret Agent.
                                              Zero means no limit.
       --gcp-request-timeout int              Timeout in seconds specifies a time limit for requests made by this Client.
                                              The timeout includes connection time, any redirects, and reading the response body.
-                                             Zero means no limit. (default 600)
+                                             Zero means no limit. (default 600000)
 
 Azure Storage Flags:
 For Azure storage container name is mandatory, and is set with --azure-storage-container-name flag.
@@ -330,10 +329,10 @@ Any Azure parameter can be retrieved from Secret Agent.
       --azure-retry-max-attempts int   Max retries specifies the maximum number of attempts a failed operation will be retried
                                        before producing an error. (default 10)
       --azure-retry-max-delay int      Max retry delay specifies the maximum delay in seconds allowed before retrying an operation.
-                                       Typically the value is greater than or equal to the value specified in azure-retry-delay. (default 90)
+                                       Typically the value is greater than or equal to the value specified in azure-retry-delay. (default 90000)
       --azure-retry-delay int          Retry delay specifies the initial amount of delay in seconds to use before retrying an operation.
                                        The value is used only if the HTTP response does not contain a Retry-After header.
-                                       The delay increases exponentially with each retry up to the maximum specified by azure-retry-max-delay. (default 60)
+                                       The delay increases exponentially with each retry up to the maximum specified by azure-retry-max-delay. (default 60000)
       --azure-retry-timeout int        Retry timeout in seconds indicates the maximum time allowed for any single try of an HTTP request.
                                        This is disabled by default. Specify a value greater than zero to enable.
                                        NOTE: Setting this to a small value might cause premature HTTP request time-outs.
@@ -342,7 +341,7 @@ Any Azure parameter can be retrieved from Secret Agent.
                                        Zero means no limit.
       --azure-request-timeout int      Timeout in seconds specifies a time limit for requests made by this Client.
                                        The timeout includes connection time, any redirects, and reading the response body.
-                                       Zero means no limit. (default 600)
+                                       Zero means no limit. (default 600000)
 ```
 
 ## Unsupported flags

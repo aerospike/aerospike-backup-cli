@@ -350,7 +350,7 @@ Any Azure parameter can be retrieved from Secret Agent.
                              - Debug
                              - Trace
                             The default is Fatal.
-
+                            
 --s3-connect-timeout        The AWS S3 client's connection timeout in milliseconds.
                             This is equivalent to cli-connect-timeout in the AWS CLI,
                             or connectTimeoutMS in the aws-sdk-cpp client configuration.                  
