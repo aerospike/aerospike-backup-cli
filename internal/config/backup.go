@@ -187,8 +187,6 @@ func newBackupConfig(params *BackupServiceConfig) (*backup.ConfigBackup, error) 
 	c.RecordsPerSecond = params.Backup.RecordsPerSecond
 	c.FileLimit = params.Backup.FileLimit * 1024 * 1024
 	c.NoUDFs = params.Backup.NoUDFs
-	// The original backup tools have a single parallelism configuration property.
-	// We may consider splitting the configuration in the future.
 	c.ParallelWrite = params.Backup.ParallelWrite
 	c.ParallelRead = params.Backup.ParallelRead
 	// As we set --bandwidth in MiB we must convert it to bytes

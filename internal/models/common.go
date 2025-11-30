@@ -62,7 +62,7 @@ func (c *Common) Validate() error {
 	}
 
 	if c.ParallelRead < 0 || c.ParallelWrite < 0 {
-		return fmt.Errorf("parallel must be non-negative")
+		return fmt.Errorf("parallelism must be non-negative")
 	}
 
 	if c.StdBufferSize < 0 {
