@@ -34,9 +34,9 @@ type AwsS3 struct {
 	AccessTier          string
 	RestorePollDuration int64
 
-	RetryMaxAttempts       int
-	RetryMaxBackoffSeconds int
-	RetryBackoffSeconds    int
+	RetryMaxAttempts int
+	RetryMaxBackoff  int
+	RetryBackoff     int
 
 	ChunkSize         int
 	UploadConcurrency int
@@ -101,11 +101,11 @@ func (a *AwsS3) Validate(isBackup bool) error {
 		return fmt.Errorf("retry maximum attempts must be non-negative")
 	}
 
-	if a.RetryMaxBackoffSeconds < 0 {
+	if a.RetryMaxBackoff < 0 {
 		return fmt.Errorf("retry max backoff must be non-negative")
 	}
 
-	if a.RetryBackoffSeconds < 0 {
+	if a.RetryBackoff < 0 {
 		return fmt.Errorf("retry backoff must be non-negative")
 	}
 

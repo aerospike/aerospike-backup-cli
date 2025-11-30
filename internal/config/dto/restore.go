@@ -160,7 +160,7 @@ func defaultRestoreConfig() *RestoreConfig {
 		InfoTimeout:                   int64Ptr(models.DefaultCommonInfoTimeout),
 		InfoMaxRetries:                uintPtr(models.DefaultCommonInfoMaxRetries),
 		InfoRetriesMultiplier:         float64Ptr(models.DefaultCommonInfoRetriesMultiplier),
-		InfoRetryIntervalMilliseconds: int64Ptr(models.DefaultCommonInfoRetryIntervalMilliseconds),
+		InfoRetryIntervalMilliseconds: int64Ptr(models.DefaultCommonInfoRetryInterval),
 		Bandwidth:                     int64Ptr(models.DefaultCommonBandwidth),
 		StdBufferSize:                 intPtr(models.DefaultCommonStdBufferSize),
 		TotalTimeout:                  int64Ptr(models.DefaultRestoreTotalTimeout),

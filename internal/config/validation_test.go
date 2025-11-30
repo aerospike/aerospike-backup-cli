@@ -46,8 +46,8 @@ func TestValidateStorages(t *testing.T) {
 				BucketName:          testBucket,
 				RestorePollDuration: 1,
 				StorageCommon: models.StorageCommon{
-					RetryReadMultiplier:     2,
-					RetryReadBackoffSeconds: 100,
+					RetryReadMultiplier: 2,
+					RetryReadBackoff:    100,
 				},
 			},
 			gcpStorage: &models.GcpStorage{},
@@ -63,8 +63,8 @@ func TestValidateStorages(t *testing.T) {
 				BucketName:             testBucket,
 				RetryBackoffMultiplier: 2,
 				StorageCommon: models.StorageCommon{
-					RetryReadMultiplier:     2,
-					RetryReadBackoffSeconds: 100,
+					RetryReadMultiplier: 2,
+					RetryReadBackoff:    100,
 				},
 			},
 			azureBlob: &models.AzureBlob{},
@@ -133,8 +133,8 @@ func TestValidateStorages(t *testing.T) {
 				Profile:             "default",
 				RestorePollDuration: 1,
 				StorageCommon: models.StorageCommon{
-					RetryReadMultiplier:     2,
-					RetryReadBackoffSeconds: 100,
+					RetryReadMultiplier: 2,
+					RetryReadBackoff:    100,
 				},
 			},
 			gcpStorage: &models.GcpStorage{},

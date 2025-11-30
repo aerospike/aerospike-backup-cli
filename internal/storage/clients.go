@@ -102,15 +102,15 @@ func newS3Client(ctx context.Context, a *models.AwsS3) (*s3.Client, error) {
 				o.StandardOptions = append(o.StandardOptions,
 					func(so *retry.StandardOptions) {
 						so.MaxAttempts = a.RetryMaxAttempts
-						so.MaxBackoff = time.Duration(a.RetryMaxBackoffSeconds) * time.Second
+						so.MaxBackoff = time.Duration(a.RetryMaxBackoff) * time.Millisecond
 						so.Backoff = retry.NewExponentialJitterBackoff(
-							time.Duration(a.RetryBackoffSeconds) * time.Second,
+							time.Duration(a.RetryBackoff) * time.Millisecond,
 						)
 					})
 			})
 		}),
 		config.WithHTTPClient(
-			newHTTPClient(a.MaxConnsPerHost, a.RequestTimeoutSeconds)),
+			newHTTPClient(a.MaxConnsPerHost, a.RequestTimeout)),
 	)
 
 	if a.Profile != "" {
@@ -149,7 +149,7 @@ func newS3Client(ctx context.Context, a *models.AwsS3) (*s3.Client, error) {
 func newGcpClient(ctx context.Context, g *models.GcpStorage) (*gcpStorage.Client, error) {
 	opts := make([]option.ClientOption, 0)
 
-	opts = append(opts, option.WithHTTPClient(newHTTPClient(g.MaxConnsPerHost, g.RequestTimeoutSeconds)))
+	opts = append(opts, option.WithHTTPClient(newHTTPClient(g.MaxConnsPerHost, g.RequestTimeout)))
 
 	if g.KeyFile != "" {
 		opts = append(opts, option.WithCredentialsFile(g.KeyFile))
@@ -165,8 +165,8 @@ func newGcpClient(ctx context.Context, g *models.GcpStorage) (*gcpStorage.Client
 	}
 
 	backoff := gax.Backoff{
-		Initial:    time.Duration(g.RetryBackoffInitSeconds) * time.Second,
-		Max:        time.Duration(g.RetryBackoffMaxSeconds) * time.Second,
+		Initial:    time.Duration(g.RetryBackoffInit) * time.Millisecond,
+		Max:        time.Duration(g.RetryBackoffMax) * time.Millisecond,
 		Multiplier: g.RetryBackoffMultiplier,
 	}
 
@@ -186,12 +186,12 @@ func newAzureClient(a *models.AzureBlob) (*azblob.Client, error) {
 
 	azOpts := &azblob.ClientOptions{
 		ClientOptions: azcore.ClientOptions{
-			Transport: newHTTPClient(a.MaxConnsPerHost, a.RequestTimeoutSeconds),
+			Transport: newHTTPClient(a.MaxConnsPerHost, a.RequestTimeout),
 			Retry: policy.RetryOptions{
 				MaxRetries:    int32(a.RetryMaxAttempts),
-				TryTimeout:    time.Duration(a.RetryTimeoutSeconds) * time.Second,
-				RetryDelay:    time.Duration(a.RetryDelaySeconds) * time.Second,
-				MaxRetryDelay: time.Duration(a.RetryMaxDelaySeconds) * time.Second,
+				TryTimeout:    time.Duration(a.RetryTimeout) * time.Millisecond,
+				RetryDelay:    time.Duration(a.RetryDelay) * time.Millisecond,
+				MaxRetryDelay: time.Duration(a.RetryMaxDelay) * time.Millisecond,
 				StatusCodes: []int{
 					http.StatusRequestTimeout,
 					http.StatusTooManyRequests,
@@ -268,6 +268,6 @@ func newTransport(maxConnsPerHost int) *http.Transport {
 func newHTTPClient(maxConnsPerHost, requestTimeoutSeconds int) *http.Client {
 	return &http.Client{
 		Transport: newTransport(maxConnsPerHost),
-		Timeout:   time.Duration(requestTimeoutSeconds) * time.Second,
+		Timeout:   time.Duration(requestTimeoutSeconds) * time.Millisecond,
 	}
 }
