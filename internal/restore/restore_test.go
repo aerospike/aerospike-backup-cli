@@ -75,6 +75,7 @@ func Test_BackupRestore(t *testing.T) {
 				Directory:                     dir,
 				Namespace:                     testNamespace,
 				ParallelRead:                  1,
+				ParallelWrite:                 1,
 				InfoMaxRetries:                3,
 				InfoRetriesMultiplier:         1,
 				InfoRetryIntervalMilliseconds: 1000,
