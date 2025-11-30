@@ -52,7 +52,7 @@ const (
 	descNoUDFsBackup  = "Don't back up any UDFs."
 	descNoUDFsRestore = "Don't restore any UDFs."
 
-	descParallelBackup = "Maximum number of scan calls to run in parallel.\n" +
+	descParallelReadBackup = "Maximum number of scan calls to run in parallel.\n" +
 		"If only one partition range is given, or the entire namespace is being backed up, the range\n" +
 		"of partitions will be evenly divided by this number to be processed in parallel. Otherwise, each\n" +
 		"filter cannot be parallelized individually, so you may only achieve as much parallelism as there are\n" +
@@ -93,7 +93,7 @@ func (f *Common) NewFlagSet() *pflag.FlagSet {
 		descNoRecords = descNoRecordsBackup
 		descNoIndexes = descNoIndexesBackup
 		descNoUDFs = descNoUDFsBackup
-		descParallel = descParallelBackup
+		descParallel = descParallelReadBackup
 		defaultTotalTimeout = models.DefaultBackupTotalTimeout
 		defaultParallel = models.DefaultBackupParallel
 	case OperationRestore:
@@ -137,9 +137,19 @@ func (f *Common) NewFlagSet() *pflag.FlagSet {
 		models.DefaultCommonNoUDFs,
 		descNoUDFs)
 
-	flagSet.IntVarP(&f.fields.Parallel, "parallel", "w",
-		defaultParallel,
-		descParallel)
+	switch f.operation {
+	case OperationBackup:
+		flagSet.IntVarP(&f.fields.ParallelRead, "parallel-read", "w",
+			defaultParallel,
+			descParallel)
+		flagSet.IntVar(&f.fields.ParallelWrite, "parallel-write",
+			defaultParallel,
+			"Number of concurrent backup files writers.\n")
+	case OperationRestore:
+		flagSet.IntVarP(&f.fields.ParallelRead, "parallel", "w",
+			defaultParallel,
+			descParallel)
+	}
 
 	flagSet.IntVarP(&f.fields.RecordsPerSecond, "records-per-second", "L",
 		models.DefaultCommonRecordsPerSecond,

@@ -108,11 +108,13 @@ Backup Flags:
   -R, --no-records                    Don't back up any records.
   -I, --no-indexes                    Don't back up any indexes.
       --no-udfs                       Don't back up any UDFs.
-  -w, --parallel int                  Maximum number of scan calls to run in parallel.
+  -w, --parallel-read int             Maximum number of scan calls to run in parallel.
                                       If only one partition range is given, or the entire namespace is being backed up, the range
                                       of partitions will be evenly divided by this number to be processed in parallel. Otherwise, each
                                       filter cannot be parallelized individually, so you may only achieve as much parallelism as there are
                                       partition filters. Accepts values from 1-1024 inclusive. (default 1)
+      --parallel-write int            Number of concurrent backup files writers.
+                                       (default 1)
   -L, --records-per-second int        Limit total returned records per second (rps).
                                       Do not apply rps limit if records-per-second is zero.
       --max-retries int               Maximum number of retries before aborting the current transaction. (default 5)
@@ -445,7 +447,9 @@ backup:
   # of partitions will be evenly divided by this number to be processed in parallel. Otherwise, each
   # filter cannot be parallelized individually, so you may only achieve as much parallelism as there are
   # partition filters. Accepts values from 1-1024 inclusive.
-  parallel: 1
+  parallel-read: 1
+  # Number of concurrent backup files writers.
+  parallel-write: 1
   # Will not back up any records if set to true.
   no-records: false
   # Will not back up any indexes if set to true.

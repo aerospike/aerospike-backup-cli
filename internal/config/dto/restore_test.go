@@ -125,7 +125,7 @@ func TestRestoreConfig_ToModelRestore(t *testing.T) {
 	assert.Equal(t, "test", model.Namespace)
 	assert.Equal(t, "set1,set2", model.SetList)
 	assert.Equal(t, "bin1,bin2", model.BinList)
-	assert.Equal(t, 8, model.Parallel)
+	assert.Equal(t, 8, model.ParallelRead)
 	assert.False(t, model.NoRecords)
 	assert.True(t, model.NoIndexes)
 	assert.False(t, model.NoUDFs)
@@ -194,7 +194,7 @@ func TestRestore_ToModelRestore_DefaultToModel(t *testing.T) {
 
 	assert.Equal(t, models.DefaultCommonDirectory, model.Directory)
 	assert.Equal(t, models.DefaultCommonNamespace, model.Namespace)
-	assert.Equal(t, models.DefaultRestoreParallel, model.Parallel)
+	assert.Equal(t, models.DefaultRestoreParallel, model.ParallelRead)
 	assert.Equal(t, models.DefaultCommonNoRecords, model.NoRecords)
 	assert.Equal(t, models.DefaultCommonNoIndexes, model.NoIndexes)
 	assert.Equal(t, models.DefaultCommonNoUDFs, model.NoUDFs)

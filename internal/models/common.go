@@ -22,7 +22,8 @@ type Common struct {
 	Namespace        string
 	SetList          string
 	BinList          string
-	Parallel         int
+	ParallelRead     int
+	ParallelWrite    int
 	NoRecords        bool
 	NoIndexes        bool
 	NoUDFs           bool
@@ -60,7 +61,7 @@ func (c *Common) Validate() error {
 		return fmt.Errorf("socket-timeout must be non-negative")
 	}
 
-	if c.Parallel < 0 {
+	if c.ParallelRead < 0 || c.ParallelWrite < 0 {
 		return fmt.Errorf("parallel must be non-negative")
 	}
 

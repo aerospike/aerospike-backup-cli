@@ -45,7 +45,7 @@ func TestDefaultBackupConfig(t *testing.T) {
 	assert.Equal(t, models.DefaultCommonNamespace, derefString(config.Namespace))
 	assert.Empty(t, config.SetList)
 	assert.Empty(t, config.BinList)
-	assert.Equal(t, models.DefaultBackupParallel, derefInt(config.Parallel))
+	assert.Equal(t, models.DefaultBackupParallel, derefInt(config.ParallelRead))
 	assert.Equal(t, models.DefaultCommonNoRecords, derefBool(config.NoRecords))
 	assert.Equal(t, models.DefaultCommonNoIndexes, derefBool(config.NoIndexes))
 	assert.Equal(t, models.DefaultCommonNoUDFs, derefBool(config.NoUDFs))
@@ -90,7 +90,7 @@ func TestBackupConfig_ToModelBackup(t *testing.T) {
 		Namespace:                     stringPtr("test"),
 		SetList:                       []string{"set1", "set2"},
 		BinList:                       []string{"bin1", "bin2"},
-		Parallel:                      intPtr(8),
+		ParallelRead:                  intPtr(8),
 		NoRecords:                     boolPtr(false),
 		NoIndexes:                     boolPtr(true),
 		NoUDFs:                        boolPtr(false),
@@ -138,7 +138,7 @@ func TestBackupConfig_ToModelBackup(t *testing.T) {
 	assert.Equal(t, "test", model.Namespace)
 	assert.Equal(t, "set1,set2", model.SetList)
 	assert.Equal(t, "bin1,bin2", model.BinList)
-	assert.Equal(t, 8, model.Parallel)
+	assert.Equal(t, 8, model.ParallelRead)
 	assert.False(t, model.NoRecords)
 	assert.True(t, model.NoIndexes)
 	assert.False(t, model.NoUDFs)
@@ -219,7 +219,7 @@ func TestBackup_ToModelBackup_DefaultToModel(t *testing.T) {
 
 	assert.Equal(t, models.DefaultCommonDirectory, model.Directory)
 	assert.Equal(t, models.DefaultCommonNamespace, model.Namespace)
-	assert.Equal(t, models.DefaultBackupParallel, model.Parallel)
+	assert.Equal(t, models.DefaultBackupParallel, model.ParallelRead)
 	assert.Equal(t, models.DefaultCommonNoRecords, model.NoRecords)
 	assert.Equal(t, models.DefaultCommonNoIndexes, model.NoIndexes)
 	assert.Equal(t, models.DefaultCommonNoUDFs, model.NoUDFs)

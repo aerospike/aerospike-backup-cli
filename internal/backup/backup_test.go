@@ -83,7 +83,7 @@ func Test_BackupWithState(t *testing.T) {
 			Common: models.Common{
 				Directory:                     dir,
 				Namespace:                     testNamespace,
-				Parallel:                      1,
+				ParallelRead:                  1,
 				InfoMaxRetries:                3,
 				InfoRetriesMultiplier:         1,
 				InfoRetryIntervalMilliseconds: 1000,
@@ -198,7 +198,7 @@ func Test_BackupEstimates(t *testing.T) {
 			FileLimit: 100000,
 			Common: models.Common{
 				Namespace:                     testNamespace,
-				Parallel:                      1,
+				ParallelRead:                  1,
 				InfoMaxRetries:                3,
 				InfoRetriesMultiplier:         1,
 				InfoRetryIntervalMilliseconds: 1000,
