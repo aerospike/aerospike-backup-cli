@@ -519,13 +519,6 @@ backup:
   # encoded through any client. This argument is mutually exclusive with multi-set backup.
   filter-exp: ""
 
-  # Specifies how to perform the query of the database run for each backup.
-  # By default, asbackup runs parallel workers for partitions.
-  # If this flag is set to true, asbackup launches parallel workers for nodes.
-  # The number of parallel workers is set by the `parallel`.
-  # This option is mutually exclusive with `continue` and `estimate`.
-  parallel-nodes: false
-
   # <addr 1>:<port 1>[,<addr 2>:<port 2>[,...]]
   # <node name 1>[,<node name 2>[,...]]
   # To get the correct node address, use the info command 'service-tls-std' if the database is configured to use TLS
