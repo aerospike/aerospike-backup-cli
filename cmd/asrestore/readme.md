@@ -99,8 +99,8 @@ Restore Flags:
                                       If not set, the default value is automatically calculated and appears as the number of CPUs on your machine.
   -L, --records-per-second int        Limit total returned records per second (RPS). If 0, no limit is applied.
       --max-retries int               Maximum number of retries before aborting the current transaction. (default 5)
-      --total-timeout int             Total transaction timeout in milliseconds. If 0, no timeout is applied.  (default 10000)
-      --socket-timeout int            Socket timeout in milliseconds. If 0, the value for --total-timeout is used.
+      --total-timeout int             Total transaction timeout (in ms). If 0, no timeout is applied.  (default 10000)
+      --socket-timeout int            Socket timeout (in ms). If 0, the value for --total-timeout is used.
                                       If both this and --total-timeout are 0, there is no socket idle time limit. (default 10000)
       --nice int                      The limits for read/write storage bandwidth in MiB/s.
                                       Default is 0 (no limit). (DEPRECATED: use --bandwidth instead)
@@ -166,7 +166,7 @@ Restore Flags:
       --extra-ttl int             For records with expirable void-times, add N seconds of extra-ttl to the
                                   recorded void-time.
                                   
-      --retry-base-interval int   Set the initial interval for a retry in milliseconds when data is sent to the Aerospike database
+      --retry-base-interval int   Set the initial interval for a retry (in ms) when data is sent to the Aerospike database
                                   during a restore. This retry sequence is triggered by the following non-critical errors:
                                   AEROSPIKE_NO_AVAILABLE_CONNECTIONS_TO_NODE,
                                   AEROSPIKE_TIMEOUT,
@@ -229,21 +229,21 @@ Any AWS parameter can be retrieved from Secret Agent.
       --s3-endpoint-override string       An alternate URL endpoint to send S3 API calls to.
       --s3-tier string                    If is set, tool will try to restore archived files to the specified tier.
                                           Tiers are: Standard, Bulk, Expedited.
-      --s3-restore-poll-duration int      How often (in milliseconds) a backup client checks object status when restoring an archived object. (default 60000)
-      --s3-retry-read-backoff int         The initial delay in milliseconds between retry attempts. In case of connection errors
-                                          tool will retry reading the object from the last known position. (default 1)
+      --s3-restore-poll-duration int      How often ((in ms)) a backup client checks object status when restoring an archived object. (default 60000)
+      --s3-retry-read-backoff int         The initial delay (in ms) between retry attempts. In case of connection errors
+                                          tool will retry reading the object from the last known position. (default 1000)
       --s3-retry-read-multiplier float    Multiplier is used to increase the delay between subsequent retry attempts.
                                           Used in combination with initial delay. (default 2)
       --s3-retry-read-max-attempts uint   The maximum number of retry attempts that will be made. If set to 0, no retries will be performed. (default 3)
       --s3-retry-max-attempts int         Maximum number of attempts that should be made in case of an error. (default 10)
-      --s3-retry-max-backoff int          Max backoff duration in milliseconds between retried attempts. (default 90)
-      --s3-retry-backoff int              Provides the backoff, in milliseconds, that the retryer will use to determine the delay between retry attempts. (default 60)
+      --s3-retry-max-backoff int          Max backoff duration (in ms) between retried attempts. (default 90000)
+      --s3-retry-backoff int              Provides the backoff, (in ms), that the retryer will use to determine the delay between retry attempts. (default 60000)
       --s3-max-conns-per-host int         MaxConnsPerHost optionally limits the total number of connections per host,
                                           including connections in the dialing, active, and idle states. On limit violation, dials will block.
                                           0 means no limit.
-      --s3-request-timeout int            Timeout in milliseconds specifies a time limit for requests made by this Client.
+      --s3-request-timeout int            Timeout (in ms) specifies a time limit for requests made by this Client.
                                           The timeout includes connection time, any redirects, and reading the response body.
-                                          0 means no limit. (default 600)
+                                          0 means no limit. (default 600000)
 
 GCP Storage Flags:
 For GCP storage, the bucket name must be set with --gcp-bucket-name flag.
@@ -253,23 +253,23 @@ Any GCP parameter can be retrieved from Secret Agent.
       --gcp-key-path string                  Path to file containing service account JSON key.
       --gcp-bucket-name string               Name of the Google cloud storage bucket.
       --gcp-endpoint-override string         An alternate url endpoint to send GCP API calls to.
-      --gcp-retry-read-backoff int           The initial delay in milliseconds between retry attempts. In case of connection errors
-                                             tool will retry reading the object from the last known position. (default 1)
+      --gcp-retry-read-backoff int           The initial delay (in ms) between retry attempts. In case of connection errors
+                                             tool will retry reading the object from the last known position. (default 1000)
       --gcp-retry-read-multiplier float      Multiplier is used to increase the delay between subsequent retry attempts.
                                              Used in combination with initial delay. (default 2)
       --gcp-retry-read-max-attempts uint     The maximum number of retry attempts that will be made. If set to 0, no retries will be performed. (default 3)
       --gcp-retry-max-attempts int           Max retries specifies the maximum number of attempts a failed operation will be retried
                                              before producing an error. (default 10)
-      --gcp-retry-max-backoff int            Max backoff is the maximum value in milliseconds of the retry period. (default 90)
-      --gcp-retry-init-backoff int           Initial backoff is the initial value in milliseconds of the retry period. (default 60)
+      --gcp-retry-max-backoff int            Max backoff is the maximum value (in ms) of the retry period. (default 90000)
+      --gcp-retry-init-backoff int           Initial backoff is the initial value (in ms) of the retry period. (default 60000)
       --gcp-retry-backoff-multiplier float   Multiplier is the factor by which the retry period increases.
                                              It should be greater than 1. (default 2)
       --gcp-max-conns-per-host int           MaxConnsPerHost optionally limits the total number of connections per host,
                                              including connections in the dialing, active, and idle states. On limit violation, dials will block.
                                              0 means no limit.
-      --gcp-request-timeout int              Timeout in milliseconds specifies a time limit for requests made by this Client.
+      --gcp-request-timeout int              Timeout (in ms) specifies a time limit for requests made by this Client.
                                              The timeout includes connection time, any redirects, and reading the response body.
-                                             0 means no limit. (default 600)
+                                             0 means no limit. (default 600000)
 
 Azure Storage Flags:
 For Azure storage, the container name must be set with --azure-storage-container-name flag.
@@ -287,28 +287,28 @@ Any Azure parameter can be retrieved from Secret Agent.
       --azure-container-name string          Azure container Name.
       --azure-access-tier string             If is set, tool will try to rehydrate archived files to the specified tier.
                                              Tiers are: Archive, Cold, Cool, Hot, P10, P15, P20, P30, P4, P40, P50, P6, P60, P70, P80, Premium.
-      --azure-rehydrate-poll-duration int    How often (in milliseconds) a backup client checks object status when restoring an archived object. (default 60000)
-      --azure-retry-read-backoff int         The initial delay in milliseconds between retry attempts. In case of connection errors
-                                             tool will retry reading the object from the last known position. (default 1)
+      --azure-rehydrate-poll-duration int    How often ((in ms)) a backup client checks object status when restoring an archived object. (default 60000)
+      --azure-retry-read-backoff int         The initial delay (in ms) between retry attempts. In case of connection errors
+                                             tool will retry reading the object from the last known position. (default 1000)
       --azure-retry-read-multiplier float    Multiplier is used to increase the delay between subsequent retry attempts.
                                              Used in combination with initial delay. (default 2)
       --azure-retry-read-max-attempts uint   The maximum number of retry attempts that will be made. If set to 0, no retries will be performed. (default 3)
       --azure-retry-max-attempts int         Max retries specifies the maximum number of attempts a failed operation will be retried
                                              before producing an error. (default 10)
-      --azure-retry-max-delay int            Max retry delay specifies the maximum delay in milliseconds allowed before retrying an operation.
-                                             Typically the value is greater than or equal to the value specified in azure-retry-delay. (default 90)
-      --azure-retry-delay int                Retry delay specifies the initial amount of delay in milliseconds to use before retrying an operation.
+      --azure-retry-max-delay int            Max retry delay specifies the maximum delay (in ms) allowed before retrying an operation.
+                                             Typically the value is greater than or equal to the value specified in azure-retry-delay. (default 90000)
+      --azure-retry-delay int                Retry delay specifies the initial amount of delay (in ms) to use before retrying an operation.
                                              The value is used only if the HTTP response does not contain a Retry-After header.
-                                             The delay increases exponentially with each retry up to the maximum specified by azure-retry-max-delay. (default 60)
-      --azure-retry-timeout int              Retry timeout in milliseconds indicates the maximum time allowed for any single try of an HTTP request.
+                                             The delay increases exponentially with each retry up to the maximum specified by azure-retry-max-delay. (default 60000)
+      --azure-retry-timeout int              Retry timeout (in ms) indicates the maximum time allowed for any single try of an HTTP request.
                                              This is disabled by default. Specify a value greater than zero to enable.
                                              NOTE: Setting this to a small value might cause premature HTTP request time-outs.
       --azure-max-conns-per-host int         MaxConnsPerHost optionally limits the total number of connections per host,
                                              including connections in the dialing, active, and idle states. On limit violation, dials will block.
                                              0 means no limit.
-      --azure-request-timeout int            Timeout in milliseconds specifies a time limit for requests made by this Client.
+      --azure-request-timeout int            Timeout (in ms) specifies a time limit for requests made by this Client.
                                              The timeout includes connection time, any redirects, and reading the response body.
-                                             0 means no limit. (default 600)
+                                             0 means no limit. (default 600000)
 ```
 
 ## Unsupported flags
@@ -350,8 +350,8 @@ Any Azure parameter can be retrieved from Secret Agent.
                              - Debug
                              - Trace
                             The default is Fatal.
-
---s3-connect-timeout        The AWS S3 client's connection timeout in milliseconds.
+                            
+--s3-connect-timeout        The AWS S3 client's connection timeout (in ms).
                             This is equivalent to cli-connect-timeout in the AWS CLI,
                             or connectTimeoutMS in the aws-sdk-cpp client configuration.                  
 ```
@@ -447,9 +447,9 @@ restore:
   records-per-second: 0
   # Maximum number of retries before aborting the current transaction.
   max-retries: 5
-  # Total transaction timeout in milliseconds. If 0, no timeout is applied.
+  # Total transaction timeout (in ms). If 0, no timeout is applied.
   total-timeout: 10000
-  # Socket timeout in milliseconds. If 0, the value for total-timeout is used.
+  # Socket timeout (in ms). If 0, the value for total-timeout is used.
   # If both this and total-timeout are 0, there is no socket idle time limit.
   socket-timeout: 10000
   # The limits for read/write storage bandwidth in MiB/s.
@@ -524,7 +524,7 @@ restore:
   info-retry-multiplier: 1
   # Set the initial interval for a retry (in ms) when info commands are sent.
   info-retry-interval: 1000
-  # Set the initial interval for a retry in milliseconds when data is sent to the Aerospike database
+  # Set the initial interval for a retry (in ms) when data is sent to the Aerospike database
   # during a restore. This retry sequence is triggered by the following non-critical errors:
   # AEROSPIKE_NO_AVAILABLE_CONNECTIONS_TO_NODE,
   # AEROSPIKE_TIMEOUT,
@@ -604,15 +604,15 @@ aws:
     # If is set, tool will try to restore archived files to the specified tier.
     # Tiers are: Standard, Bulk, Expedited.
     access-tier: ""
-    # How often (in milliseconds) a backup client checks object status when restoring an archived object.
+    # How often ((in ms)) a backup client checks object status when restoring an archived object.
     restore-poll-duration: 60000
     # Maximum number of attempts that should be made in case of an error.
     retry-max-attempts: 10
-    # Max backoff duration in milliseconds between retried attempts.
+    # Max backoff duration (in ms) between retried attempts.
     retry-max-backoff: 90
-    # Provides the backoff, in milliseconds, that the retryer will use to determine the delay between retry attempts.
+    # Provides the backoff, (in ms), that the retryer will use to determine the delay between retry attempts.
     retry-backoff: 60
-    # The initial delay in milliseconds between retry attempts. 
+    # The initial delay (in ms) between retry attempts. 
     # In case of connection errors tool will retry reading the object from the last known position.
     retry-read-backoff: 1
     # Multiplier is used to increase the delay between subsequent retry attempts.
@@ -624,7 +624,7 @@ aws:
     # including connections in the dialing, active, and idle states. On limit violation, dials will block.
     # 0 means no limit.
     max-conns-per-host: 0
-    # Timeout in milliseconds specifies a time limit for requests made by this Client.
+    # Timeout (in ms) specifies a time limit for requests made by this Client.
     # The timeout includes connection time, any redirects, and reading the response body.
     # 0 means no limit.
     request-timeout: 600
@@ -640,14 +640,14 @@ gcp:
     # Max retries specifies the maximum number of attempts a failed operation will be retried
     # before producing an error.
     retry-max-attempts: 10
-    # Max backoff is the maximum value in milliseconds of the retry period.
+    # Max backoff is the maximum value (in ms) of the retry period.
     retry-max-backoff: 90
-    # Initial backoff is the initial value in milliseconds of the retry period.
+    # Initial backoff is the initial value (in ms) of the retry period.
     retry-init-backoff: 60
     # Multiplier is the factor by which the retry period increases.
     # It should be greater than 1.
     retry-backoff-multiplier: 2
-    # The initial delay in milliseconds between retry attempts. 
+    # The initial delay (in ms) between retry attempts. 
     # In case of connection errors tool will retry reading the object from the last known position.
     retry-read-backoff: 1
     # Multiplier is used to increase the delay between subsequent retry attempts.
@@ -659,7 +659,7 @@ gcp:
     # including connections in the dialing, active, and idle states. On limit violation, dials will block.
     # 0 means no limit.
     max-conns-per-host: 0
-    # Timeout in milliseconds specifies a time limit for requests made by this Client.
+    # Timeout (in ms) specifies a time limit for requests made by this Client.
     # The timeout includes connection time, any redirects, and reading the response body.
     # 0 means no limit.
     request-timeout: 600
@@ -683,23 +683,23 @@ azure:
     # If is set, tool will try to rehydrate archived files to the specified tier.
     # Tiers are: Archive, Cold, Cool, Hot, P10, P15, P20, P30, P4, P40, P50, P6, P60, P70, P80, Premium.
     access-tier: ""
-    # How often (in milliseconds) a backup client checks object status when restoring an archived object.
+    # How often ((in ms)) a backup client checks object status when restoring an archived object.
     rehydrate-poll-duration: 60000
     # Max retries specifies the maximum number of attempts a failed operation will be retried
     # before producing an error.
     retry-max-attempts: 10
-    # Retry timeout in milliseconds indicates the maximum time allowed for any single try of an HTTP request.
+    # Retry timeout (in ms) indicates the maximum time allowed for any single try of an HTTP request.
     # This is disabled by default. Specify a value greater than zero to enable.
     # NOTE: Setting this to a small value might cause premature HTTP request time-outs.
     retry-timeout: 0
-    # Retry delay specifies the initial amount of delay in milliseconds to use before retrying an operation.
+    # Retry delay specifies the initial amount of delay (in ms) to use before retrying an operation.
     # The value is used only if the HTTP response does not contain a Retry-After header.
     # The delay increases exponentially with each retry up to the maximum specified by azure-retry-max-delay.
     retry-delay: 60
-    # Max retry delay specifies the maximum delay in milliseconds allowed before retrying an operation.
+    # Max retry delay specifies the maximum delay (in ms) allowed before retrying an operation.
     # Typically the value is greater than or equal to the value specified in azure-retry-delay.
     retry-max-delay: 90
-    # The initial delay in milliseconds between retry attempts. 
+    # The initial delay (in ms) between retry attempts. 
     # In case of connection errors tool will retry reading the object from the last known position.
     retry-read-backoff: 1
     # Multiplier is used to increase the delay between subsequent retry attempts.
@@ -711,7 +711,7 @@ azure:
     # including connections in the dialing, active, and idle states. On limit violation, dials will block.
     # 0 means no limit.
     max-conns-per-host: 0
-    # Timeout in milliseconds specifies a time limit for requests made by this Client.
+    # Timeout (in ms) specifies a time limit for requests made by this Client.
     # The timeout includes connection time, any redirects, and reading the response body.
     # 0 means no limit.
     request-timeout: 600

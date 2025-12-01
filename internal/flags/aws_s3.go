@@ -96,12 +96,12 @@ func (f *AwsS3) NewFlagSet() *pflag.FlagSet {
 
 		flagSet.Int64Var(&f.RestorePollDuration, "s3-restore-poll-duration",
 			models.DefaultS3RestorePollDuration,
-			"How often (in milliseconds) a backup client checks object status when restoring an archived object.",
+			"How often ((in ms)) a backup client checks object status when restoring an archived object.",
 		)
 
-		flagSet.IntVar(&f.RetryReadBackoffSeconds, "s3-retry-read-backoff",
-			models.DefaultCloudRetryReadBackoffSeconds,
-			"The initial delay in seconds between retry attempts. In case of connection errors\n"+
+		flagSet.IntVar(&f.RetryReadBackoff, "s3-retry-read-backoff",
+			models.DefaultCloudRetryReadBackoff,
+			"The initial delay (in ms) between retry attempts. In case of connection errors\n"+
 				"tool will retry reading the object from the last known position.")
 
 		flagSet.Float64Var(&f.RetryReadMultiplier, "s3-retry-read-multiplier",
@@ -118,13 +118,13 @@ func (f *AwsS3) NewFlagSet() *pflag.FlagSet {
 		models.DefaultS3RetryMaxAttempts,
 		"Maximum number of attempts that should be made in case of an error.")
 
-	flagSet.IntVar(&f.RetryMaxBackoffSeconds, "s3-retry-max-backoff",
-		models.DefaultS3RetryMaxBackoffSeconds,
-		"Max backoff duration in seconds between retried attempts.")
+	flagSet.IntVar(&f.RetryMaxBackoff, "s3-retry-max-backoff",
+		models.DefaultS3RetryMaxBackoff,
+		"Max backoff duration (in ms) between retried attempts.")
 
-	flagSet.IntVar(&f.RetryBackoffSeconds, "s3-retry-backoff",
-		models.DefaultS3RetryBackoffSeconds,
-		"Provides the backoff, in seconds, that the retryer will use to determine the delay between retry attempts.")
+	flagSet.IntVar(&f.RetryBackoff, "s3-retry-backoff",
+		models.DefaultS3RetryBackoff,
+		"Provides the backoff, (in ms), that the retryer will use to determine the delay between retry attempts.")
 
 	flagSet.IntVar(&f.MaxConnsPerHost, "s3-max-conns-per-host",
 		models.DefaultCloudMaxConnsPerHost,
@@ -132,9 +132,9 @@ func (f *AwsS3) NewFlagSet() *pflag.FlagSet {
 			"including connections in the dialing, active, and idle states. On limit violation, dials will block.\n"+
 			"0 means no limit.")
 
-	flagSet.IntVar(&f.RequestTimeoutSeconds, "s3-request-timeout",
-		models.DefaultCloudRequestTimeoutSeconds,
-		"Timeout in seconds specifies a time limit for requests made by this Client.\n"+
+	flagSet.IntVar(&f.RequestTimeout, "s3-request-timeout",
+		models.DefaultCloudRequestTimeout,
+		"Timeout (in ms) specifies a time limit for requests made by this Client.\n"+
 			"The timeout includes connection time, any redirects, and reading the response body.\n"+
 			"0 means no limit.")
 

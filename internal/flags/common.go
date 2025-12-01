@@ -151,11 +151,11 @@ func (f *Common) NewFlagSet() *pflag.FlagSet {
 
 	flagSet.Int64Var(&f.fields.TotalTimeout, "total-timeout",
 		defaultTotalTimeout,
-		"Total transaction timeout in milliseconds. If 0, no timeout is applied. ")
+		"Total transaction timeout (in ms). If 0, no timeout is applied. ")
 
 	flagSet.Int64Var(&f.fields.SocketTimeout, "socket-timeout",
 		models.DefaultCommonSocketTimeout,
-		"Socket timeout in milliseconds. If 0, the value for --total-timeout is used.\n"+
+		"Socket timeout (in ms). If 0, the value for --total-timeout is used.\n"+
 			"If both this and --total-timeout are 0, there is no socket idle time limit.")
 
 	flagSet.Int64Var(&f.fields.Bandwidth, "nice",
@@ -174,7 +174,7 @@ func (f *Common) NewFlagSet() *pflag.FlagSet {
 			"The info commands are to check version, get indexes, get udfs, count records, and check batch write support.")
 
 	flagSet.Int64Var(&f.fields.InfoRetryIntervalMilliseconds, "info-retry-interval",
-		models.DefaultCommonInfoRetryIntervalMilliseconds,
+		models.DefaultCommonInfoRetryInterval,
 		"Set the initial interval for a retry (in ms) when info commands are sent.")
 
 	flagSet.Float64Var(&f.fields.InfoRetriesMultiplier, "info-retry-multiplier",

@@ -56,8 +56,9 @@ General Flags:
 Aerospike Client Flags:
   -h, --host host[:tls-name][:port][,...]                                                           The Aerospike host. (default 127.0.0.1)
   -p, --port int                                                                                    The default Aerospike port. (default 3000)
-  -U, --user string                                                                                 The Aerospike user for the connection to the Aerospike cluster.
-  -P, --password "env-b64:<env-var>,b64:<b64-pass>,file:<pass-file>,<clear-pass>"                   The Aerospike password for the connection to the Aerospike cluster.
+  -U, --user string                                                                                 The Aerospike user to use to connect to the Aerospike cluster.
+  -P, --password "env-b64:<env-var>,b64:<b64-pass>,file:<pass-file>,<clear-pass>"                   The Aerospike password to use to connect to the Aerospike 
+                                                                                                    cluster.
       --auth INTERNAL,EXTERNAL,PKI                                                                  The authentication mode used by the Aerospike server. INTERNAL 
                                                                                                     uses standard user/pass. EXTERNAL uses external methods (like LDAP) 
                                                                                                     which are configured on the server. EXTERNAL requires TLS. PKI allows 
@@ -65,7 +66,8 @@ Aerospike Client Flags:
                                                                                                     username needs to be configured. (default INTERNAL)
       --tls-enable                                                                                  Enable TLS authentication with Aerospike. If false, other TLS 
                                                                                                     options are ignored.
-      --tls-name string                                                                             The server TLS context to use to authenticate the connection to Aerospike.
+      --tls-name string                                                                             The server TLS context to use to authenticate the connection to 
+                                                                                                    Aerospike.
       --tls-cafile env-b64:<cert>,b64:<cert>,<cert-file-name>                                       The CA used when connecting to Aerospike.
       --tls-capath <cert-path-name>                                                                 A path containing CAs for connecting to Aerospike.
       --tls-certfile env-b64:<cert>,b64:<cert>,<cert-file-name>                                     The certificate file for mutual TLS authentication with 
@@ -74,7 +76,7 @@ Aerospike Client Flags:
       --tls-keyfile-password "env-b64:<env-var>,b64:<b64-pass>,file:<pass-file>,<clear-pass>"       The password used to decrypt the key file if encrypted.
       --tls-protocols "[[+][-]all] [[+][-]TLSv1] [[+][-]TLSv1.1] [[+][-]TLSv1.2] [[+][-]TLSv1.3]"   Set the TLS protocol selection criteria. This format is the same 
                                                                                                     as Apache's SSLProtocol documented at 
-                                                                                                    https://httpd.apache.org/docs/current/mod/mod_ssl.html#sslprotocol. (default +TLSv1.2)
+                                                                                                    https://httpd.apache.org/docs/current/mod/mod_ssl.html#ssl protocol. (default +TLSv1.2)
       --services-alternate                                                                          Determines if the client should use "services-alternate" instead 
                                                                                                     of "services" in info request during cluster tending.
       --client-timeout int         Initial host connection timeout duration. The timeout when opening a connection
@@ -83,10 +85,10 @@ Aerospike Client Flags:
                                    deadline will be extended by this duration. When this deadline is reached,
                                    the connection will be closed and discarded from the connection pool.
                                    The value is limited to 24 hours (86400s).
-                                   Set this value to a few seconds less than the server's proto-fd-idle-ms
+                                   It's important to set this value to a few seconds less than the server's proto-fd-idle-ms
                                    (default 60000 milliseconds or 1 minute), so the client does not attempt to use a socket
                                    that has already been reaped by the server.
-                                   Connection pools are implemented by a LIFO stack. Connections at the tail of the
+                                   Connection pools are now implemented by a LIFO stack. Connections at the tail of the
                                    stack will always be the least used. These connections are checked for IdleTimeout
                                    on every tend (usually 1 second).
                                    
@@ -111,8 +113,8 @@ Backup Flags:
                                       partition filters. Accepts values from 1-1024 inclusive. (default 1)
   -L, --records-per-second int        Limit total returned records per second (RPS). If 0, no limit is applied.
       --max-retries int               Maximum number of retries before aborting the current transaction. (default 5)
-      --total-timeout int             Total transaction timeout in milliseconds. If 0, no timeout is applied. 
-      --socket-timeout int            Socket timeout in milliseconds. If 0, the value for --total-timeout is used.
+      --total-timeout int             Total transaction timeout (in ms). If 0, no timeout is applied. 
+      --socket-timeout int            Socket timeout (in ms). If 0, the value for --total-timeout is used.
                                       If both this and --total-timeout are 0, there is no socket idle time limit. (default 10000)
       --nice int                      The limits for read/write storage bandwidth in MiB/s.
                                       Default is 0 (no limit). (DEPRECATED: use --bandwidth instead)
@@ -191,7 +193,6 @@ Backup Flags:
                                     This field is ignored when --max-retries is zero. (default 5)
   -C, --compact                     If true, do not apply Base64 encoding to BLOBs and instead write raw binary data,
                                     resulting in smaller backup files.
-                                    Deprecated.
   -e, --estimate                    Estimate the backed-up record size from a random sample of 
                                     10,000 (default) records at 99.9999% confidence to estimate the full backup size.
                                     It ignores any filter:  --filter-exp, --node-list, --modified-after, --modified-before, --no-ttl-only,
@@ -270,14 +271,14 @@ Any AWS parameter can be retrieved from Secret Agent.
                                       Each concurrent upload will create a buffer of size s3-block-size.
       --s3-calculate-checksum         Calculate checksum for each uploaded object.
       --s3-retry-max-attempts int     Maximum number of attempts that should be made in case of an error. (default 10)
-      --s3-retry-max-backoff int      Max backoff duration in milliseconds between retried attempts. (default 90)
-      --s3-retry-backoff int          Provides the backoff, in milliseconds, that the retryer will use to determine the delay between retry attempts. (default 60)
+      --s3-retry-max-backoff int      Max backoff duration (in ms) between retried attempts. (default 90000)
+      --s3-retry-backoff int          Provides the backoff, (in ms), that the retryer will use to determine the delay between retry attempts. (default 60000)
       --s3-max-conns-per-host int     MaxConnsPerHost optionally limits the total number of connections per host,
                                       including connections in the dialing, active, and idle states. On limit violation, dials will block.
                                       0 means no limit.
-      --s3-request-timeout int        Timeout in milliseconds specifies a time limit for requests made by this Client.
+      --s3-request-timeout int        Timeout (in ms) specifies a time limit for requests made by this Client.
                                       The timeout includes connection time, any redirects, and reading the response body.
-                                      0 means no limit. (default 600)
+                                      0 means no limit. (default 600000)
 
 GCP Storage Flags:
 For GCP storage, the bucket name must be set with --gcp-bucket-name flag.
@@ -293,16 +294,16 @@ Any GCP parameter can be retrieved from Secret Agent.
       --gcp-calculate-checksum               Calculate checksum for each uploaded object.
       --gcp-retry-max-attempts int           Max retries specifies the maximum number of attempts a failed operation will be retried
                                              before producing an error. (default 10)
-      --gcp-retry-max-backoff int            Max backoff is the maximum value in milliseconds of the retry period. (default 90)
-      --gcp-retry-init-backoff int           Initial backoff is the initial value in milliseconds of the retry period. (default 60)
+      --gcp-retry-max-backoff int            Max backoff is the maximum value (in ms) of the retry period. (default 90000)
+      --gcp-retry-init-backoff int           Initial backoff is the initial value (in ms) of the retry period. (default 60000)
       --gcp-retry-backoff-multiplier float   Multiplier is the factor by which the retry period increases.
                                              It should be greater than 1. (default 2)
       --gcp-max-conns-per-host int           MaxConnsPerHost optionally limits the total number of connections per host,
                                              including connections in the dialing, active, and idle states. On limit violation, dials will block.
                                              0 means no limit.
-      --gcp-request-timeout int              Timeout in milliseconds specifies a time limit for requests made by this Client.
+      --gcp-request-timeout int              Timeout (in ms) specifies a time limit for requests made by this Client.
                                              The timeout includes connection time, any redirects, and reading the response body.
-                                             0 means no limit. (default 600)
+                                             0 means no limit. (default 600000)
 
 Azure Storage Flags:
 For Azure storage, the container name must be set with --azure-storage-container-name flag.
@@ -326,20 +327,20 @@ Any Azure parameter can be retrieved from Secret Agent.
       --azure-calculate-checksum       Calculate checksum for each uploaded object.
       --azure-retry-max-attempts int   Max retries specifies the maximum number of attempts a failed operation will be retried
                                        before producing an error. (default 10)
-      --azure-retry-max-delay int      Max retry delay specifies the maximum delay in milliseconds allowed before retrying an operation.
-                                       Typically the value is greater than or equal to the value specified in azure-retry-delay. (default 90)
-      --azure-retry-delay int          Retry delay specifies the initial amount of delay in milliseconds to use before retrying an operation.
+      --azure-retry-max-delay int      Max retry delay specifies the maximum delay (in ms) allowed before retrying an operation.
+                                       Typically the value is greater than or equal to the value specified in azure-retry-delay. (default 90000)
+      --azure-retry-delay int          Retry delay specifies the initial amount of delay (in ms) to use before retrying an operation.
                                        The value is used only if the HTTP response does not contain a Retry-After header.
-                                       The delay increases exponentially with each retry up to the maximum specified by azure-retry-max-delay. (default 60)
-      --azure-retry-timeout int        Retry timeout in milliseconds indicates the maximum time allowed for any single try of an HTTP request.
+                                       The delay increases exponentially with each retry up to the maximum specified by azure-retry-max-delay. (default 60000)
+      --azure-retry-timeout int        Retry timeout (in ms) indicates the maximum time allowed for any single try of an HTTP request.
                                        This is disabled by default. Specify a value greater than zero to enable.
                                        NOTE: Setting this to a small value might cause premature HTTP request time-outs.
       --azure-max-conns-per-host int   MaxConnsPerHost optionally limits the total number of connections per host,
                                        including connections in the dialing, active, and idle states. On limit violation, dials will block.
                                        0 means no limit.
-      --azure-request-timeout int      Timeout in milliseconds specifies a time limit for requests made by this Client.
+      --azure-request-timeout int      Timeout (in ms) specifies a time limit for requests made by this Client.
                                        The timeout includes connection time, any redirects, and reading the response body.
-                                       0 means no limit. (default 600)
+                                       0 means no limit. (default 600000)
 ```
 
 ## Unsupported flags
@@ -370,7 +371,7 @@ Any Azure parameter can be retrieved from Secret Agent.
                              - Trace
                             The default is Fatal.
 
---s3-connect-timeout        The AWS S3 client's connection timeout in milliseconds.
+--s3-connect-timeout        The AWS S3 client's connection timeout (in ms).
                             This is equivalent to cli-connect-timeout in the AWS CLI,
                             or connectTimeoutMS in the aws-sdk-cpp client configuration.
 ```
@@ -470,9 +471,9 @@ backup:
   records-per-second: 0
   # Maximum number of retries before aborting the current transaction.
   max-retries: 5
-  # Total transaction timeout in milliseconds. If 0, no timeout is applied.
+  # Total transaction timeout (in ms). If 0, no timeout is applied.
   total-timeout: 0
-  # Socket timeout in milliseconds. If 0, the value for total-timeout is used.
+  # Socket timeout (in ms). If 0, the value for total-timeout is used.
   # If both this and total-timeout are 0, there is no socket idle time limit.
   socket-timeout: 10000
   # The limits for read/write storage bandwidth in MiB/s.
@@ -661,9 +662,9 @@ aws:
     storage-class: ""
     # Maximum number of attempts that should be made in case of an error.
     retry-max-attempts: 10
-    # Max backoff duration in milliseconds between retried attempts.
+    # Max backoff duration (in ms) between retried attempts.
     retry-max-backoff: 90
-    # Provides the backoff, in milliseconds, that the retryer will use to determine the delay between retry attempts.
+    # Provides the backoff, (in ms), that the retryer will use to determine the delay between retry attempts.
     retry-backoff: 60
     # Chunk size controls the maximum number of megabytes of the object that the app will attempt to send to
     # the storage in a single request. Objects smaller than the size will be sent in a single request,
@@ -678,7 +679,7 @@ aws:
     # including connections in the dialing, active, and idle states. On limit violation, dials will block.
     # 0 means no limit.
     max-conns-per-host: 0
-    # Timeout in milliseconds specifies a time limit for requests made by this Client.
+    # Timeout (in ms) specifies a time limit for requests made by this Client.
     # The timeout includes connection time, any redirects, and reading the response body.
     # 0 means no limit.
     request-timeout: 600
@@ -694,9 +695,9 @@ gcp:
     # Max retries specifies the maximum number of attempts a failed operation will be retried
     # before producing an error.
     retry-max-attempts: 10
-    # Max backoff is the maximum value in milliseconds of the retry period.
+    # Max backoff is the maximum value (in ms) of the retry period.
     retry-max-backoff: 90
-    # Initial backoff is the initial value in milliseconds of the retry period.
+    # Initial backoff is the initial value (in ms) of the retry period.
     retry-init-backoff: 60
     # Multiplier is the factor by which the retry period increases.
     # It should be greater than 1.
@@ -711,7 +712,7 @@ gcp:
     # including connections in the dialing, active, and idle states. On limit violation, dials will block.
     # 0 means no limit.
     max-conns-per-host: 0
-    # Timeout in milliseconds specifies a time limit for requests made by this Client.
+    # Timeout (in ms) specifies a time limit for requests made by this Client.
     # The timeout includes connection time, any redirects, and reading the response body.
     # 0 means no limit.
     request-timeout: 600
@@ -738,15 +739,15 @@ azure:
     # Max retries specifies the maximum number of attempts a failed operation will be retried
     # before producing an error.
     retry-max-attempts: 10
-    # Retry timeout in milliseconds indicates the maximum time allowed for any single try of an HTTP request.
+    # Retry timeout (in ms) indicates the maximum time allowed for any single try of an HTTP request.
     # This is disabled by default. Specify a value greater than zero to enable.
     # NOTE: Setting this to a small value might cause premature HTTP request time-outs.
     retry-timeout: 0
-    # Retry delay specifies the initial amount of delay in milliseconds to use before retrying an operation.
+    # Retry delay specifies the initial amount of delay (in ms) to use before retrying an operation.
     # The value is used only if the HTTP response does not contain a Retry-After header.
     # The delay increases exponentially with each retry up to the maximum specified by azure-retry-max-delay.
     retry-delay: 60
-    # Max retry delay specifies the maximum delay in milliseconds allowed before retrying an operation.
+    # Max retry delay specifies the maximum delay (in ms) allowed before retrying an operation.
     # Typically the value is greater than or equal to the value specified in azure-retry-delay.
     retry-max-delay: 90
     # Block size in MiB defines the size of the buffer used during upload.
@@ -760,7 +761,7 @@ azure:
     # including connections in the dialing, active, and idle states. On limit violation, dials will block.
     # 0 means no limit.
     max-conns-per-host: 0
-    # Timeout in milliseconds specifies a time limit for requests made by this Client.
+    # Timeout (in ms) specifies a time limit for requests made by this Client.
     # The timeout includes connection time, any redirects, and reading the response body.
     # 0 means no limit.
     request-timeout: 600

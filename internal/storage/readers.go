@@ -254,7 +254,7 @@ func newS3Reader(
 
 	opts = append(opts, options.WithRetryPolicy(
 		bModels.NewRetryPolicy(
-			time.Duration(a.RetryReadBackoffSeconds)*time.Second,
+			time.Duration(a.RetryReadBackoff)*time.Millisecond,
 			a.RetryReadMultiplier,
 			a.RetryReadMaxAttempts),
 	))
@@ -274,7 +274,7 @@ func newGcpReader(
 
 	opts = append(opts, options.WithRetryPolicy(
 		bModels.NewRetryPolicy(
-			time.Duration(g.RetryReadBackoffSeconds)*time.Second,
+			time.Duration(g.RetryReadBackoff)*time.Millisecond,
 			g.RetryReadMultiplier,
 			g.RetryReadMaxAttempts),
 	))
@@ -304,7 +304,7 @@ func newAzureReader(
 
 	opts = append(opts, options.WithRetryPolicy(
 		bModels.NewRetryPolicy(
-			time.Duration(a.RetryReadBackoffSeconds)*time.Second,
+			time.Duration(a.RetryReadBackoff)*time.Millisecond,
 			a.RetryReadMultiplier,
 			a.RetryReadMaxAttempts),
 	))

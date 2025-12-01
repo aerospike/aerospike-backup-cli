@@ -390,50 +390,50 @@ func (s *SecretAgent) ToModelSecretAgent() *models.SecretAgent {
 // AwsS3 defines configuration for AWS S3 storage including bucket details and retry mechanisms
 // parsed from a YAML file.
 type AwsS3 struct {
-	BucketName              *string  `yaml:"bucket-name"`
-	Region                  *string  `yaml:"region"`
-	Profile                 *string  `yaml:"profile"`
-	EndpointOverride        *string  `yaml:"endpoint-override"`
-	AccessKeyID             *string  `yaml:"access-key-id"`
-	SecretAccessKey         *string  `yaml:"secret-access-key"`
-	RestorePollDuration     *int64   `yaml:"restore-poll-duration"`
-	StorageClass            *string  `yaml:"storage-class"`
-	AccessTier              *string  `yaml:"access-tier"`
-	RetryMaxAttempts        *int     `yaml:"retry-max-attempts"`
-	RetryMaxBackoff         *int     `yaml:"retry-max-backoff"`
-	RetryBackoff            *int     `yaml:"retry-backoff"`
-	ChunkSize               *int     `yaml:"chunk-size"`
-	UploadConcurrency       *int     `yaml:"upload-concurrency"`
-	CalculateChecksum       *bool    `yaml:"calculate-checksum"`
-	RetryReadBackoffSeconds *int     `yaml:"retry-read-backoff"`
-	RetryReadMultiplier     *float64 `yaml:"retry-read-multiplier"`
-	RetryReadMaxAttempts    *uint    `yaml:"retry-read-max-attempts"`
-	MaxConnsPerHost         *int     `yaml:"max-conns-per-host"`
-	RequestTimeoutSeconds   *int     `yaml:"request-timeout"`
+	BucketName           *string  `yaml:"bucket-name"`
+	Region               *string  `yaml:"region"`
+	Profile              *string  `yaml:"profile"`
+	EndpointOverride     *string  `yaml:"endpoint-override"`
+	AccessKeyID          *string  `yaml:"access-key-id"`
+	SecretAccessKey      *string  `yaml:"secret-access-key"`
+	RestorePollDuration  *int64   `yaml:"restore-poll-duration"`
+	StorageClass         *string  `yaml:"storage-class"`
+	AccessTier           *string  `yaml:"access-tier"`
+	RetryMaxAttempts     *int     `yaml:"retry-max-attempts"`
+	RetryMaxBackoff      *int     `yaml:"retry-max-backoff"`
+	RetryBackoff         *int     `yaml:"retry-backoff"`
+	ChunkSize            *int     `yaml:"chunk-size"`
+	UploadConcurrency    *int     `yaml:"upload-concurrency"`
+	CalculateChecksum    *bool    `yaml:"calculate-checksum"`
+	RetryReadBackoff     *int     `yaml:"retry-read-backoff"`
+	RetryReadMultiplier  *float64 `yaml:"retry-read-multiplier"`
+	RetryReadMaxAttempts *uint    `yaml:"retry-read-max-attempts"`
+	MaxConnsPerHost      *int     `yaml:"max-conns-per-host"`
+	RequestTimeout       *int     `yaml:"request-timeout"`
 }
 
 func defaultAwsS3() *AwsS3 {
 	return &AwsS3{
-		BucketName:              stringPtr(models.DefaultS3BucketName),
-		Region:                  stringPtr(models.DefaultS3Region),
-		Profile:                 stringPtr(models.DefaultS3Profile),
-		EndpointOverride:        stringPtr(models.DefaultS3Endpoint),
-		AccessKeyID:             stringPtr(models.DefaultS3AccessKeyID),
-		SecretAccessKey:         stringPtr(models.DefaultS3SecretAccessKey),
-		RestorePollDuration:     int64Ptr(models.DefaultS3RestorePollDuration),
-		StorageClass:            stringPtr(models.DefaultS3StorageClass),
-		AccessTier:              stringPtr(models.DefaultS3AccessTier),
-		RetryMaxAttempts:        intPtr(models.DefaultS3RetryMaxAttempts),
-		RetryMaxBackoff:         intPtr(models.DefaultS3RetryMaxBackoffSeconds),
-		RetryBackoff:            intPtr(models.DefaultS3RetryBackoffSeconds),
-		ChunkSize:               intPtr(models.DefaultS3ChunkSize),
-		UploadConcurrency:       intPtr(models.DefaultS3UploadConcurrency),
-		CalculateChecksum:       boolPtr(models.DefaultCloudCalculateChecksum),
-		RetryReadBackoffSeconds: intPtr(models.DefaultCloudRetryReadBackoffSeconds),
-		RetryReadMultiplier:     float64Ptr(models.DefaultCloudRetryReadMultiplier),
-		RetryReadMaxAttempts:    uintPtr(models.DefaultCloudRetryReadMaxAttempts),
-		MaxConnsPerHost:         intPtr(models.DefaultCloudMaxConnsPerHost),
-		RequestTimeoutSeconds:   intPtr(models.DefaultCloudRequestTimeoutSeconds),
+		BucketName:           stringPtr(models.DefaultS3BucketName),
+		Region:               stringPtr(models.DefaultS3Region),
+		Profile:              stringPtr(models.DefaultS3Profile),
+		EndpointOverride:     stringPtr(models.DefaultS3Endpoint),
+		AccessKeyID:          stringPtr(models.DefaultS3AccessKeyID),
+		SecretAccessKey:      stringPtr(models.DefaultS3SecretAccessKey),
+		RestorePollDuration:  int64Ptr(models.DefaultS3RestorePollDuration),
+		StorageClass:         stringPtr(models.DefaultS3StorageClass),
+		AccessTier:           stringPtr(models.DefaultS3AccessTier),
+		RetryMaxAttempts:     intPtr(models.DefaultS3RetryMaxAttempts),
+		RetryMaxBackoff:      intPtr(models.DefaultS3RetryMaxBackoff),
+		RetryBackoff:         intPtr(models.DefaultS3RetryBackoff),
+		ChunkSize:            intPtr(models.DefaultS3ChunkSize),
+		UploadConcurrency:    intPtr(models.DefaultS3UploadConcurrency),
+		CalculateChecksum:    boolPtr(models.DefaultCloudCalculateChecksum),
+		RetryReadBackoff:     intPtr(models.DefaultCloudRetryReadBackoff),
+		RetryReadMultiplier:  float64Ptr(models.DefaultCloudRetryReadMultiplier),
+		RetryReadMaxAttempts: uintPtr(models.DefaultCloudRetryReadMaxAttempts),
+		MaxConnsPerHost:      intPtr(models.DefaultCloudMaxConnsPerHost),
+		RequestTimeout:       intPtr(models.DefaultCloudRequestTimeout),
 	}
 }
 
@@ -443,64 +443,64 @@ func (a *AwsS3) ToModelAwsS3() *models.AwsS3 {
 	}
 
 	return &models.AwsS3{
-		BucketName:             derefString(a.BucketName),
-		Region:                 derefString(a.Region),
-		Profile:                derefString(a.Profile),
-		Endpoint:               derefString(a.EndpointOverride),
-		AccessKeyID:            derefString(a.AccessKeyID),
-		SecretAccessKey:        derefString(a.SecretAccessKey),
-		StorageClass:           derefString(a.StorageClass),
-		AccessTier:             derefString(a.AccessTier),
-		RetryMaxAttempts:       derefInt(a.RetryMaxAttempts),
-		RetryMaxBackoffSeconds: derefInt(a.RetryMaxBackoff),
-		RetryBackoffSeconds:    derefInt(a.RetryBackoff),
-		ChunkSize:              derefInt(a.ChunkSize),
-		UploadConcurrency:      derefInt(a.UploadConcurrency),
-		RestorePollDuration:    derefInt64(a.RestorePollDuration),
+		BucketName:          derefString(a.BucketName),
+		Region:              derefString(a.Region),
+		Profile:             derefString(a.Profile),
+		Endpoint:            derefString(a.EndpointOverride),
+		AccessKeyID:         derefString(a.AccessKeyID),
+		SecretAccessKey:     derefString(a.SecretAccessKey),
+		StorageClass:        derefString(a.StorageClass),
+		AccessTier:          derefString(a.AccessTier),
+		RetryMaxAttempts:    derefInt(a.RetryMaxAttempts),
+		RetryMaxBackoff:     derefInt(a.RetryMaxBackoff),
+		RetryBackoff:        derefInt(a.RetryBackoff),
+		ChunkSize:           derefInt(a.ChunkSize),
+		UploadConcurrency:   derefInt(a.UploadConcurrency),
+		RestorePollDuration: derefInt64(a.RestorePollDuration),
 		StorageCommon: models.StorageCommon{
-			CalculateChecksum:       derefBool(a.CalculateChecksum),
-			RetryReadBackoffSeconds: derefInt(a.RetryReadBackoffSeconds),
-			RetryReadMultiplier:     derefFloat64(a.RetryReadMultiplier),
-			RetryReadMaxAttempts:    derefUint(a.RetryReadMaxAttempts),
-			MaxConnsPerHost:         derefInt(a.MaxConnsPerHost),
-			RequestTimeoutSeconds:   derefInt(a.RequestTimeoutSeconds),
+			CalculateChecksum:    derefBool(a.CalculateChecksum),
+			RetryReadBackoff:     derefInt(a.RetryReadBackoff),
+			RetryReadMultiplier:  derefFloat64(a.RetryReadMultiplier),
+			RetryReadMaxAttempts: derefUint(a.RetryReadMaxAttempts),
+			MaxConnsPerHost:      derefInt(a.MaxConnsPerHost),
+			RequestTimeout:       derefInt(a.RequestTimeout),
 		},
 	}
 }
 
 type GcpStorage struct {
-	KeyFile                 *string  `yaml:"key-file"`
-	BucketName              *string  `yaml:"bucket-name"`
-	EndpointOverride        *string  `yaml:"endpoint-override"`
-	RetryMaxAttempts        *int     `yaml:"retry-max-attempts"`
-	RetryMaxBackoff         *int     `yaml:"retry-max-backoff"`
-	RetryInitBackoff        *int     `yaml:"retry-init-backoff"`
-	RetryBackoffMultiplier  *float64 `yaml:"retry-backoff-multiplier"`
-	ChunkSize               *int     `yaml:"chunk-size"`
-	CalculateChecksum       *bool    `yaml:"calculate-checksum"`
-	RetryReadBackoffSeconds *int     `yaml:"retry-read-backoff"`
-	RetryReadMultiplier     *float64 `yaml:"retry-read-multiplier"`
-	RetryReadMaxAttempts    *uint    `yaml:"retry-read-max-attempts"`
-	MaxConnsPerHost         *int     `yaml:"max-conns-per-host"`
-	RequestTimeoutSeconds   *int     `yaml:"request-timeout"`
+	KeyFile                *string  `yaml:"key-file"`
+	BucketName             *string  `yaml:"bucket-name"`
+	EndpointOverride       *string  `yaml:"endpoint-override"`
+	RetryMaxAttempts       *int     `yaml:"retry-max-attempts"`
+	RetryMaxBackoff        *int     `yaml:"retry-max-backoff"`
+	RetryInitBackoff       *int     `yaml:"retry-init-backoff"`
+	RetryBackoffMultiplier *float64 `yaml:"retry-backoff-multiplier"`
+	ChunkSize              *int     `yaml:"chunk-size"`
+	CalculateChecksum      *bool    `yaml:"calculate-checksum"`
+	RetryReadBackoff       *int     `yaml:"retry-read-backoff"`
+	RetryReadMultiplier    *float64 `yaml:"retry-read-multiplier"`
+	RetryReadMaxAttempts   *uint    `yaml:"retry-read-max-attempts"`
+	MaxConnsPerHost        *int     `yaml:"max-conns-per-host"`
+	RequestTimeout         *int     `yaml:"request-timeout"`
 }
 
 func defaultGcpStorage() *GcpStorage {
 	return &GcpStorage{
-		KeyFile:                 stringPtr(models.DefaultGcpKeyFile),
-		BucketName:              stringPtr(models.DefaultGcpBucketName),
-		EndpointOverride:        stringPtr(models.DefaultGcpEndpoint),
-		RetryMaxAttempts:        intPtr(models.DefaultGcpRetryMaxAttempts),
-		RetryMaxBackoff:         intPtr(models.DefaultGcpRetryBackoffMaxSeconds),
-		RetryInitBackoff:        intPtr(models.DefaultGcpRetryBackoffInitSeconds),
-		RetryBackoffMultiplier:  float64Ptr(models.DefaultGcpRetryBackoffMultiplier),
-		ChunkSize:               intPtr(models.DefaultGcpChunkSize),
-		CalculateChecksum:       boolPtr(models.DefaultCloudCalculateChecksum),
-		RetryReadBackoffSeconds: intPtr(models.DefaultCloudRetryReadBackoffSeconds),
-		RetryReadMultiplier:     float64Ptr(models.DefaultCloudRetryReadMultiplier),
-		RetryReadMaxAttempts:    uintPtr(models.DefaultCloudRetryReadMaxAttempts),
-		MaxConnsPerHost:         intPtr(models.DefaultCloudMaxConnsPerHost),
-		RequestTimeoutSeconds:   intPtr(models.DefaultCloudRequestTimeoutSeconds),
+		KeyFile:                stringPtr(models.DefaultGcpKeyFile),
+		BucketName:             stringPtr(models.DefaultGcpBucketName),
+		EndpointOverride:       stringPtr(models.DefaultGcpEndpoint),
+		RetryMaxAttempts:       intPtr(models.DefaultGcpRetryMaxAttempts),
+		RetryMaxBackoff:        intPtr(models.DefaultGcpRetryBackoffMax),
+		RetryInitBackoff:       intPtr(models.DefaultGcpRetryBackoffInit),
+		RetryBackoffMultiplier: float64Ptr(models.DefaultGcpRetryBackoffMultiplier),
+		ChunkSize:              intPtr(models.DefaultGcpChunkSize),
+		CalculateChecksum:      boolPtr(models.DefaultCloudCalculateChecksum),
+		RetryReadBackoff:       intPtr(models.DefaultCloudRetryReadBackoff),
+		RetryReadMultiplier:    float64Ptr(models.DefaultCloudRetryReadMultiplier),
+		RetryReadMaxAttempts:   uintPtr(models.DefaultCloudRetryReadMaxAttempts),
+		MaxConnsPerHost:        intPtr(models.DefaultCloudMaxConnsPerHost),
+		RequestTimeout:         intPtr(models.DefaultCloudRequestTimeout),
 	}
 }
 
@@ -510,72 +510,72 @@ func (g *GcpStorage) ToModelGcpStorage() *models.GcpStorage {
 	}
 
 	return &models.GcpStorage{
-		KeyFile:                 derefString(g.KeyFile),
-		BucketName:              derefString(g.BucketName),
-		Endpoint:                derefString(g.EndpointOverride),
-		RetryMaxAttempts:        derefInt(g.RetryMaxAttempts),
-		RetryBackoffMaxSeconds:  derefInt(g.RetryMaxBackoff),
-		RetryBackoffInitSeconds: derefInt(g.RetryInitBackoff),
-		RetryBackoffMultiplier:  derefFloat64(g.RetryBackoffMultiplier),
-		ChunkSize:               derefInt(g.ChunkSize),
+		KeyFile:                derefString(g.KeyFile),
+		BucketName:             derefString(g.BucketName),
+		Endpoint:               derefString(g.EndpointOverride),
+		RetryMaxAttempts:       derefInt(g.RetryMaxAttempts),
+		RetryBackoffMax:        derefInt(g.RetryMaxBackoff),
+		RetryBackoffInit:       derefInt(g.RetryInitBackoff),
+		RetryBackoffMultiplier: derefFloat64(g.RetryBackoffMultiplier),
+		ChunkSize:              derefInt(g.ChunkSize),
 		StorageCommon: models.StorageCommon{
-			CalculateChecksum:       derefBool(g.CalculateChecksum),
-			RetryReadBackoffSeconds: derefInt(g.RetryReadBackoffSeconds),
-			RetryReadMultiplier:     derefFloat64(g.RetryReadMultiplier),
-			RetryReadMaxAttempts:    derefUint(g.RetryReadMaxAttempts),
-			MaxConnsPerHost:         derefInt(g.MaxConnsPerHost),
-			RequestTimeoutSeconds:   derefInt(g.RequestTimeoutSeconds),
+			CalculateChecksum:    derefBool(g.CalculateChecksum),
+			RetryReadBackoff:     derefInt(g.RetryReadBackoff),
+			RetryReadMultiplier:  derefFloat64(g.RetryReadMultiplier),
+			RetryReadMaxAttempts: derefUint(g.RetryReadMaxAttempts),
+			MaxConnsPerHost:      derefInt(g.MaxConnsPerHost),
+			RequestTimeout:       derefInt(g.RequestTimeout),
 		},
 	}
 }
 
 type AzureBlob struct {
-	AccountName             *string  `yaml:"account-name"`
-	AccountKey              *string  `yaml:"account-key"`
-	TenantID                *string  `yaml:"tenant-id"`
-	ClientID                *string  `yaml:"client-id"`
-	ClientSecret            *string  `yaml:"client-secret"`
-	EndpointOverride        *string  `yaml:"endpoint-override"`
-	ContainerName           *string  `yaml:"container-name"`
-	AccessTier              *string  `yaml:"access-tier"`
-	RestorePollDuration     *int64   `yaml:"rehydrate-poll-duration"`
-	RetryMaxAttempts        *int     `yaml:"retry-max-attempts"`
-	RetryTimeout            *int     `yaml:"retry-timeout"`
-	RetryDelay              *int     `yaml:"retry-delay"`
-	RetryMaxDelay           *int     `yaml:"retry-max-delay"`
-	UploadConcurrency       *int     `yaml:"upload-concurrency"`
-	CalculateChecksum       *bool    `yaml:"calculate-checksum"`
-	RetryReadBackoffSeconds *int     `yaml:"retry-read-backoff"`
-	RetryReadMultiplier     *float64 `yaml:"retry-read-multiplier"`
-	RetryReadMaxAttempts    *uint    `yaml:"retry-read-max-attempts"`
-	MaxConnsPerHost         *int     `yaml:"max-conns-per-host"`
-	RequestTimeoutSeconds   *int     `yaml:"request-timeout"`
-	BlockSize               *int     `yaml:"block-size"`
+	AccountName          *string  `yaml:"account-name"`
+	AccountKey           *string  `yaml:"account-key"`
+	TenantID             *string  `yaml:"tenant-id"`
+	ClientID             *string  `yaml:"client-id"`
+	ClientSecret         *string  `yaml:"client-secret"`
+	EndpointOverride     *string  `yaml:"endpoint-override"`
+	ContainerName        *string  `yaml:"container-name"`
+	AccessTier           *string  `yaml:"access-tier"`
+	RestorePollDuration  *int64   `yaml:"rehydrate-poll-duration"`
+	RetryMaxAttempts     *int     `yaml:"retry-max-attempts"`
+	RetryTimeout         *int     `yaml:"retry-timeout"`
+	RetryDelay           *int     `yaml:"retry-delay"`
+	RetryMaxDelay        *int     `yaml:"retry-max-delay"`
+	UploadConcurrency    *int     `yaml:"upload-concurrency"`
+	CalculateChecksum    *bool    `yaml:"calculate-checksum"`
+	RetryReadBackoff     *int     `yaml:"retry-read-backoff"`
+	RetryReadMultiplier  *float64 `yaml:"retry-read-multiplier"`
+	RetryReadMaxAttempts *uint    `yaml:"retry-read-max-attempts"`
+	MaxConnsPerHost      *int     `yaml:"max-conns-per-host"`
+	RequestTimeout       *int     `yaml:"request-timeout"`
+	BlockSize            *int     `yaml:"block-size"`
 }
 
 func defaultAzureBlob() *AzureBlob {
 	return &AzureBlob{
-		AccountName:             stringPtr(models.DefaultAzureAccountName),
-		AccountKey:              stringPtr(models.DefaultAzureAccountKey),
-		TenantID:                stringPtr(models.DefaultAzureTenantID),
-		ClientID:                stringPtr(models.DefaultAzureClientID),
-		ClientSecret:            stringPtr(models.DefaultAzureClientSecret),
-		EndpointOverride:        stringPtr(models.DefaultAzureEndpoint),
-		ContainerName:           stringPtr(models.DefaultAzureContainerName),
-		AccessTier:              stringPtr(models.DefaultAzureAccessTier),
-		RestorePollDuration:     int64Ptr(models.DefaultAzureRestorePollDuration),
-		RetryMaxAttempts:        intPtr(models.DefaultAzureRetryMaxAttempts),
-		RetryTimeout:            intPtr(models.DefaultAzureRetryTimeoutSeconds),
-		RetryDelay:              intPtr(models.DefaultAzureRetryDelaySeconds),
-		RetryMaxDelay:           intPtr(models.DefaultAzureRetryMaxDelaySeconds),
-		UploadConcurrency:       intPtr(models.DefaultAzureUploadConcurrency),
-		BlockSize:               intPtr(models.DefaultAzureBlockSize),
-		CalculateChecksum:       boolPtr(models.DefaultCloudCalculateChecksum),
-		RetryReadBackoffSeconds: intPtr(models.DefaultCloudRetryReadBackoffSeconds),
-		RetryReadMultiplier:     float64Ptr(models.DefaultCloudRetryReadMultiplier),
-		RetryReadMaxAttempts:    uintPtr(models.DefaultCloudRetryReadMaxAttempts),
-		MaxConnsPerHost:         intPtr(models.DefaultCloudMaxConnsPerHost),
-		RequestTimeoutSeconds:   intPtr(models.DefaultCloudRequestTimeoutSeconds),
+		AccountName:          stringPtr(models.DefaultAzureAccountName),
+		AccountKey:           stringPtr(models.DefaultAzureAccountKey),
+		TenantID:             stringPtr(models.DefaultAzureTenantID),
+		ClientID:             stringPtr(models.DefaultAzureClientID),
+		ClientSecret:         stringPtr(models.DefaultAzureClientSecret),
+		EndpointOverride:     stringPtr(models.DefaultAzureEndpoint),
+		ContainerName:        stringPtr(models.DefaultAzureContainerName),
+		AccessTier:           stringPtr(models.DefaultAzureAccessTier),
+		RestorePollDuration:  int64Ptr(models.DefaultAzureRestorePollDuration),
+		RetryMaxAttempts:     intPtr(models.DefaultAzureRetryMaxAttempts),
+		RetryTimeout:         intPtr(models.DefaultAzureRetryTimeout),
+		RetryDelay:           intPtr(models.DefaultAzureRetryDelay),
+		RetryMaxDelay:        intPtr(models.DefaultAzureRetryMaxDelay),
+		UploadConcurrency:    intPtr(models.DefaultAzureUploadConcurrency),
+		BlockSize:            intPtr(models.DefaultAzureBlockSize),
+		CalculateChecksum:    boolPtr(models.DefaultCloudCalculateChecksum),
+		RetryReadBackoff:     intPtr(models.DefaultCloudRetryReadBackoff),
+		RetryReadMultiplier:  float64Ptr(models.DefaultCloudRetryReadMultiplier),
+		RetryReadMaxAttempts: uintPtr(models.DefaultCloudRetryReadMaxAttempts),
+		MaxConnsPerHost:      intPtr(models.DefaultCloudMaxConnsPerHost),
+		RequestTimeout:       intPtr(models.DefaultCloudRequestTimeout),
 	}
 }
 
@@ -585,28 +585,28 @@ func (a *AzureBlob) ToModelAzureBlob() *models.AzureBlob {
 	}
 
 	return &models.AzureBlob{
-		AccountName:          derefString(a.AccountName),
-		AccountKey:           derefString(a.AccountKey),
-		TenantID:             derefString(a.TenantID),
-		ClientID:             derefString(a.ClientID),
-		ClientSecret:         derefString(a.ClientSecret),
-		Endpoint:             derefString(a.EndpointOverride),
-		ContainerName:        derefString(a.ContainerName),
-		AccessTier:           derefString(a.AccessTier),
-		RetryMaxAttempts:     derefInt(a.RetryMaxAttempts),
-		RetryTimeoutSeconds:  derefInt(a.RetryTimeout),
-		RetryDelaySeconds:    derefInt(a.RetryDelay),
-		RetryMaxDelaySeconds: derefInt(a.RetryMaxDelay),
-		UploadConcurrency:    derefInt(a.UploadConcurrency),
-		RestorePollDuration:  derefInt64(a.RestorePollDuration),
-		BlockSize:            derefInt(a.BlockSize),
+		AccountName:         derefString(a.AccountName),
+		AccountKey:          derefString(a.AccountKey),
+		TenantID:            derefString(a.TenantID),
+		ClientID:            derefString(a.ClientID),
+		ClientSecret:        derefString(a.ClientSecret),
+		Endpoint:            derefString(a.EndpointOverride),
+		ContainerName:       derefString(a.ContainerName),
+		AccessTier:          derefString(a.AccessTier),
+		RetryMaxAttempts:    derefInt(a.RetryMaxAttempts),
+		RetryTimeout:        derefInt(a.RetryTimeout),
+		RetryDelay:          derefInt(a.RetryDelay),
+		RetryMaxDelay:       derefInt(a.RetryMaxDelay),
+		UploadConcurrency:   derefInt(a.UploadConcurrency),
+		RestorePollDuration: derefInt64(a.RestorePollDuration),
+		BlockSize:           derefInt(a.BlockSize),
 		StorageCommon: models.StorageCommon{
-			CalculateChecksum:       derefBool(a.CalculateChecksum),
-			RetryReadBackoffSeconds: derefInt(a.RetryReadBackoffSeconds),
-			RetryReadMultiplier:     derefFloat64(a.RetryReadMultiplier),
-			RetryReadMaxAttempts:    derefUint(a.RetryReadMaxAttempts),
-			MaxConnsPerHost:         derefInt(a.MaxConnsPerHost),
-			RequestTimeoutSeconds:   derefInt(a.RequestTimeoutSeconds),
+			CalculateChecksum:    derefBool(a.CalculateChecksum),
+			RetryReadBackoff:     derefInt(a.RetryReadBackoff),
+			RetryReadMultiplier:  derefFloat64(a.RetryReadMultiplier),
+			RetryReadMaxAttempts: derefUint(a.RetryReadMaxAttempts),
+			MaxConnsPerHost:      derefInt(a.MaxConnsPerHost),
+			RequestTimeout:       derefInt(a.RequestTimeout),
 		},
 	}
 }
