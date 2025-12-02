@@ -126,12 +126,9 @@ func Test_BackupRestore(t *testing.T) {
 		Compression: &models.Compression{
 			Mode: backup.CompressNone,
 		},
-		Encryption:  nil,
-		SecretAgent: nil,
 		AwsS3: &models.AwsS3{
 			RestorePollDuration: 1000,
 		},
-		GcpStorage: nil,
 		AzureBlob: &models.AzureBlob{
 			RestorePollDuration: 1000,
 		},
