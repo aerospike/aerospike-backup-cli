@@ -186,7 +186,7 @@ func newLocalWriter(ctx context.Context, l *models.Local, opts []options.Opt) (b
 	if l != nil {
 		opts = append(opts, options.WithChunkSize(l.BufferSize))
 	}
-	
+
 	return local.NewWriter(ctx, opts...)
 }
 
