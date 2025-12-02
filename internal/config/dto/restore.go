@@ -66,13 +66,12 @@ func (r *Restore) ToModelRestore() *models.Restore {
 	}
 
 	return &models.Restore{
-		//nolint:dupl // Mappings looks the same for common values.
 		Common: models.Common{
 			Directory:                     derefString(r.Restore.Directory),
 			Namespace:                     derefString(r.Restore.Namespace),
 			SetList:                       strings.Join(r.Restore.SetList, ","),
 			BinList:                       strings.Join(r.Restore.BinList, ","),
-			Parallel:                      derefInt(r.Restore.Parallel),
+			ParallelRead:                  derefInt(r.Restore.Parallel),
 			NoRecords:                     derefBool(r.Restore.NoRecords),
 			NoIndexes:                     derefBool(r.Restore.NoIndexes),
 			NoUDFs:                        derefBool(r.Restore.NoUDFs),

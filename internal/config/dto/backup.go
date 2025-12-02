@@ -72,13 +72,13 @@ func (b *Backup) ToModelBackup() *models.Backup {
 	}
 
 	return &models.Backup{
-		//nolint:dupl // Mappings looks the same for common values.
 		Common: models.Common{
 			Directory:                     derefString(b.Backup.Directory),
 			Namespace:                     derefString(b.Backup.Namespace),
 			SetList:                       strings.Join(b.Backup.SetList, ","),
 			BinList:                       strings.Join(b.Backup.BinList, ","),
-			Parallel:                      derefInt(b.Backup.Parallel),
+			ParallelRead:                  derefInt(b.Backup.ParallelRead),
+			ParallelWrite:                 derefInt(b.Backup.ParallelWrite),
 			NoRecords:                     derefBool(b.Backup.NoRecords),
 			NoIndexes:                     derefBool(b.Backup.NoIndexes),
 			NoUDFs:                        derefBool(b.Backup.NoUDFs),
@@ -124,7 +124,8 @@ type BackupConfig struct {
 	Namespace                     *string  `yaml:"namespace"`
 	SetList                       []string `yaml:"set-list"`
 	BinList                       []string `yaml:"bin-list"`
-	Parallel                      *int     `yaml:"parallel"`
+	ParallelRead                  *int     `yaml:"parallel-read"`
+	ParallelWrite                 *int     `yaml:"parallel-write"`
 	NoRecords                     *bool    `yaml:"no-records"`
 	NoIndexes                     *bool    `yaml:"no-indexes"`
 	NoUDFs                        *bool    `yaml:"no-udfs"`
@@ -205,6 +206,7 @@ func defaultBackupConfig() *BackupConfig {
 		OutputFilePrefix:              stringPtr(models.DefaultBackupOutputFilePrefix),
 		RackList:                      []string{},
 		TotalTimeout:                  int64Ptr(models.DefaultBackupTotalTimeout),
-		Parallel:                      intPtr(models.DefaultBackupParallel),
+		ParallelRead:                  intPtr(models.DefaultBackupParallel),
+		ParallelWrite:                 intPtr(models.DefaultBackupParallel),
 	}
 }
