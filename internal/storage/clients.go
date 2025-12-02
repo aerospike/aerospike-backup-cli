@@ -20,6 +20,7 @@ import (
 	"log/slog"
 	"net"
 	"net/http"
+	"os"
 	"time"
 
 	gcpStorage "cloud.google.com/go/storage"
@@ -37,6 +38,8 @@ import (
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/googleapis/gax-go/v2"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
 	"google.golang.org/api/option"
 )
 
@@ -110,7 +113,7 @@ func newS3Client(ctx context.Context, a *models.AwsS3) (*s3.Client, error) {
 			})
 		}),
 		config.WithHTTPClient(
-			newHTTPClient(a.MaxConnsPerHost, a.RequestTimeout)),
+			newHTTPClient(newTransport(a.MaxConnsPerHost), a.RequestTimeout)),
 	)
 
 	if a.Profile != "" {
@@ -149,11 +152,19 @@ func newS3Client(ctx context.Context, a *models.AwsS3) (*s3.Client, error) {
 func newGcpClient(ctx context.Context, g *models.GcpStorage) (*gcpStorage.Client, error) {
 	opts := make([]option.ClientOption, 0)
 
-	opts = append(opts, option.WithHTTPClient(newHTTPClient(g.MaxConnsPerHost, g.RequestTimeout)))
-
+	var transport http.RoundTripper = newTransport(g.MaxConnsPerHost)
+	// GCP can't apply option.WithCredentialsFile() with custom http client option.WithHTTPClient().
+	// So we implement our own logic to load auth key and set http headers.
 	if g.KeyFile != "" {
-		opts = append(opts, option.WithCredentialsFile(g.KeyFile))
+		creds, err := getGcpAuth(ctx, g.KeyFile)
+		if err != nil {
+			return nil, err
+		}
+		// Use client with custom auth.
+		transport = newAuthTransport(transport, creds.TokenSource)
 	}
+
+	opts = append(opts, option.WithHTTPClient(newHTTPClient(transport, g.RequestTimeout)))
 
 	if g.Endpoint != "" {
 		opts = append(opts, option.WithEndpoint(g.Endpoint), option.WithoutAuthentication())
@@ -178,6 +189,23 @@ func newGcpClient(ctx context.Context, g *models.GcpStorage) (*gcpStorage.Client
 	return gcpClient, nil
 }
 
+// getGcpAuth read and load auth key from a file for GCP.
+func getGcpAuth(ctx context.Context, keyFile string) (*google.Credentials, error) {
+	jsonKey, err := os.ReadFile(keyFile)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read key file %s: %w", keyFile, err)
+	}
+
+	creds, err := google.CredentialsFromJSON(ctx, jsonKey,
+		gcpStorage.ScopeReadWrite,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse JSON key file %s: %w", keyFile, err)
+	}
+
+	return creds, nil
+}
+
 func newAzureClient(a *models.AzureBlob) (*azblob.Client, error) {
 	var (
 		azClient *azblob.Client
@@ -186,7 +214,7 @@ func newAzureClient(a *models.AzureBlob) (*azblob.Client, error) {
 
 	azOpts := &azblob.ClientOptions{
 		ClientOptions: azcore.ClientOptions{
-			Transport: newHTTPClient(a.MaxConnsPerHost, a.RequestTimeout),
+			Transport: newHTTPClient(newTransport(a.MaxConnsPerHost), a.RequestTimeout),
 			Retry: policy.RetryOptions{
 				MaxRetries:    int32(a.RetryMaxAttempts),
 				TryTimeout:    time.Duration(a.RetryTimeout) * time.Millisecond,
@@ -264,10 +292,19 @@ func newTransport(maxConnsPerHost int) *http.Transport {
 	}
 }
 
+// newAuthTransport returns transport with auth.
+// It is used only for GCP, because it can't pass auth to custom http.Client.
+func newAuthTransport(baseTransport http.RoundTripper, tokenSource oauth2.TokenSource) *oauth2.Transport {
+	return &oauth2.Transport{
+		Base:   baseTransport,
+		Source: tokenSource,
+	}
+}
+
 // newHTTPClient returns a new http.Client.
-func newHTTPClient(maxConnsPerHost, requestTimeoutSeconds int) *http.Client {
+func newHTTPClient(transport http.RoundTripper, requestTimeoutSeconds int) *http.Client {
 	return &http.Client{
-		Transport: newTransport(maxConnsPerHost),
+		Transport: transport,
 		Timeout:   time.Duration(requestTimeoutSeconds) * time.Millisecond,
 	}
 }
