@@ -152,7 +152,7 @@ func newS3Client(ctx context.Context, a *models.AwsS3) (*s3.Client, error) {
 func newGcpClient(ctx context.Context, g *models.GcpStorage) (*gcpStorage.Client, error) {
 	opts := make([]option.ClientOption, 0)
 
-	transport := newTransport(g.MaxConnsPerHost)
+	var transport http.RoundTripper = newTransport(g.MaxConnsPerHost)
 	// GCP can't apply option.WithCredentialsFile() with custom http client option.WithHTTPClient().
 	// So we implement our own logic to load auth key and set http headers.
 	if g.KeyFile != "" {
@@ -161,11 +161,10 @@ func newGcpClient(ctx context.Context, g *models.GcpStorage) (*gcpStorage.Client
 			return nil, err
 		}
 		// Use client with custom auth.
-		authTransport := newAuthTransport(transport, creds.TokenSource)
-		opts = append(opts, option.WithHTTPClient(newHTTPClient(authTransport, g.RequestTimeout)))
-	} else {
-		opts = append(opts, option.WithHTTPClient(newHTTPClient(transport, g.RequestTimeout)))
+		transport = newAuthTransport(transport, creds.TokenSource)
 	}
+
+	opts = append(opts, option.WithHTTPClient(newHTTPClient(transport, g.RequestTimeout)))
 
 	if g.Endpoint != "" {
 		opts = append(opts, option.WithEndpoint(g.Endpoint), option.WithoutAuthentication())
@@ -295,7 +294,7 @@ func newTransport(maxConnsPerHost int) *http.Transport {
 
 // newAuthTransport returns transport with auth.
 // It is used only for GCP, because it can't pass auth to custom http.Client.
-func newAuthTransport(baseTransport *http.Transport, tokenSource oauth2.TokenSource) *oauth2.Transport {
+func newAuthTransport(baseTransport http.RoundTripper, tokenSource oauth2.TokenSource) *oauth2.Transport {
 	return &oauth2.Transport{
 		Base:   baseTransport,
 		Source: tokenSource,
