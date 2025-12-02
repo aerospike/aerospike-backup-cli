@@ -76,6 +76,7 @@ func TestAwsS3_Validate(t *testing.T) {
 			aws: &AwsS3{
 				BucketName:       testBucketName,
 				RetryMaxAttempts: -1,
+				ChunkSize:        5,
 			},
 			isBackup: true,
 			wantErr:  "retry maximum attempts must be non-negative",
@@ -102,16 +103,16 @@ func TestAwsS3_Validate(t *testing.T) {
 			wantErr:  "retry backoff must be non-negative",
 		},
 		{
-			name: "negative chunk size",
+			name: "small chunk size",
 			aws: &AwsS3{
 				BucketName:       testBucketName,
 				RetryMaxAttempts: 3,
 				RetryMaxBackoff:  30,
 				RetryBackoff:     5,
-				ChunkSize:        -1,
+				ChunkSize:        4,
 			},
 			isBackup: true,
-			wantErr:  "chunk size must be non-negative",
+			wantErr:  "chunk size can't be less than 5",
 		},
 		{
 			name: "restore poll duration less than 1 for restore",
@@ -147,7 +148,7 @@ func TestAwsS3_Validate(t *testing.T) {
 				RetryMaxAttempts:    0,
 				RetryMaxBackoff:     0,
 				RetryBackoff:        0,
-				ChunkSize:           0,
+				ChunkSize:           5,
 				RestorePollDuration: 1,
 				StorageCommon: StorageCommon{
 					RetryReadMultiplier: 3,
@@ -164,7 +165,7 @@ func TestAwsS3_Validate(t *testing.T) {
 				RetryMaxAttempts:    0,
 				RetryMaxBackoff:     0,
 				RetryBackoff:        0,
-				ChunkSize:           0,
+				ChunkSize:           5,
 				RestorePollDuration: 1,
 				StorageCommon: StorageCommon{
 					RetryReadMultiplier: 3,
@@ -183,6 +184,7 @@ func TestAwsS3_Validate(t *testing.T) {
 				RetryBackoff:      5,
 				UploadConcurrency: 1,
 				StorageCommon:     StorageCommon{MaxConnsPerHost: -1},
+				ChunkSize:         5,
 			},
 			isBackup: true,
 			wantErr:  "max connections per host must be non-negative",
@@ -196,6 +198,7 @@ func TestAwsS3_Validate(t *testing.T) {
 				RetryBackoff:      5,
 				UploadConcurrency: 1,
 				StorageCommon:     StorageCommon{RequestTimeout: -1},
+				ChunkSize:         5,
 			},
 			isBackup: true,
 			wantErr:  "request timeout must be non-negative",

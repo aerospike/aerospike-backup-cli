@@ -61,6 +61,14 @@ func newWriter(
 	sa *backup.SecretAgentConfig,
 	logger *slog.Logger,
 ) (backup.Writer, error) {
+	if params == nil {
+		return nil, fmt.Errorf("params cannot be nil")
+	}
+
+	if logger == nil {
+		return nil, fmt.Errorf("logger cannot be nil")
+	}
+
 	directory, outputFile := getDirectoryOutputFile(params)
 	shouldClearTarget, continueBackup := getShouldCleanContinue(params)
 	opts := newWriterOpts(directory, outputFile, shouldClearTarget, continueBackup, params.IsXDR(), logger)
@@ -175,7 +183,9 @@ func newWriterOpts(
 }
 
 func newLocalWriter(ctx context.Context, l *models.Local, opts []options.Opt) (backup.Writer, error) {
-	opts = append(opts, options.WithChunkSize(l.BufferSize))
+	if l != nil {
+		opts = append(opts, options.WithChunkSize(l.BufferSize))
+	}
 
 	return local.NewWriter(ctx, opts...)
 }

@@ -36,7 +36,7 @@ func TestLocal_Validate(t *testing.T) {
 		},
 		{
 			name:       "backup with zero buffer size",
-			bufferSize: 0,
+			bufferSize: 1,
 			isBackup:   true,
 			wantErr:    false,
 		},
@@ -45,7 +45,7 @@ func TestLocal_Validate(t *testing.T) {
 			bufferSize: -1,
 			isBackup:   true,
 			wantErr:    true,
-			errMsg:     "buffer size must be non-negative",
+			errMsg:     "buffer size can't be less than 1",
 		},
 		{
 			name:       "restore with positive buffer size",

@@ -122,7 +122,7 @@ func TestAzureBlob_Validate(t *testing.T) {
 				BlockSize:        -1,
 			},
 			isBackup: true,
-			wantErr:  "block size must be non-negative",
+			wantErr:  "block size can't be less than 1",
 		},
 		{
 			name: "restore poll duration less than 1 for restore",
@@ -161,7 +161,7 @@ func TestAzureBlob_Validate(t *testing.T) {
 				RetryTimeout:        0,
 				RetryDelay:          0,
 				RetryMaxDelay:       0,
-				BlockSize:           0,
+				BlockSize:           1,
 				RestorePollDuration: 1,
 				StorageCommon: StorageCommon{
 					RetryReadMultiplier: 3,
@@ -193,7 +193,7 @@ func TestAzureBlob_Validate(t *testing.T) {
 				RetryTimeout:        0,
 				RetryDelay:          0,
 				RetryMaxDelay:       0,
-				BlockSize:           0,
+				BlockSize:           1,
 				RestorePollDuration: 1,
 				StorageCommon: StorageCommon{
 					RetryReadMultiplier: 3,

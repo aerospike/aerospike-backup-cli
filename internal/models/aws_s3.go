@@ -109,8 +109,8 @@ func (a *AwsS3) Validate(isBackup bool) error {
 		return fmt.Errorf("retry backoff must be non-negative")
 	}
 
-	if a.ChunkSize < 0 {
-		return fmt.Errorf("chunk size must be non-negative")
+	if a.ChunkSize < 5 {
+		return fmt.Errorf("chunk size can't be less than 5")
 	}
 
 	switch isBackup {

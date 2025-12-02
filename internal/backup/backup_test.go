@@ -92,12 +92,6 @@ func Test_BackupWithState(t *testing.T) {
 		Compression: &models.Compression{
 			Mode: backup.CompressNone,
 		},
-		Encryption:  &models.Encryption{},
-		SecretAgent: &models.SecretAgent{},
-		AwsS3:       &models.AwsS3{},
-		GcpStorage:  &models.GcpStorage{},
-		AzureBlob:   &models.AzureBlob{},
-		Local:       &models.Local{},
 	}
 
 	err := createRecords(asbParams.ClientConfig, asbParams.ClientPolicy, testNamespace, testSet)
@@ -154,12 +148,6 @@ func Test_BackupXDR(t *testing.T) {
 		Compression: &models.Compression{
 			Mode: backup.CompressNone,
 		},
-		Encryption:  &models.Encryption{},
-		SecretAgent: &models.SecretAgent{},
-		AwsS3:       &models.AwsS3{},
-		GcpStorage:  &models.GcpStorage{},
-		AzureBlob:   &models.AzureBlob{},
-		Local:       &models.Local{},
 	}
 
 	err := createRecords(asbParams.ClientConfig, asbParams.ClientPolicy, testNamespace, testSetXDR)
@@ -209,12 +197,12 @@ func Test_BackupEstimates(t *testing.T) {
 		Compression: &models.Compression{
 			Mode: backup.CompressNone,
 		},
-		Encryption:  &models.Encryption{},
-		SecretAgent: &models.SecretAgent{},
-		AwsS3:       &models.AwsS3{},
-		GcpStorage:  &models.GcpStorage{},
-		AzureBlob:   &models.AzureBlob{},
-		Local:       &models.Local{},
+		Encryption:  nil,
+		SecretAgent: nil,
+		AwsS3:       nil,
+		GcpStorage:  nil,
+		AzureBlob:   nil,
+		Local:       nil,
 	}
 
 	err := createRecords(asbParams.ClientConfig, asbParams.ClientPolicy, testNamespace, testSet)
