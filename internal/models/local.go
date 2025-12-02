@@ -23,8 +23,8 @@ type Local struct {
 
 func (l *Local) Validate(isBackup bool) error {
 	if isBackup {
-		if l.BufferSize < 0 {
-			return fmt.Errorf("buffer size must be non-negative")
+		if l.BufferSize < 1 {
+			return fmt.Errorf("buffer size can't be less than 1")
 		}
 	}
 
