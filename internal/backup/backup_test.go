@@ -92,12 +92,6 @@ func Test_BackupWithState(t *testing.T) {
 		Compression: &models.Compression{
 			Mode: backup.CompressNone,
 		},
-		Encryption:  nil,
-		SecretAgent: nil,
-		AwsS3:       nil,
-		GcpStorage:  nil,
-		AzureBlob:   nil,
-		Local:       nil,
 	}
 
 	err := createRecords(asbParams.ClientConfig, asbParams.ClientPolicy, testNamespace, testSet)
@@ -154,12 +148,6 @@ func Test_BackupXDR(t *testing.T) {
 		Compression: &models.Compression{
 			Mode: backup.CompressNone,
 		},
-		Encryption:  nil,
-		SecretAgent: nil,
-		AwsS3:       nil,
-		GcpStorage:  nil,
-		AzureBlob:   nil,
-		Local:       nil,
 	}
 
 	err := createRecords(asbParams.ClientConfig, asbParams.ClientPolicy, testNamespace, testSetXDR)
