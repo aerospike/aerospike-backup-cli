@@ -10,9 +10,9 @@ vendor: "${VENDOR}"
 homepage: "${HOMEPAGE}"
 license: "${LICENSE}"
 contents:
-  - src: ${WORKSPACE}/target/${BACKUP_BINARY_NAME}_${OS}_${ARCH}
+  - src: ${WORKSPACE}/dist/${BACKUP_BINARY_NAME}_${OS}_${ARCH}
     dst: /usr/bin/${BACKUP_BINARY_NAME}
-  - src: ${WORKSPACE}/target/${RESTORE_BINARY_NAME}_${OS}_${ARCH}
+  - src: ${WORKSPACE}/dist/${RESTORE_BINARY_NAME}_${OS}_${ARCH}
     dst: /usr/bin/${RESTORE_BINARY_NAME}
 
 umask: 0o002

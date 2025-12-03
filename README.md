@@ -100,7 +100,7 @@ To generate `.rpm` and `.deb` packages for supported Linux architectures (`linux
 ```bash
 make packages
 ```
-The generated packages and their `sha256` checksum files will be located in the `/target` directory.
+The generated packages and their `sha256` checksum files will be located in the `/dist` directory.
 
 ## Configuration Reference
 
