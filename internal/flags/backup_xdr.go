@@ -87,11 +87,11 @@ func (f *BackupXDR) NewFlagSet() *pflag.FlagSet {
 
 	flagSet.Int64Var(&f.ReadTimeoutMilliseconds, "read-timeout",
 		models.DefaultBackupXDRReadTimeout,
-		"Timeout in milliseconds for TCP read operations. Used by TCP server for XDR.")
+		"Timeout (in ms) for TCP read operations. Used by TCP server for XDR.")
 
 	flagSet.Int64Var(&f.WriteTimeoutMilliseconds, "write-timeout",
 		models.DefaultBackupXDRWriteTimeout,
-		"Timeout in milliseconds for TCP write operations. Used by TCP server for XDR.")
+		"Timeout (in ms) for TCP write operations. Used by TCP server for XDR.")
 
 	flagSet.IntVar(&f.ResultQueueSize, "results-queue-size",
 		models.DefaultBackupXDRResultQueueSize,
@@ -107,12 +107,12 @@ func (f *BackupXDR) NewFlagSet() *pflag.FlagSet {
 
 	flagSet.Int64Var(&f.InfoPolingPeriodMilliseconds, "info-poling-period",
 		models.DefaultBackupXDRInfoPolingPeriod,
-		"How often (in milliseconds) a backup client sends info commands\n"+
+		"How often ((in ms)) a backup client sends info commands\n"+
 			"to check Aerospike cluster statistics on recovery rate and lag.")
 
 	flagSet.Int64Var(&f.InfoRetryIntervalMilliseconds, "info-retry-interval",
 		models.DefaultBackupXDRInfoRetryInterval,
-		"Set the initial interval for a retry in milliseconds when info commands are sent.\n"+
+		"Set the initial interval for a retry (in ms) when info commands are sent.\n"+
 			"This parameter is applied to stop-xdr and unblock-mrt requests.")
 
 	flagSet.Float64Var(&f.InfoRetriesMultiplier, "info-retry-multiplier",

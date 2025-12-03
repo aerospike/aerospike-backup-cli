@@ -16,8 +16,8 @@ When using `asrestore`, be aware of the following considerations:
 The privileges required to run `asrestore` depend on the type of objects in the namespace.
 
 - If the namespace does not contain [user-defined functions](https://aerospike.com/docs/database/learn/architecture/udf) or [secondary indexes](https://aerospike.com/docs/database/learn/architecture/data-storage/secondary-index), `read-write` is the minimum necessary privilege.
-- If the namespace contains [user-defined functions](https://aerospike.com/docs/database/learn/architecture/udf), `udf-admin` is the minimum necessary privilege to restore UDFs for Database 6.0 or newer. Otherwise, use `data-admin`.
-- If the namespace contains [secondary indexes](https://aerospike.com/docs/database/learn/architecture/data-storage/secondary-index), `sindex-admin` is the minimum necessary privilege to restore secondary indexes for Database 6.0 or newer. Otherwise, use `data-admin`.
+- If the namespace contains [user-defined functions](https://aerospike.com/docs/database/learn/architecture/udf), `udf-admin` is the minimum necessary privilege to restore UDFs for Database 6.0 or later. Otherwise, use `data-admin`.
+- If the namespace contains [secondary indexes](https://aerospike.com/docs/database/learn/architecture/data-storage/secondary-index), `sindex-admin` is the minimum necessary privilege to restore secondary indexes for Database 6.0 or later. Otherwise, use `data-admin`.
 
 For more information about Aerospike’s role-based access control system, see [Configuring Access Control in EE and FE](https://aerospike.com/docs/database/manage/security/rbac/#privileges).
 
@@ -97,23 +97,22 @@ Restore Flags:
       --no-udfs                       Don't restore any UDFs.
   -w, --parallel int                  The number of restore threads. Accepts values from 1-1024 inclusive.
                                       If not set, the default value is automatically calculated and appears as the number of CPUs on your machine.
-  -L, --records-per-second int        Limit total returned records per second (rps).
-                                      Do not apply rps limit if records-per-second is zero.
+  -L, --records-per-second int        Limit total returned records per second (RPS). If 0, no limit is applied.
       --max-retries int               Maximum number of retries before aborting the current transaction. (default 5)
-      --total-timeout int             Total transaction timeout in milliseconds. 0 - no timeout. (default 10000)
-      --socket-timeout int            Socket timeout in milliseconds. If this value is 0, it's set to --total-timeout.
+      --total-timeout int             Total transaction timeout (in ms). If 0, no timeout is applied.  (default 10000)
+      --socket-timeout int            Socket timeout (in ms). If 0, the value for --total-timeout is used.
                                       If both this and --total-timeout are 0, there is no socket idle time limit. (default 10000)
       --nice int                      The limits for read/write storage bandwidth in MiB/s.
                                       Default is 0 (no limit). (DEPRECATED: use --bandwidth instead)
   -N, --bandwidth int                 The limits for read/write storage bandwidth in MiB/s.
                                       Default is 0 (no limit).
-  -T, --info-timeout int              Set the timeout (ms) for asinfo commands sent from asrestore to the database.
+  -T, --info-timeout int              Set the timeout (in ms) for asinfo commands sent from asrestore to the database.
                                       The info commands are to check version, get indexes, get udfs, count records, and check batch write support. (default 10000)
-      --info-retry-interval int       Set the initial interval for a retry in milliseconds when info commands are sent. (default 1000)
+      --info-retry-interval int       Set the initial interval for a retry (in ms) when info commands are sent. (default 1000)
       --info-retry-multiplier float   Increases the delay between subsequent retry attempts.
                                       The actual delay is calculated as: info-retry-interval * (info-retry-multiplier ^ attemptNumber) (default 1)
-      --info-max-retries uint         How many times to retry to send info commands before failing.  (default 3)
-      --std-buffer int                Buffer size in MiB for stdin and stdout operations. Is used for pipelining. (default 4)
+      --info-max-retries uint         Number of retries to send info commands before failing. (default 3)
+      --std-buffer int                Buffer size in MiB for stdin and stdout operations. Used for pipelining. (default 4)
   -i, --input-file string         Restore from a single backup file. Use '-' for stdin.
                                   Required, unless --directory or --directory-list is used.
                                   
@@ -167,7 +166,7 @@ Restore Flags:
       --extra-ttl int             For records with expirable void-times, add N seconds of extra-ttl to the
                                   recorded void-time.
                                   
-      --retry-base-interval int   Set the initial interval for a retry in milliseconds when data is sent to the Aerospike database
+      --retry-base-interval int   Set the initial interval for a retry (in ms) when data is sent to the Aerospike database
                                   during a restore. This retry sequence is triggered by the following non-critical errors:
                                   AEROSPIKE_NO_AVAILABLE_CONNECTIONS_TO_NODE,
                                   AEROSPIKE_TIMEOUT,
@@ -189,27 +188,28 @@ Restore Flags:
 Compression Flags:
   -z, --compress string         Enables decompressing of backup files using the specified compression algorithm.
                                 This must match the compression mode used when backing up the data.
-                                Supported compression algorithms are: zstd, none
-                                Set the zstd compression level via the --compression-level option. (default "NONE")
-      --compression-level int   zstd compression level. (default 3)
+                                Supported compression algorithms are: ZSTD, NONE
+                                Set the ZSTD compression level via the --compression-level option. (default "NONE")
+      --compression-level int   ZSTD compression level. (default 3)
 
 Encryption Flags:
       --encrypt string                 Enables decryption of backup files using the specified encryption algorithm.
                                        This must match the encryption mode used when backing up the data.
-                                       Supported encryption algorithms are: none, aes128, aes256.
-                                       A private key must be given, either via the --encryption-key-file option or
+                                       Supported encryption algorithms are: NONE, AES128, AES256.
+                                       A private key must be given, either with the --encryption-key-file option or
                                        the --encryption-key-env option or the --encryption-key-secret. (default "NONE")
-      --encryption-key-file string     Grabs the encryption key from the given file, which must be in PEM format.
-      --encryption-key-env string      Grabs the encryption key from the given environment variable, which must be base-64 encoded.
-      --encryption-key-secret string   Grabs the encryption key from secret-agent.
+      --encryption-key-file string     Gets the encryption key from the given file, which must be in PEM format.
+      --encryption-key-env string      Gets the encryption key from the given environment variable, which must be Base64 encoded.
+      --encryption-key-secret string   Gets the encryption key from secret-agent.
 
 Secret Agent Flags:
 Options pertaining to the Aerospike Secret Agent.
 See documentation here: https://aerospike.com/docs/tools/secret-agent.
-Both asbackup and asrestore support getting all the cloud config parameters from the Aerospike Secret Agent.
+Both asbackup and asrestore support getting all the cloud configuration parameters
+from the Aerospike Secret Agent.
 To use a secret as an option, use this format: 'secrets:<resource_name>:<secret_name>' 
 Example: asbackup --azure-account-name secret:resource1:azaccount
-      --sa-connection-type string   Secret Agent connection type, supported types: tcp, unix. (default "tcp")
+      --sa-connection-type string   Secret Agent connection type. Supported types: TCP, UNIX. (default "TCP")
       --sa-address string           Secret Agent host for TCP connection or socket file path for UDS connection.
       --sa-port int                 Secret Agent port (only for TCP connection).
       --sa-timeout int              Secret Agent connection and reading timeout.
@@ -217,66 +217,66 @@ Example: asbackup --azure-account-name secret:resource1:azaccount
       --sa-is-base64                Whether Secret Agent responses are Base64 encoded.
 
 AWS Storage Flags:
-For S3 storage bucket name is mandatory, and is set with --s3-bucket-name flag.
-So --directory path will only contain folder name.
---s3-endpoint-override is used in case you want to use minio, instead of AWS.
+For S3, the storage bucket name must be set with the --s3-bucket-name flag.
+--directory path will only contain the folder name.
+--s3-endpoint-override is used for MinIO storage instead of AWS.
 Any AWS parameter can be retrieved from Secret Agent.
       --s3-bucket-name string             Existing S3 bucket name
       --s3-region string                  The S3 region that the bucket(s) exist in.
       --s3-profile string                 The S3 profile to use for credentials.
-      --s3-access-key-id string           S3 access key id. If not set, profile auth info will be used.
+      --s3-access-key-id string           S3 access key ID. If not set, profile auth info will be used.
       --s3-secret-access-key string       S3 secret access key. If not set, profile auth info will be used.
-      --s3-endpoint-override string       An alternate url endpoint to send S3 API calls to.
+      --s3-endpoint-override string       An alternate URL endpoint to send S3 API calls to.
       --s3-tier string                    If is set, tool will try to restore archived files to the specified tier.
                                           Tiers are: Standard, Bulk, Expedited.
-      --s3-restore-poll-duration int      How often (in milliseconds) a backup client checks object status when restoring an archived object. (default 60000)
-      --s3-retry-read-backoff int         The initial delay in milliseconds between retry attempts. In case of connection errors
+      --s3-restore-poll-duration int      How often ((in ms)) a backup client checks object status when restoring an archived object. (default 60000)
+      --s3-retry-read-backoff int         The initial delay (in ms) between retry attempts. In case of connection errors
                                           tool will retry reading the object from the last known position. (default 1000)
       --s3-retry-read-multiplier float    Multiplier is used to increase the delay between subsequent retry attempts.
                                           Used in combination with initial delay. (default 2)
       --s3-retry-read-max-attempts uint   The maximum number of retry attempts that will be made. If set to 0, no retries will be performed. (default 3)
       --s3-retry-max-attempts int         Maximum number of attempts that should be made in case of an error. (default 10)
-      --s3-retry-max-backoff int          Max backoff duration in milliseconds between retried attempts. (default 90000)
-      --s3-retry-backoff int              Provides the backoff in milliseconds strategy the retryer will use to determine the delay between retry attempts. (default 60000)
+      --s3-retry-max-backoff int          Max backoff duration (in ms) between retried attempts. (default 90000)
+      --s3-retry-backoff int              Provides the backoff, (in ms), that the retryer will use to determine the delay between retry attempts. (default 60000)
       --s3-max-conns-per-host int         MaxConnsPerHost optionally limits the total number of connections per host,
                                           including connections in the dialing, active, and idle states. On limit violation, dials will block.
-                                          Zero means no limit.
-      --s3-request-timeout int            Timeout in milliseconds specifies a time limit for requests made by this Client.
+                                          0 means no limit.
+      --s3-request-timeout int            Timeout (in ms) specifies a time limit for requests made by this Client.
                                           The timeout includes connection time, any redirects, and reading the response body.
-                                          Zero means no limit. (default 600000)
+                                          0 means no limit. (default 600000)
 
 GCP Storage Flags:
-For GCP storage bucket name is mandatory, and is set with --gcp-bucket-name flag.
-So --directory path will only contain folder name.
-Flag --gcp-endpoint-override is mandatory, as each storage account has different service address.
+For GCP storage, the bucket name must be set with --gcp-bucket-name flag.
+--directory path will only contain the folder name.
+The flag --gcp-endpoint-override is also mandatory, as each storage account has different service address.
 Any GCP parameter can be retrieved from Secret Agent.
       --gcp-key-path string                  Path to file containing service account JSON key.
       --gcp-bucket-name string               Name of the Google cloud storage bucket.
       --gcp-endpoint-override string         An alternate url endpoint to send GCP API calls to.
-      --gcp-retry-read-backoff int           The initial delay in milliseconds between retry attempts. In case of connection errors
+      --gcp-retry-read-backoff int           The initial delay (in ms) between retry attempts. In case of connection errors
                                              tool will retry reading the object from the last known position. (default 1000)
       --gcp-retry-read-multiplier float      Multiplier is used to increase the delay between subsequent retry attempts.
                                              Used in combination with initial delay. (default 2)
       --gcp-retry-read-max-attempts uint     The maximum number of retry attempts that will be made. If set to 0, no retries will be performed. (default 3)
       --gcp-retry-max-attempts int           Max retries specifies the maximum number of attempts a failed operation will be retried
                                              before producing an error. (default 10)
-      --gcp-retry-max-backoff int            Max backoff is the maximum value in milliseconds of the retry period. (default 90000)
-      --gcp-retry-init-backoff int           Initial backoff is the initial value in milliseconds of the retry period. (default 60000)
+      --gcp-retry-max-backoff int            Max backoff is the maximum value (in ms) of the retry period. (default 90000)
+      --gcp-retry-init-backoff int           Initial backoff is the initial value (in ms) of the retry period. (default 60000)
       --gcp-retry-backoff-multiplier float   Multiplier is the factor by which the retry period increases.
                                              It should be greater than 1. (default 2)
       --gcp-max-conns-per-host int           MaxConnsPerHost optionally limits the total number of connections per host,
                                              including connections in the dialing, active, and idle states. On limit violation, dials will block.
-                                             Zero means no limit.
-      --gcp-request-timeout int              Timeout in milliseconds specifies a time limit for requests made by this Client.
+                                             0 means no limit.
+      --gcp-request-timeout int              Timeout (in ms) specifies a time limit for requests made by this Client.
                                              The timeout includes connection time, any redirects, and reading the response body.
-                                             Zero means no limit. (default 600000)
+                                             0 means no limit. (default 600000)
 
 Azure Storage Flags:
-For Azure storage container name is mandatory, and is set with --azure-storage-container-name flag.
-So --directory path will only contain folder name.
-Flag --azure-endpoint is optional, and is used for tests with Azurit or any other Azure emulator.
-For authentication you can use --azure-account-name and --azure-account-key, or 
---azure-tenant-id, --azure-client-id and azure-client-secret.
+For Azure storage, the container name must be set with --azure-storage-container-name flag.
+--directory path will only contain folder name.
+The flag --azure-endpoint is optional, and is used for tests with Azurit or any other Azure emulator.
+For authentication, use --azure-account-name and --azure-account-key, or 
+--azure-tenant-id, --azure-client-id and --azure-client-secret.
 Any Azure parameter can be retrieved from Secret Agent.
       --azure-account-name string            Azure account name for account name, key authorization.
       --azure-account-key string             Azure account key for account name, key authorization.
@@ -287,28 +287,28 @@ Any Azure parameter can be retrieved from Secret Agent.
       --azure-container-name string          Azure container Name.
       --azure-access-tier string             If is set, tool will try to rehydrate archived files to the specified tier.
                                              Tiers are: Archive, Cold, Cool, Hot, P10, P15, P20, P30, P4, P40, P50, P6, P60, P70, P80, Premium.
-      --azure-rehydrate-poll-duration int    How often (in milliseconds) a backup client checks object status when restoring an archived object. (default 60000)
-      --azure-retry-read-backoff int         The initial delay in milliseconds between retry attempts. In case of connection errors
+      --azure-rehydrate-poll-duration int    How often ((in ms)) a backup client checks object status when restoring an archived object. (default 60000)
+      --azure-retry-read-backoff int         The initial delay (in ms) between retry attempts. In case of connection errors
                                              tool will retry reading the object from the last known position. (default 1000)
       --azure-retry-read-multiplier float    Multiplier is used to increase the delay between subsequent retry attempts.
                                              Used in combination with initial delay. (default 2)
       --azure-retry-read-max-attempts uint   The maximum number of retry attempts that will be made. If set to 0, no retries will be performed. (default 3)
       --azure-retry-max-attempts int         Max retries specifies the maximum number of attempts a failed operation will be retried
                                              before producing an error. (default 10)
-      --azure-retry-max-delay int            Max retry delay specifies the maximum delay in milliseconds allowed before retrying an operation.
+      --azure-retry-max-delay int            Max retry delay specifies the maximum delay (in ms) allowed before retrying an operation.
                                              Typically the value is greater than or equal to the value specified in azure-retry-delay. (default 90000)
-      --azure-retry-delay int                Retry delay specifies the initial amount of delay in milliseconds to use before retrying an operation.
+      --azure-retry-delay int                Retry delay specifies the initial amount of delay (in ms) to use before retrying an operation.
                                              The value is used only if the HTTP response does not contain a Retry-After header.
                                              The delay increases exponentially with each retry up to the maximum specified by azure-retry-max-delay. (default 60000)
-      --azure-retry-timeout int              Retry timeout in milliseconds indicates the maximum time allowed for any single try of an HTTP request.
+      --azure-retry-timeout int              Retry timeout (in ms) indicates the maximum time allowed for any single try of an HTTP request.
                                              This is disabled by default. Specify a value greater than zero to enable.
                                              NOTE: Setting this to a small value might cause premature HTTP request time-outs.
       --azure-max-conns-per-host int         MaxConnsPerHost optionally limits the total number of connections per host,
                                              including connections in the dialing, active, and idle states. On limit violation, dials will block.
-                                             Zero means no limit.
-      --azure-request-timeout int            Timeout in milliseconds specifies a time limit for requests made by this Client.
+                                             0 means no limit.
+      --azure-request-timeout int            Timeout (in ms) specifies a time limit for requests made by this Client.
                                              The timeout includes connection time, any redirects, and reading the response body.
-                                             Zero means no limit. (default 600000)
+                                             0 means no limit. (default 600000)
 ```
 
 ## Unsupported flags
@@ -351,13 +351,13 @@ Any Azure parameter can be retrieved from Secret Agent.
                              - Trace
                             The default is Fatal.
                             
---s3-connect-timeout        The AWS S3 client's connection timeout in milliseconds.
+--s3-connect-timeout        The AWS S3 client's connection timeout (in ms).
                             This is equivalent to cli-connect-timeout in the AWS CLI,
                             or connectTimeoutMS in the aws-sdk-cpp client configuration.                  
 ```
 
 
-## Configuration file schema with default values
+## Configuration file schema with example values
 ```yaml
 app:
   # Enable more detailed logging.
@@ -366,33 +366,48 @@ app:
   log-level: debug
   # Set output in JSON format for parsing by external tools.
   log-json: false
+
 cluster:
   seeds:
     - host: 127.0.0.1
       tls-name: ""
       port: 3000
   # The Aerospike user to use to connect to the Aerospike cluster.
-  user: some_login
+  user: "db_user"
   # The Aerospike password to use to connect to the Aerospike cluster.
-  password: some_password
-  # The authentication mode used by the Aerospike server: INTERNAL, EXTERNAL, PKI
-  auth: ""
-  # Initial host connection timeout duration. The timeout when opening a connection to the server host for the first time.
+  password: "db_password"
+  # The authentication mode used by the Aerospike server. INTERNAL
+  # uses standard user/pass. EXTERNAL uses external methods (like LDAP)
+  # which are configured on the server. EXTERNAL requires TLS. PKI allows
+  # TLS authentication and authorization based on a certificate. No
+  # username needs to be configured. (default INTERNAL)
+  auth: INTERNAL
+  # Initial host connection timeout duration. The timeout when opening a connection
+  # to the server host for the first time.
   client-timeout: 30000
-  # Idle timeout. Every time a connection is used,
-  # its idle deadline will be extended by this duration. When this deadline is reached,
+  # Idle timeout. Every time a connection is used, its idle
+  # deadline will be extended by this duration. When this deadline is reached,
   # the connection will be closed and discarded from the connection pool.
-  client-idle-timeout: 10000
+  # The value is limited to 24 hours (86400s).
+  # It's important to set this value to a few seconds less than the server's proto-fd-idle-ms
+  # (default 60000 milliseconds or 1 minute), so the client does not attempt to use a socket
+  # that has already been reaped by the server.
+  # Connection pools are now implemented by a LIFO stack. Connections at the tail of the
+  # stack will always be the least used. These connections are checked for IdleTimeout
+  # on every tend (usually 1 second).
+  client-idle-timeout: 60000
   # Specifies the login operation timeout for external authentication methods such as LDAP.
   client-login-timeout: 10000
-  # Determines if the client should use "services-alternate" instead of "services" in info request during cluster tending.
+  # Determines if the client should use "services-alternate" instead
+  # of "services" in info request during cluster tending.
   service-alternate: false
   tls:
-    # TLS name used to authenticate each TLS socket connection to a database.
+    # The server TLS context to use to authenticate the connection to Aerospike.
     name: ""
-    # Set the TLS protocol selection criteria. This format is the same as Apache's SSLProtocol documented
-    # at https://httpd.apache.org/docs/current/mod/mod_ssl.html#ssl protocol.
-    protocols: ""
+    # Set the TLS protocol selection criteria. This format is the same
+    # as Apache's SSLProtocol documented at
+    # https://httpd.apache.org/docs/current/mod/mod_ssl.html#sslprotocol.
+    protocols: "+TLSv1.2"
     # The CA used when connecting to Aerospike.
     ca-file: ""
     # A path containing CAs for connecting to Aerospike.
@@ -403,11 +418,12 @@ cluster:
     key-file: ""
     # The password used to decrypt the key file if encrypted.
     key-file-password: ""
+
 restore:
   # The directory that holds the backup files. Required, unless input-file is used.
-  directory: continue_test
+  directory: "backup_dir"
   # Used to restore to a different namespace. Example: source-ns,destination-ns
-  namespace: source-ns1
+  namespace: "source-ns1"
   # Only restore the given sets from the backup.
   # Default: restore all sets.
   set-list:
@@ -415,37 +431,37 @@ restore:
     - "set2"
   # Only restore the given bins in the backup.
   # If empty, include all bins.
-  bin-list: 
+  bin-list:
     - "bin1"
     - "bin2"
   # The number of restore threads. Accepts values from 1-1024 inclusive.
   # If not set, the default value is automatically calculated and appears as the number of CPUs on your machine.
   parallel: 1
-  # Will not restore any records if set to true.
+  # Don't restore any records.
   no-records: false
-  # Will not restore any indexes if set to true.
+  # Don't restore any secondary indexes.
   no-indexes: false
-  # Will not restore any UDFs if set to true.
+  # Don't restore any UDFs.
   no-udfs: false
-  # Limit total returned records per second (rps).
-  # Do not apply rps limit if records-per-second is zero.
+  # Limit total returned records per second (RPS). If 0, no limit is applied.
   records-per-second: 0
   # Maximum number of retries before aborting the current transaction.
   max-retries: 5
-  # Total transaction timeout in milliseconds. 0 - no timeout.
-  total-timeout: 0
-  # Socket timeout in milliseconds. If this value is 0, it's set to total-timeout.
+  # Total transaction timeout (in ms). If 0, no timeout is applied.
+  total-timeout: 10000
+  # Socket timeout (in ms). If 0, the value for total-timeout is used.
   # If both this and total-timeout are 0, there is no socket idle time limit.
   socket-timeout: 10000
   # The limits for read/write storage bandwidth in MiB/s.
+  # Default is 0 (no limit).
   bandwidth: 0
-  # Restore from a single backup file. Use - for stdin.
+  # Restore from a single backup file. Use '-' for stdin.
   # Required, unless directory or directory-list is used.
   input-file: ""
   # A comma-separated list of paths to directories that hold the backup files. Required,
   # unless -i or -d is used. The paths may not contain commas.
   # Example: 'asrestore directory-list /path/to/dir1/,/path/to/dir2'
-  directory-list: 
+  directory-list:
     - "dir1"
     - "dir2"
   # A common root path for all paths used in directory-list.
@@ -473,7 +489,7 @@ restore:
   # The true max number of async Aerospike calls would then be <max-async-batches> * <batch-size>.
   max-async-batches: 32
   # Warm Up fills the connection pool with connections for all nodes. This is necessary for batch restore.
-  # By default is calculated as (--max-async-batches + 1), as one connection per node is reserved
+  # By default is calculated as (max-async-batches + 1), as one connection per node is reserved
   # for tend operations and is not used for transactions.
   warm-up: 0
   # For records with expirable void-times, add N seconds of extra-ttl to the
@@ -498,17 +514,17 @@ restore:
   replace: false
   # Don't check the generation of records that already exist in the namespace.
   no-generation: false
-  # Set the timeout (ms) for asinfo commands sent from asrestore to the database.
+  # Set the timeout (in ms) for asinfo commands sent from asrestore to the database.
   # The info commands are to check version, get indexes, get udfs, count records, and check batch write support.
   info-timeout: 10000
-  # How many times to retry to send info commands before failing.
+  # Number of retries to send info commands before failing.
   info-max-retries: 3
   # Increases the delay between subsequent retry attempts.
   # The actual delay is calculated as: info-retry-interval * (info-retry-multiplier ^ attemptNumber)
   info-retry-multiplier: 1
-  # Set the initial interval for a retry in milliseconds when info commands are sent.
+  # Set the initial interval for a retry (in ms) when info commands are sent.
   info-retry-interval: 1000
-  # Set the initial interval for a retry in milliseconds when data is sent to the Aerospike database
+  # Set the initial interval for a retry (in ms) when data is sent to the Aerospike database
   # during a restore. This retry sequence is triggered by the following non-critical errors:
   # AEROSPIKE_NO_AVAILABLE_CONNECTIONS_TO_NODE,
   # AEROSPIKE_TIMEOUT,
@@ -525,168 +541,178 @@ restore:
   retry-multiplier: 1
   # Set the maximum number of retry attempts for the errors listed under retry-base-interval.
   # The default is 0, indicating no retries will be performed
-  retry-max-attempts: 1
+  retry-max-attempts: 0
   # Validate backup files without restoring.
   validate: false
   # Defines when to restore metadata (secondary indexes and UDFs).
   # If set to true, metadata from separate file will be restored after all records have been processed.
   apply-metadata-last: false
-  # Buffer size in MiB for stdin and stdout operations. Is used for pipelining. (default 4)
+  # Buffer size in MiB for stdin and stdout operations. Used for pipelining.
   std-buffer-size: 4
+
 compression:
   # Enables decompressing of backup files using the specified compression algorithm.
   # This must match the compression mode used when backing up the data.
-  # Supported compression algorithms are: zstd, none
-  # Set the zstd compression level via the compression-level option.
+  # Supported compression algorithms are: ZSTD, NONE
+  # Set the ZSTD compression level via the compression-level option.
   mode: NONE
-  # zstd compression level.
+  # ZSTD compression level.
   level: 3
+
 encryption:
   # Enables decryption of backup files using the specified encryption algorithm.
   # This must match the encryption mode used when backing up the data.
-  # Supported encryption algorithms are: none, aes128, aes256.
-  # A private key must be given, either via the encryption-key-file option or
+  # Supported encryption algorithms are: NONE, AES128, AES256.
+  # A private key must be given, either with the encryption-key-file option or
   # the encryption-key-env option or the encryption-key-secret.
-  mode: none
-  # Grabs the encryption key from the given file, which must be in PEM format.
+  mode: NONE
+  # Gets the encryption key from the given file, which must be in PEM format.
   key-file: ""
-  # Grabs the encryption key from the given environment variable, which must be base-64 encoded.
+  # Gets the encryption key from the given environment variable, which must be Base64 encoded.
   key-env: ""
-  # Grabs the encryption key from secret-agent.
+  # Gets the encryption key from secret-agent.
   key-secret: ""
+
 secret-agent:
-  # Secret Agent connection type, supported types: tcp, unix.
-  connection-type: tcp
+  # Secret Agent connection type. Supported types: TCP, UNIX.
+  connection-type: TCP
   # Secret Agent host for TCP connection or socket file path for UDS connection.
   address: ""
   # Secret Agent port (only for TCP connection).
   port: 0
-  # Secret Agent connection and reading timeout in milliseconds.
+  # Secret Agent connection and reading timeout.
   timeout: 0
   # Path to ca file for encrypted connections.
   ca-file: ""
   # Whether Secret Agent responses are Base64 encoded.
   is-base64: false
+
 aws:
   s3:
-      # Existing S3 bucket name
-      bucket-name: ""
-      # The S3 region that the bucket(s) exist in.
-      region: ""
-      # The S3 profile to use for credentials.
-      profile: ""
-      # An alternate url endpoint to send S3 API calls to.
-      endpoint-override: ""
-      # S3 access key id. If not set, profile auth info will be used.
-      access-key-id: ""
-      # S3 secret access key. If not set, profile auth info will be used.
-      secret-access-key: ""
-      # If is set, tool will try to restore archived files to the specified tier.
-      # Tiers are: Standard, Bulk, Expedited.
-      access-tier: ""
-      # How often (in milliseconds) a backup client checks object status when restoring an archived object.
-      restore-poll-duration: 1000
-      # Maximum number of attempts that should be made in case of an error.
-      retry-max-attempts: 100
-      # Max backoff duration in milliseconds between retried attempts.
-      retry-max-backoff: 90
-      # Provides the backoff in milliseconds strategy the retryer will use to determine the delay between retry attempts.
-      retry-backoff: 60
-      # The initial delay in milliseconds between retry attempts. 
-      # In case of connection errors tool will retry reading the object from the last known position.
-      retry-read-backoff: 1
-      # Multiplier is used to increase the delay between subsequent retry attempts.
-      # Used in combination with initial delay.
-      retry-read-multiplier: 2.0
-      # The maximum number of retry attempts that will be made. If set to 0, no retries will be performed.
-      retry-read-max-attempts: 3
-      # MaxConnsPerHost optionally limits the total number of connections per host, 
-      # including connections in the dialing, active, and idle states. On limit violation, dials will block.
-      # Zero means no limit.
-      max-conns-per-host: 0
-      # Timeout specifies a time limit for requests made by this Client.
-      # The timeout includes connection time, any redirects, and reading the response body.
-      # Zero means no limit.
-      request-timeout: 600
+    # Existing S3 bucket name
+    bucket-name: ""
+    # The S3 region that the bucket(s) exist in.
+    region: ""
+    # The S3 profile to use for credentials.
+    profile: ""
+    # An alternate URL endpoint to send S3 API calls to.
+    endpoint-override: ""
+    # S3 access key ID. If not set, profile auth info will be used.
+    access-key-id: ""
+    # S3 secret access key. If not set, profile auth info will be used.
+    secret-access-key: ""
+    # If is set, tool will try to restore archived files to the specified tier.
+    # Tiers are: Standard, Bulk, Expedited.
+    access-tier: ""
+    # How often ((in ms)) a backup client checks object status when restoring an archived object.
+    restore-poll-duration: 60000
+    # Maximum number of attempts that should be made in case of an error.
+    retry-max-attempts: 10
+    # Max backoff duration (in ms) between retried attempts.
+    retry-max-backoff: 90
+    # Provides the backoff, (in ms), that the retryer will use to determine the delay between retry attempts.
+    retry-backoff: 60
+    # The initial delay (in ms) between retry attempts. 
+    # In case of connection errors tool will retry reading the object from the last known position.
+    retry-read-backoff: 1
+    # Multiplier is used to increase the delay between subsequent retry attempts.
+    # Used in combination with initial delay.
+    retry-read-multiplier: 2.0
+    # The maximum number of retry attempts that will be made. If set to 0, no retries will be performed.
+    retry-read-max-attempts: 3
+    # MaxConnsPerHost optionally limits the total number of connections per host,
+    # including connections in the dialing, active, and idle states. On limit violation, dials will block.
+    # 0 means no limit.
+    max-conns-per-host: 0
+    # Timeout (in ms) specifies a time limit for requests made by this Client.
+    # The timeout includes connection time, any redirects, and reading the response body.
+    # 0 means no limit.
+    request-timeout: 600
+
 gcp:
   storage:
-      # Path to file containing service account JSON key.
-      key-file: ""
-      # Name of the Google cloud storage bucket.
-      bucket-name: ""
-      # An alternate url endpoint to send GCP API calls to.
-      endpoint-override: ""
-      # Max retries specifies the maximum number of attempts a failed operation will be retried before producing an error.
-      retry-max-attempts: 100
-      # Max backoff is the maximum value in milliseconds of the retry period.
-      retry-max-backoff: 90
-      # Initial backoff is the initial value in milliseconds of the retry period.
-      retry-init-backoff: 60
-      # Multiplier is the factor by which the retry period increases. It should be greater than 1.
-      retry-backoff-multiplier: 2
-      # The initial delay in milliseconds between retry attempts. 
-      # In case of connection errors tool will retry reading the object from the last known position.
-      retry-read-backoff: 1
-      # Multiplier is used to increase the delay between subsequent retry attempts.
-      # Used in combination with initial delay.
-      retry-read-multiplier: 2.0
-      # The maximum number of retry attempts that will be made. If set to 0, no retries will be performed.
-      retry-read-max-attempts: 3
-      # MaxConnsPerHost optionally limits the total number of connections per host, 
-      # including connections in the dialing, active, and idle states. On limit violation, dials will block.
-      # Zero means no limit.
-      max-conns-per-host: 0
-      # Timeout specifies a time limit for requests made by this Client.
-      # The timeout includes connection time, any redirects, and reading the response body.
-      # Zero means no limit.
-      request-timeout: 600
+    # Path to file containing service account JSON key.
+    key-file: ""
+    # Name of the Google cloud storage bucket.
+    bucket-name: ""
+    # An alternate url endpoint to send GCP API calls to.
+    endpoint-override: ""
+    # Max retries specifies the maximum number of attempts a failed operation will be retried
+    # before producing an error.
+    retry-max-attempts: 10
+    # Max backoff is the maximum value (in ms) of the retry period.
+    retry-max-backoff: 90
+    # Initial backoff is the initial value (in ms) of the retry period.
+    retry-init-backoff: 60
+    # Multiplier is the factor by which the retry period increases.
+    # It should be greater than 1.
+    retry-backoff-multiplier: 2
+    # The initial delay (in ms) between retry attempts. 
+    # In case of connection errors tool will retry reading the object from the last known position.
+    retry-read-backoff: 1
+    # Multiplier is used to increase the delay between subsequent retry attempts.
+    # Used in combination with initial delay.
+    retry-read-multiplier: 2.0
+    # The maximum number of retry attempts that will be made. If set to 0, no retries will be performed.
+    retry-read-max-attempts: 3
+    # MaxConnsPerHost optionally limits the total number of connections per host,
+    # including connections in the dialing, active, and idle states. On limit violation, dials will block.
+    # 0 means no limit.
+    max-conns-per-host: 0
+    # Timeout (in ms) specifies a time limit for requests made by this Client.
+    # The timeout includes connection time, any redirects, and reading the response body.
+    # 0 means no limit.
+    request-timeout: 600
+
 azure:
   blob:
-      # Azure account name for account name, key authorization.
-      account-name: ""
-      # Azure account key for account name, key authorization.
-      account-key: ""
-      # Azure tenant ID for Azure Active Directory authorization.
-      tenant-id: ""
-      # Azure client ID for Azure Active Directory authorization.
-      client-id: ""
-      # Azure client secret for Azure Active Directory authorization.
-      client-secret: ""
-      # Azure endpoint.
-      endpoint-override: ""
-      # Azure container Name.
-      container-name: ""
-      # Tiers are: Archive, Cold, Cool, Hot, P10, P15, P20, P30, P4, P40, P50, P6, P60, P70, P80, Premium.
-      access-tier: ""
-      # How often (in milliseconds) a backup client checks object status when restoring an archived object.
-      rehydrate-poll-duration: 100
-      # Max retries specifies the maximum number of attempts a failed operation will be retried before producing an error.
-      retry-max-attempts: 100
-      # Retry timeout in milliseconds indicates the maximum time allowed for any single try of an HTTP request.
-      # This is disabled by default. Specify a value greater than zero to enable.
-      # NOTE: Setting this to a small value might cause premature HTTP request time-outs.
-      retry-timeout: 10
-      # Retry delay specifies the initial amount of delay in milliseconds to use before retrying an operation.
-      # The value is used only if the HTTP response does not contain a Retry-After header.
-      # The delay increases exponentially with each retry up to the maximum specified by azure-retry-max-delay.
-      retry-delay: 60
-      # Max retry delay specifies the maximum delay in milliseconds allowed before retrying an operation.
-      # Typically the value is greater than or equal to the value specified in azure-retry-delay.
-      retry-max-delay: 90
-      # The initial delay in milliseconds between retry attempts. 
-      # In case of connection errors tool will retry reading the object from the last known position.
-      retry-read-backoff: 1
-      # Multiplier is used to increase the delay between subsequent retry attempts.
-      # Used in combination with initial delay.
-      retry-read-multiplier: 2.0
-      # The maximum number of retry attempts that will be made. If set to 0, no retries will be performed.
-      retry-read-max-attempts: 3
-      # MaxConnsPerHost optionally limits the total number of connections per host, 
-      # including connections in the dialing, active, and idle states. On limit violation, dials will block.
-      # Zero means no limit.
-      max-conns-per-host: 0
-      # Timeout specifies a time limit for requests made by this Client.
-      # The timeout includes connection time, any redirects, and reading the response body.
-      # Zero means no limit.
-      request-timeout: 600
+    # Azure account name for account name, key authorization.
+    account-name: ""
+    # Azure account key for account name, key authorization.
+    account-key: ""
+    # Azure tenant ID for Azure Active Directory authorization.
+    tenant-id: ""
+    # Azure client ID for Azure Active Directory authorization.
+    client-id: ""
+    # Azure client secret for Azure Active Directory authorization.
+    client-secret: ""
+    # Azure endpoint.
+    endpoint-override: ""
+    # Azure container Name.
+    container-name: ""
+    # If is set, tool will try to rehydrate archived files to the specified tier.
+    # Tiers are: Archive, Cold, Cool, Hot, P10, P15, P20, P30, P4, P40, P50, P6, P60, P70, P80, Premium.
+    access-tier: ""
+    # How often ((in ms)) a backup client checks object status when restoring an archived object.
+    rehydrate-poll-duration: 60000
+    # Max retries specifies the maximum number of attempts a failed operation will be retried
+    # before producing an error.
+    retry-max-attempts: 10
+    # Retry timeout (in ms) indicates the maximum time allowed for any single try of an HTTP request.
+    # This is disabled by default. Specify a value greater than zero to enable.
+    # NOTE: Setting this to a small value might cause premature HTTP request time-outs.
+    retry-timeout: 0
+    # Retry delay specifies the initial amount of delay (in ms) to use before retrying an operation.
+    # The value is used only if the HTTP response does not contain a Retry-After header.
+    # The delay increases exponentially with each retry up to the maximum specified by azure-retry-max-delay.
+    retry-delay: 60
+    # Max retry delay specifies the maximum delay (in ms) allowed before retrying an operation.
+    # Typically the value is greater than or equal to the value specified in azure-retry-delay.
+    retry-max-delay: 90
+    # The initial delay (in ms) between retry attempts. 
+    # In case of connection errors tool will retry reading the object from the last known position.
+    retry-read-backoff: 1
+    # Multiplier is used to increase the delay between subsequent retry attempts.
+    # Used in combination with initial delay.
+    retry-read-multiplier: 2.0
+    # The maximum number of retry attempts that will be made. If set to 0, no retries will be performed.
+    retry-read-max-attempts: 3
+    # MaxConnsPerHost optionally limits the total number of connections per host,
+    # including connections in the dialing, active, and idle states. On limit violation, dials will block.
+    # 0 means no limit.
+    max-conns-per-host: 0
+    # Timeout (in ms) specifies a time limit for requests made by this Client.
+    # The timeout includes connection time, any redirects, and reading the response body.
+    # 0 means no limit.
+    request-timeout: 600
 ```

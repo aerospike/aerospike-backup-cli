@@ -113,7 +113,7 @@ func (f *Restore) NewFlagSet() *pflag.FlagSet {
 
 	flagSet.Int64Var(&f.RetryBaseInterval, "retry-base-interval",
 		models.DefaultRestoreRetryBaseInterval,
-		"Set the initial interval for a retry in milliseconds when data is sent to the Aerospike database\n"+
+		"Set the initial interval for a retry (in ms) when data is sent to the Aerospike database\n"+
 			"during a restore. This retry sequence is triggered by the following non-critical errors:\n"+
 			"AEROSPIKE_NO_AVAILABLE_CONNECTIONS_TO_NODE,\n"+
 			"AEROSPIKE_TIMEOUT,\n"+

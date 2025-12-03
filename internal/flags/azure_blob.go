@@ -97,11 +97,11 @@ func (f *AzureBlob) NewFlagSet() *pflag.FlagSet {
 	case OperationRestore:
 		flagSet.Int64Var(&f.RestorePollDuration, "azure-rehydrate-poll-duration",
 			models.DefaultAzureRestorePollDuration,
-			"How often (in milliseconds) a backup client checks object status when restoring an archived object.")
+			"How often ((in ms)) a backup client checks object status when restoring an archived object.")
 
 		flagSet.IntVar(&f.RetryReadBackoff, "azure-retry-read-backoff",
 			models.DefaultCloudRetryReadBackoff,
-			"The initial delay in milliseconds between retry attempts. In case of connection errors\n"+
+			"The initial delay (in ms) between retry attempts. In case of connection errors\n"+
 				"tool will retry reading the object from the last known position.")
 
 		flagSet.Float64Var(&f.RetryReadMultiplier, "azure-retry-read-multiplier",
@@ -121,18 +121,18 @@ func (f *AzureBlob) NewFlagSet() *pflag.FlagSet {
 
 	flagSet.IntVar(&f.RetryMaxDelay, "azure-retry-max-delay",
 		models.DefaultAzureRetryMaxDelay,
-		"Max retry delay specifies the maximum delay in milliseconds allowed before retrying an operation.\n"+
+		"Max retry delay specifies the maximum delay (in ms) allowed before retrying an operation.\n"+
 			"Typically the value is greater than or equal to the value specified in azure-retry-delay.")
 
 	flagSet.IntVar(&f.RetryDelay, "azure-retry-delay",
 		models.DefaultAzureRetryDelay,
-		"Retry delay specifies the initial amount of delay in milliseconds to use before retrying an operation.\n"+
+		"Retry delay specifies the initial amount of delay (in ms) to use before retrying an operation.\n"+
 			"The value is used only if the HTTP response does not contain a Retry-After header.\n"+
 			"The delay increases exponentially with each retry up to the maximum specified by azure-retry-max-delay.")
 
 	flagSet.IntVar(&f.RetryTimeout, "azure-retry-timeout",
 		models.DefaultAzureRetryTimeout,
-		"Retry timeout in milliseconds indicates the maximum time allowed for any single try of an HTTP request.\n"+
+		"Retry timeout (in ms) indicates the maximum time allowed for any single try of an HTTP request.\n"+
 			"This is disabled by default. Specify a value greater than zero to enable.\n"+
 			"NOTE: Setting this to a small value might cause premature HTTP request time-outs.")
 
@@ -140,13 +140,13 @@ func (f *AzureBlob) NewFlagSet() *pflag.FlagSet {
 		models.DefaultCloudMaxConnsPerHost,
 		"MaxConnsPerHost optionally limits the total number of connections per host,\n"+
 			"including connections in the dialing, active, and idle states. On limit violation, dials will block.\n"+
-			"Zero means no limit.")
+			"0 means no limit.")
 
 	flagSet.IntVar(&f.RequestTimeout, "azure-request-timeout",
 		models.DefaultCloudRequestTimeout,
-		"Timeout in milliseconds specifies a time limit for requests made by this Client.\n"+
+		"Timeout (in ms) specifies a time limit for requests made by this Client.\n"+
 			"The timeout includes connection time, any redirects, and reading the response body.\n"+
-			"Zero means no limit.")
+			"0 means no limit.")
 
 	return flagSet
 }

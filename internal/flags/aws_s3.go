@@ -47,7 +47,7 @@ func (f *AwsS3) NewFlagSet() *pflag.FlagSet {
 
 	flagSet.StringVar(&f.AccessKeyID, "s3-access-key-id",
 		models.DefaultS3AccessKeyID,
-		"S3 access key id. If not set, profile auth info will be used.")
+		"S3 access key ID. If not set, profile auth info will be used.")
 
 	flagSet.StringVar(&f.SecretAccessKey, "s3-secret-access-key",
 		models.DefaultS3SecretAccessKey,
@@ -55,7 +55,7 @@ func (f *AwsS3) NewFlagSet() *pflag.FlagSet {
 
 	flagSet.StringVar(&f.Endpoint, "s3-endpoint-override",
 		models.DefaultS3Endpoint,
-		"An alternate url endpoint to send S3 API calls to.")
+		"An alternate URL endpoint to send S3 API calls to.")
 
 	switch f.operation {
 	case OperationBackup:
@@ -96,12 +96,12 @@ func (f *AwsS3) NewFlagSet() *pflag.FlagSet {
 
 		flagSet.Int64Var(&f.RestorePollDuration, "s3-restore-poll-duration",
 			models.DefaultS3RestorePollDuration,
-			"How often (in milliseconds) a backup client checks object status when restoring an archived object.",
+			"How often ((in ms)) a backup client checks object status when restoring an archived object.",
 		)
 
 		flagSet.IntVar(&f.RetryReadBackoff, "s3-retry-read-backoff",
 			models.DefaultCloudRetryReadBackoff,
-			"The initial delay in milliseconds between retry attempts. In case of connection errors\n"+
+			"The initial delay (in ms) between retry attempts. In case of connection errors\n"+
 				"tool will retry reading the object from the last known position.")
 
 		flagSet.Float64Var(&f.RetryReadMultiplier, "s3-retry-read-multiplier",
@@ -120,23 +120,23 @@ func (f *AwsS3) NewFlagSet() *pflag.FlagSet {
 
 	flagSet.IntVar(&f.RetryMaxBackoff, "s3-retry-max-backoff",
 		models.DefaultS3RetryMaxBackoff,
-		"Max backoff duration in milliseconds between retried attempts.")
+		"Max backoff duration (in ms) between retried attempts.")
 
 	flagSet.IntVar(&f.RetryBackoff, "s3-retry-backoff",
 		models.DefaultS3RetryBackoff,
-		"Provides the backoff in milliseconds strategy the retryer will use to determine the delay between retry attempts.")
+		"Provides the backoff, (in ms), that the retryer will use to determine the delay between retry attempts.")
 
 	flagSet.IntVar(&f.MaxConnsPerHost, "s3-max-conns-per-host",
 		models.DefaultCloudMaxConnsPerHost,
 		"MaxConnsPerHost optionally limits the total number of connections per host,\n"+
 			"including connections in the dialing, active, and idle states. On limit violation, dials will block.\n"+
-			"Zero means no limit.")
+			"0 means no limit.")
 
 	flagSet.IntVar(&f.RequestTimeout, "s3-request-timeout",
 		models.DefaultCloudRequestTimeout,
-		"Timeout in milliseconds specifies a time limit for requests made by this Client.\n"+
+		"Timeout (in ms) specifies a time limit for requests made by this Client.\n"+
 			"The timeout includes connection time, any redirects, and reading the response body.\n"+
-			"Zero means no limit.")
+			"0 means no limit.")
 
 	return flagSet
 }

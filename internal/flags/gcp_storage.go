@@ -59,7 +59,7 @@ func (f *GcpStorage) NewFlagSet() *pflag.FlagSet {
 	case OperationRestore:
 		flagSet.IntVar(&f.RetryReadBackoff, "gcp-retry-read-backoff",
 			models.DefaultCloudRetryReadBackoff,
-			"The initial delay in milliseconds between retry attempts. In case of connection errors\n"+
+			"The initial delay (in ms) between retry attempts. In case of connection errors\n"+
 				"tool will retry reading the object from the last known position.")
 
 		flagSet.Float64Var(&f.RetryReadMultiplier, "gcp-retry-read-multiplier",
@@ -79,11 +79,11 @@ func (f *GcpStorage) NewFlagSet() *pflag.FlagSet {
 
 	flagSet.IntVar(&f.RetryBackoffMax, "gcp-retry-max-backoff",
 		models.DefaultGcpRetryBackoffMax,
-		"Max backoff is the maximum value in milliseconds of the retry period.")
+		"Max backoff is the maximum value (in ms) of the retry period.")
 
 	flagSet.IntVar(&f.RetryBackoffInit, "gcp-retry-init-backoff",
 		models.DefaultGcpRetryBackoffInit,
-		"Initial backoff is the initial value in milliseconds of the retry period.")
+		"Initial backoff is the initial value (in ms) of the retry period.")
 
 	flagSet.Float64Var(&f.RetryBackoffMultiplier, "gcp-retry-backoff-multiplier",
 		models.DefaultGcpRetryBackoffMultiplier,
@@ -94,13 +94,13 @@ func (f *GcpStorage) NewFlagSet() *pflag.FlagSet {
 		models.DefaultCloudMaxConnsPerHost,
 		"MaxConnsPerHost optionally limits the total number of connections per host,\n"+
 			"including connections in the dialing, active, and idle states. On limit violation, dials will block.\n"+
-			"Zero means no limit.")
+			"0 means no limit.")
 
 	flagSet.IntVar(&f.RequestTimeout, "gcp-request-timeout",
 		models.DefaultCloudRequestTimeout,
-		"Timeout in milliseconds specifies a time limit for requests made by this Client.\n"+
+		"Timeout (in ms) specifies a time limit for requests made by this Client.\n"+
 			"The timeout includes connection time, any redirects, and reading the response body.\n"+
-			"Zero means no limit.")
+			"0 means no limit.")
 
 	return flagSet
 }

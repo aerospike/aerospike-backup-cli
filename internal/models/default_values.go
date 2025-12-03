@@ -111,7 +111,7 @@ const (
 
 // Secret Agent.
 const (
-	DefaultSecretAgentConnectionType     = "tcp"
+	DefaultSecretAgentConnectionType     = "TCP"
 	DefaultSecretAgentAddress            = ""
 	DefaultSecretAgentPort               = 0
 	DefaultSecretAgentTimeoutMillisecond = 0

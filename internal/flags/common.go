@@ -143,8 +143,7 @@ func (f *Common) NewFlagSet() *pflag.FlagSet {
 
 	flagSet.IntVarP(&f.fields.RecordsPerSecond, "records-per-second", "L",
 		models.DefaultCommonRecordsPerSecond,
-		"Limit total returned records per second (rps).\n"+
-			"Do not apply rps limit if records-per-second is zero.")
+		"Limit total returned records per second (RPS). If 0, no limit is applied.")
 
 	flagSet.IntVar(&f.fields.MaxRetries, "max-retries",
 		models.DefaultCommonMaxRetries,
@@ -152,11 +151,11 @@ func (f *Common) NewFlagSet() *pflag.FlagSet {
 
 	flagSet.Int64Var(&f.fields.TotalTimeout, "total-timeout",
 		defaultTotalTimeout,
-		"Total transaction timeout in milliseconds. 0 - no timeout.")
+		"Total transaction timeout (in ms). If 0, no timeout is applied. ")
 
 	flagSet.Int64Var(&f.fields.SocketTimeout, "socket-timeout",
 		models.DefaultCommonSocketTimeout,
-		"Socket timeout in milliseconds. If this value is 0, it's set to --total-timeout.\n"+
+		"Socket timeout (in ms). If 0, the value for --total-timeout is used.\n"+
 			"If both this and --total-timeout are 0, there is no socket idle time limit.")
 
 	flagSet.Int64Var(&f.fields.Bandwidth, "nice",
@@ -171,12 +170,12 @@ func (f *Common) NewFlagSet() *pflag.FlagSet {
 
 	flagSet.Int64VarP(&f.fields.InfoTimeout, "info-timeout", "T",
 		models.DefaultCommonInfoTimeout,
-		"Set the timeout (ms) for asinfo commands sent from asrestore to the database.\n"+
+		"Set the timeout (in ms) for asinfo commands sent from asrestore to the database.\n"+
 			"The info commands are to check version, get indexes, get udfs, count records, and check batch write support.")
 
 	flagSet.Int64Var(&f.fields.InfoRetryIntervalMilliseconds, "info-retry-interval",
 		models.DefaultCommonInfoRetryInterval,
-		"Set the initial interval for a retry in milliseconds when info commands are sent.")
+		"Set the initial interval for a retry (in ms) when info commands are sent.")
 
 	flagSet.Float64Var(&f.fields.InfoRetriesMultiplier, "info-retry-multiplier",
 		models.DefaultCommonInfoRetriesMultiplier,
@@ -185,11 +184,11 @@ func (f *Common) NewFlagSet() *pflag.FlagSet {
 
 	flagSet.UintVar(&f.fields.InfoMaxRetries, "info-max-retries",
 		models.DefaultCommonInfoMaxRetries,
-		"How many times to retry to send info commands before failing. ")
+		"Number of retries to send info commands before failing.")
 
 	flagSet.IntVar(&f.fields.StdBufferSize, "std-buffer",
 		models.DefaultCommonStdBufferSize,
-		"Buffer size in MiB for stdin and stdout operations. Is used for pipelining.")
+		"Buffer size in MiB for stdin and stdout operations. Used for pipelining.")
 
 	return flagSet
 }

@@ -8,17 +8,15 @@ After you define the scope, `asbackup` scans the database and fetches the record
 
 As `asbackup` identifies records for backup, it serializes the data into a predefined format and writes it to a backup file or directory. Serialization converts the in-memory representation of records into a stable format that can be safely stored on disk.
 
-`asbackup` supports backing up locally, to an Amazon S3 bucket, to an Azure container or GCP bucket.
+`asbackup` supports backing up locally or to an Amazon S3 bucket, an Azure container, or a GCP bucket.
 
 ## `asbackup` limitations
 `asbackup` has the following limitations:
 
 - `asbackup` requires read privileges or higher. See [Configuring Access Control in EE and FE](https://aerospike.com/docs/database/manage/security/rbac/#privileges) for more information.
-- Direct backups are supported to S3, Azure Blob, GCP Storage, also you can use other services for storing the backup files after creating them locally.
-- When running in directory mode, each parallel worker creates its own backup file.
-- You can control the size of backup files created by `asbackup` with the `--file-limit` option. After a backup file reaches the predefined size, `asbackup` creates another file. `asbackup` does not have an upper limit for the size of a backup file.
+- Direct backups are supported to S3, Azure, GCP, or you can use other services for storing the backup files after creating them locally.
 - ZSTD is the only compression algorithm available with `asbackup`. 
-- ZSTD at compression levels 1-2 may produce uncompressed (raw) blocks when the algorithm determines that compression would not reduce the data size, as per [RFC 8878](https://datatracker.ietf.org/doc/html/rfc8878) specification which recommends sending uncompressed blocks when compressed output would be larger than the original.
+- At compression levels 1–2, ZSTD may produce uncompressed (raw) blocks when the algorithm determines that compression would not reduce the data size, as per RFC 8878, which recommends sending uncompressed blocks when the compressed output would be larger than the original.
 
 ## Default backup content
 `asbackup` backs up the following data by default:
@@ -40,7 +38,7 @@ As `asbackup` identifies records for backup, it serializes the data into a prede
 make build
 ```
 ### Release
-Version artifacts are automatically built and uploaded under releases in GitHub.
+Release artifacts are automatically built and uploaded under GitHub Releases.
 
 ## Supported flags
 ```bash
@@ -113,23 +111,22 @@ Backup Flags:
                                       of partitions will be evenly divided by this number to be processed in parallel. Otherwise, each
                                       filter cannot be parallelized individually, so you may only achieve as much parallelism as there are
                                       partition filters. Accepts values from 1-1024 inclusive. (default 1)
-  -L, --records-per-second int        Limit total returned records per second (rps).
-                                      Do not apply rps limit if records-per-second is zero.
+  -L, --records-per-second int        Limit total returned records per second (RPS). If 0, no limit is applied.
       --max-retries int               Maximum number of retries before aborting the current transaction. (default 5)
-      --total-timeout int             Total transaction timeout in milliseconds. 0 - no timeout.
-      --socket-timeout int            Socket timeout in milliseconds. If this value is 0, it's set to --total-timeout.
+      --total-timeout int             Total transaction timeout (in ms). If 0, no timeout is applied. 
+      --socket-timeout int            Socket timeout (in ms). If 0, the value for --total-timeout is used.
                                       If both this and --total-timeout are 0, there is no socket idle time limit. (default 10000)
       --nice int                      The limits for read/write storage bandwidth in MiB/s.
                                       Default is 0 (no limit). (DEPRECATED: use --bandwidth instead)
   -N, --bandwidth int                 The limits for read/write storage bandwidth in MiB/s.
                                       Default is 0 (no limit).
-  -T, --info-timeout int              Set the timeout (ms) for asinfo commands sent from asrestore to the database.
+  -T, --info-timeout int              Set the timeout (in ms) for asinfo commands sent from asrestore to the database.
                                       The info commands are to check version, get indexes, get udfs, count records, and check batch write support. (default 10000)
-      --info-retry-interval int       Set the initial interval for a retry in milliseconds when info commands are sent. (default 1000)
+      --info-retry-interval int       Set the initial interval for a retry (in ms) when info commands are sent. (default 1000)
       --info-retry-multiplier float   Increases the delay between subsequent retry attempts.
                                       The actual delay is calculated as: info-retry-interval * (info-retry-multiplier ^ attemptNumber) (default 1)
-      --info-max-retries uint         How many times to retry to send info commands before failing.  (default 3)
-      --std-buffer int                Buffer size in MiB for stdin and stdout operations. Is used for pipelining. (default 4)
+      --info-max-retries uint         Number of retries to send info commands before failing. (default 3)
+      --std-buffer int                Buffer size in MiB for stdin and stdout operations. Used for pipelining. (default 4)
   -r, --remove-files                Remove an existing backup file (-o) or entire directory (-d) and replace with the new backup.
       --remove-artifacts            Remove existing backup file (-o) or files (-d) without performing a backup.
   -o, --output-file string          Backup to a single backup file. Use '-' for stdout. Required, unless -d or -e is used.
@@ -140,8 +137,8 @@ Backup Flags:
                                     value (in MiB). Only used when backing up to a directory.
                                      (default 250)
   -x, --no-bins                     Do not include bin data in the backup. Use this flag for data sampling or troubleshooting.
-                                    On restore all records, that don't contain bin data will be skipped.
-      --no-ttl-only                 Only include records that have no ttl set (persistent records).
+                                    On restore, all records not containing bin data will be skipped.
+      --no-ttl-only                 Only include records that have no TTL set (persistent records).
   -D, --after-digest string         Backup records after record digest in record's partition plus all succeeding
                                     partitions. Used to resume backup with last record received from previous
                                     incomplete backup.
@@ -159,22 +156,23 @@ Backup Flags:
   -b, --modified-before string      <YYYY-MM-DD_HH:MM:SS>
                                     Only include records that last changed before the given
                                     date and time. May combined with --modified-after to specify a range.
-  -f, --filter-exp string           Base64 encoded expression. Use the encoded filter expression in each scan call,
+  -f, --filter-exp string           Base64 encoded filter expression. Use the encoded filter expression in each scan call,
                                     which can be used to do a partial backup. The expression to be used can be Base64 
                                     encoded through any client. This argument is mutually exclusive with multi-set backup.
                                     
   -l, --node-list string            <addr 1>:<port 1>[,<addr 2>:<port 2>[,...]]
                                     <node name 1>[,<node name 2>[,...]]
-                                    To get the correct node address, use 'service-tls-std' if a database configured to use TLS
-                                    and 'service-clear-std' info command if no TLS is configured.
+                                    To get the correct node address, use the info command 'service-tls-std' if the database is configured to use TLS
+                                    or 'service-clear-std' if no TLS is configured.
                                     To get the node name, use the 'node:' info command.
                                     Back up the given cluster nodes only.
-                                    The job is parallelized by number of nodes unless --parallel is set less than nodes number.
+                                    The job is parallelized by the number of nodes unless --parallel is lower than the number of nodes.
                                     This argument is mutually exclusive with --partition-list, --after-digest, --rack-list, --prefer-racks arguments.
-                                    Default: backup all nodes in the cluster
+                                    Default: back up all nodes in the cluster
   -X, --partition-list string       List of partitions <filter[,<filter>[...]]> to back up. Partition filters can be ranges,
                                     individual partitions, or records after a specific digest within a single partition.
-                                    To use this argument --parallel value must be set to the number of elements in partition list or greater
+                                    To use this argument, --parallel must be set equal to or greater
+                                    than the number of elements in the partition list
                                     This argument is mutually exclusive with after-digest.
                                     Filter: <begin partition>[-<partition count>]|<digest>
                                     begin partition: 0-4095
@@ -193,7 +191,7 @@ Backup Flags:
   -M, --max-records int             The number of records approximately to back up. 0 - all records
       --sleep-between-retries int   The amount of milliseconds to sleep between retries after an error.
                                     This field is ignored when --max-retries is zero. (default 5)
-  -C, --compact                     If true, do not apply base-64 encoding to BLOBs and instead write raw binary data,
+  -C, --compact                     If true, do not apply Base64 encoding to BLOBs and instead write raw binary data,
                                     resulting in smaller backup files.
   -e, --estimate                    Estimate the backed-up record size from a random sample of 
                                     10,000 (default) records at 99.9999% confidence to estimate the full backup size.
@@ -213,26 +211,27 @@ Backup Flags:
 
 Compression Flags:
   -z, --compress string         Enables compressing of backup files using the specified compression algorithm.
-                                Supported compression algorithms are: zstd, none
-                                Set the zstd compression level via the --compression-level option. (default "NONE")
-      --compression-level int   zstd compression level. (default 3)
+                                Supported compression algorithms are: ZSTD, NONE
+                                Set the ZSTD compression level via the --compression-level option. (default "NONE")
+      --compression-level int   ZSTD compression level. (default 3)
 
 Encryption Flags:
       --encrypt string                 Enables encryption of backup files using the specified encryption algorithm.
-                                       Supported encryption algorithms are: none, aes128, aes256.
-                                       A private key must be given, either via the --encryption-key-file option or
+                                       Supported encryption algorithms are: NONE, AES128, AES256.
+                                       A private key must be given, either with the --encryption-key-file option or
                                        the --encryption-key-env option or the --encryption-key-secret. (default "NONE")
-      --encryption-key-file string     Grabs the encryption key from the given file, which must be in PEM format.
-      --encryption-key-env string      Grabs the encryption key from the given environment variable, which must be base-64 encoded.
-      --encryption-key-secret string   Grabs the encryption key from secret-agent.
+      --encryption-key-file string     Gets the encryption key from the given file, which must be in PEM format.
+      --encryption-key-env string      Gets the encryption key from the given environment variable, which must be Base64 encoded.
+      --encryption-key-secret string   Gets the encryption key from secret-agent.
 
 Secret Agent Flags:
 Options pertaining to the Aerospike Secret Agent.
 See documentation here: https://aerospike.com/docs/tools/secret-agent.
-Both asbackup and asrestore support getting all the cloud config parameters from the Aerospike Secret Agent.
+Both asbackup and asrestore support getting all the cloud configuration parameters
+from the Aerospike Secret Agent.
 To use a secret as an option, use this format: 'secrets:<resource_name>:<secret_name>' 
 Example: asbackup --azure-account-name secret:resource1:azaccount
-      --sa-connection-type string   Secret Agent connection type, supported types: tcp, unix. (default "tcp")
+      --sa-connection-type string   Secret Agent connection type. Supported types: TCP, UNIX. (default "TCP")
       --sa-address string           Secret Agent host for TCP connection or socket file path for UDS connection.
       --sa-port int                 Secret Agent port (only for TCP connection).
       --sa-timeout int              Secret Agent connection and reading timeout.
@@ -243,16 +242,16 @@ Local Storage Flags:
       --local-buffer-size int   Buffer size in megabytes for local file writes. (default 5)
 
 AWS Storage Flags:
-For S3 storage bucket name is mandatory, and is set with --s3-bucket-name flag.
-So --directory path will only contain folder name.
---s3-endpoint-override is used in case you want to use minio, instead of AWS.
+For S3, the storage bucket name must be set with the --s3-bucket-name flag.
+--directory path will only contain the folder name.
+--s3-endpoint-override is used for MinIO storage instead of AWS.
 Any AWS parameter can be retrieved from Secret Agent.
       --s3-bucket-name string         Existing S3 bucket name
       --s3-region string              The S3 region that the bucket(s) exist in.
       --s3-profile string             The S3 profile to use for credentials.
-      --s3-access-key-id string       S3 access key id. If not set, profile auth info will be used.
+      --s3-access-key-id string       S3 access key ID. If not set, profile auth info will be used.
       --s3-secret-access-key string   S3 secret access key. If not set, profile auth info will be used.
-      --s3-endpoint-override string   An alternate url endpoint to send S3 API calls to.
+      --s3-endpoint-override string   An alternate URL endpoint to send S3 API calls to.
       --s3-storage-class string       Apply storage class to backup files. Storage classes are:
                                       STANDARD,
                                       REDUCED_REDUNDANCY,
@@ -272,19 +271,19 @@ Any AWS parameter can be retrieved from Secret Agent.
                                       Each concurrent upload will create a buffer of size s3-block-size.
       --s3-calculate-checksum         Calculate checksum for each uploaded object.
       --s3-retry-max-attempts int     Maximum number of attempts that should be made in case of an error. (default 10)
-      --s3-retry-max-backoff int      Max backoff duration in milliseconds between retried attempts. (default 90000)
-      --s3-retry-backoff int          Provides the backoff in milliseconds strategy the retryer will use to determine the delay between retry attempts. (default 60000)
+      --s3-retry-max-backoff int      Max backoff duration (in ms) between retried attempts. (default 90000)
+      --s3-retry-backoff int          Provides the backoff, (in ms), that the retryer will use to determine the delay between retry attempts. (default 60000)
       --s3-max-conns-per-host int     MaxConnsPerHost optionally limits the total number of connections per host,
                                       including connections in the dialing, active, and idle states. On limit violation, dials will block.
-                                      Zero means no limit.
-      --s3-request-timeout int        Timeout in milliseconds specifies a time limit for requests made by this Client.
+                                      0 means no limit.
+      --s3-request-timeout int        Timeout (in ms) specifies a time limit for requests made by this Client.
                                       The timeout includes connection time, any redirects, and reading the response body.
-                                      Zero means no limit. (default 600000)
+                                      0 means no limit. (default 600000)
 
 GCP Storage Flags:
-For GCP storage bucket name is mandatory, and is set with --gcp-bucket-name flag.
-So --directory path will only contain folder name.
-Flag --gcp-endpoint-override is mandatory, as each storage account has different service address.
+For GCP storage, the bucket name must be set with --gcp-bucket-name flag.
+--directory path will only contain the folder name.
+The flag --gcp-endpoint-override is also mandatory, as each storage account has different service address.
 Any GCP parameter can be retrieved from Secret Agent.
       --gcp-key-path string                  Path to file containing service account JSON key.
       --gcp-bucket-name string               Name of the Google cloud storage bucket.
@@ -295,23 +294,23 @@ Any GCP parameter can be retrieved from Secret Agent.
       --gcp-calculate-checksum               Calculate checksum for each uploaded object.
       --gcp-retry-max-attempts int           Max retries specifies the maximum number of attempts a failed operation will be retried
                                              before producing an error. (default 10)
-      --gcp-retry-max-backoff int            Max backoff is the maximum value in milliseconds of the retry period. (default 90000)
-      --gcp-retry-init-backoff int           Initial backoff is the initial value in milliseconds of the retry period. (default 60000)
+      --gcp-retry-max-backoff int            Max backoff is the maximum value (in ms) of the retry period. (default 90000)
+      --gcp-retry-init-backoff int           Initial backoff is the initial value (in ms) of the retry period. (default 60000)
       --gcp-retry-backoff-multiplier float   Multiplier is the factor by which the retry period increases.
                                              It should be greater than 1. (default 2)
       --gcp-max-conns-per-host int           MaxConnsPerHost optionally limits the total number of connections per host,
                                              including connections in the dialing, active, and idle states. On limit violation, dials will block.
-                                             Zero means no limit.
-      --gcp-request-timeout int              Timeout in milliseconds specifies a time limit for requests made by this Client.
+                                             0 means no limit.
+      --gcp-request-timeout int              Timeout (in ms) specifies a time limit for requests made by this Client.
                                              The timeout includes connection time, any redirects, and reading the response body.
-                                             Zero means no limit. (default 600000)
+                                             0 means no limit. (default 600000)
 
 Azure Storage Flags:
-For Azure storage container name is mandatory, and is set with --azure-storage-container-name flag.
-So --directory path will only contain folder name.
-Flag --azure-endpoint is optional, and is used for tests with Azurit or any other Azure emulator.
-For authentication you can use --azure-account-name and --azure-account-key, or 
---azure-tenant-id, --azure-client-id and azure-client-secret.
+For Azure storage, the container name must be set with --azure-storage-container-name flag.
+--directory path will only contain folder name.
+The flag --azure-endpoint is optional, and is used for tests with Azurit or any other Azure emulator.
+For authentication, use --azure-account-name and --azure-account-key, or 
+--azure-tenant-id, --azure-client-id and --azure-client-secret.
 Any Azure parameter can be retrieved from Secret Agent.
       --azure-account-name string      Azure account name for account name, key authorization.
       --azure-account-key string       Azure account key for account name, key authorization.
@@ -328,20 +327,20 @@ Any Azure parameter can be retrieved from Secret Agent.
       --azure-calculate-checksum       Calculate checksum for each uploaded object.
       --azure-retry-max-attempts int   Max retries specifies the maximum number of attempts a failed operation will be retried
                                        before producing an error. (default 10)
-      --azure-retry-max-delay int      Max retry delay specifies the maximum delay in milliseconds allowed before retrying an operation.
+      --azure-retry-max-delay int      Max retry delay specifies the maximum delay (in ms) allowed before retrying an operation.
                                        Typically the value is greater than or equal to the value specified in azure-retry-delay. (default 90000)
-      --azure-retry-delay int          Retry delay specifies the initial amount of delay in milliseconds to use before retrying an operation.
+      --azure-retry-delay int          Retry delay specifies the initial amount of delay (in ms) to use before retrying an operation.
                                        The value is used only if the HTTP response does not contain a Retry-After header.
                                        The delay increases exponentially with each retry up to the maximum specified by azure-retry-max-delay. (default 60000)
-      --azure-retry-timeout int        Retry timeout in milliseconds indicates the maximum time allowed for any single try of an HTTP request.
+      --azure-retry-timeout int        Retry timeout (in ms) indicates the maximum time allowed for any single try of an HTTP request.
                                        This is disabled by default. Specify a value greater than zero to enable.
                                        NOTE: Setting this to a small value might cause premature HTTP request time-outs.
       --azure-max-conns-per-host int   MaxConnsPerHost optionally limits the total number of connections per host,
                                        including connections in the dialing, active, and idle states. On limit violation, dials will block.
-                                       Zero means no limit.
-      --azure-request-timeout int      Timeout in milliseconds specifies a time limit for requests made by this Client.
+                                       0 means no limit.
+      --azure-request-timeout int      Timeout (in ms) specifies a time limit for requests made by this Client.
                                        The timeout includes connection time, any redirects, and reading the response body.
-                                       Zero means no limit. (default 600000)
+                                       0 means no limit. (default 600000)
 ```
 
 ## Unsupported flags
@@ -372,12 +371,12 @@ Any Azure parameter can be retrieved from Secret Agent.
                              - Trace
                             The default is Fatal.
 
---s3-connect-timeout        The AWS S3 client's connection timeout in milliseconds.
+--s3-connect-timeout        The AWS S3 client's connection timeout (in ms).
                             This is equivalent to cli-connect-timeout in the AWS CLI,
                             or connectTimeoutMS in the aws-sdk-cpp client configuration.
 ```
 
-## Configuration file schema with default values
+## Configuration file schema with example values
 ```yaml
 app:
   # Enable more detailed logging.
@@ -386,33 +385,48 @@ app:
   log-level: debug
   # Set output in JSON format for parsing by external tools.
   log-json: false
+
 cluster:
   seeds:
     - host: 127.0.0.1
       tls-name: ""
       port: 3000
-  # The Aerospike user to use to connect to the Aerospike cluster.
-  user: some_login
-  # The Aerospike password to use to connect to the Aerospike cluster.
-  password: some_password
-  # The authentication mode used by the Aerospike server: INTERNAL, EXTERNAL, PKI
-  auth: ""
-  # Initial host connection timeout duration. The timeout when opening a connection to the server host for the first time.
+  # The Aerospike user for the connection to the Aerospike cluster.
+  user: "db_user"
+  # The Aerospike password for the connection to the Aerospike cluster.
+  password: "db_password"
+  # The authentication mode used by the Aerospike server. INTERNAL
+  # uses standard user/pass. EXTERNAL uses external methods (like LDAP)
+  # which are configured on the server. EXTERNAL requires TLS. PKI allows
+  # TLS authentication and authorization based on a certificate. No
+  # username needs to be configured. (default INTERNAL)
+  auth: INTERNAL
+  # Initial host connection timeout duration. The timeout when opening a connection
+  # to the server host for the first time.
   client-timeout: 30000
-  # Idle timeout. Every time a connection is used,
-  # its idle deadline will be extended by this duration. When this deadline is reached,
+  # Idle timeout. Every time a connection is used, its idle
+  # deadline will be extended by this duration. When this deadline is reached,
   # the connection will be closed and discarded from the connection pool.
-  client-idle-timeout: 10000
+  # The value is limited to 24 hours (86400s).
+  # Set this value to a few seconds less than the server's proto-fd-idle-ms
+  # (default 60000 milliseconds or 1 minute), so the client does not attempt to use a socket
+  # that has already been reaped by the server.
+  # Connection pools are implemented by a LIFO stack. Connections at the tail of the
+  # stack will always be the least used. These connections are checked for IdleTimeout
+  # on every tend (usually 1 second).
+  client-idle-timeout: 60000
   # Specifies the login operation timeout for external authentication methods such as LDAP.
   client-login-timeout: 10000
-  # Determines if the client should use "services-alternate" instead of "services" in info request during cluster tending.
+  # Determines if the client should use "services-alternate" instead
+  # of "services" in info request during cluster tending.
   service-alternate: false
   tls:
-    # TLS name used to authenticate each TLS socket connection to a database.
+    # The server TLS context to use to authenticate the connection to Aerospike.
     name: ""
-    # Set the TLS protocol selection criteria. This format is the same as Apache's SSLProtocol documented
-    # at https://httpd.apache.org/docs/current/mod/mod_ssl.html#ssl protocol.
-    protocols: ""
+    # Set the TLS protocol selection criteria. This format is the same
+    # as Apache's SSLProtocol documented at
+    # https://httpd.apache.org/docs/current/mod/mod_ssl.html#sslprotocol.
+    protocols: "+TLSv1.2"
     # The CA used when connecting to Aerospike.
     ca-file: ""
     # A path containing CAs for connecting to Aerospike.
@@ -423,139 +437,145 @@ cluster:
     key-file: ""
     # The password used to decrypt the key file if encrypted.
     key-file-password: ""
+
 backup:
-  # The directory that holds the backup files. Required, unless `output-file` or `estimate` is used.
-  directory: continue_test
+  # The directory that holds the backup files. Required, unless -o or -e is used.
+  directory: "backup_dir"
   # The namespace to be backed up. Required.
-  namespace: source-ns1
-  # The set(s) to be backed up. Accepts comma-separated values with no spaces 'set1,set2,set3'
+  namespace: "source-ns1"
+  # The set(s) to be backed up. Accepts comma-separated values with no spaces: 'set1,set2,set3'
   # If multiple sets are being backed up, filter-exp cannot be used.
   # If empty, include all sets.
-  set-list: 
-   - "set1"
-   - "set2"
-  # Only include the given bins in the backup. Accepts comma-separated values with no spaces: 'bin1,bin2,bin3'
+  set-list:
+    - "set1"
+    - "set2"
+  # Only include the given bins in the backup.
+  # Accepts comma-separated values with no spaces: 'bin1,bin2,bin3'
   # If empty include all bins.
-  bin-list: 
-   - "bin1"
-   - "bin2"
+  bin-list:
+    - "bin1"
+    - "bin2"
   # Maximum number of scan calls to run in parallel.
   # If only one partition range is given, or the entire namespace is being backed up, the range
   # of partitions will be evenly divided by this number to be processed in parallel. Otherwise, each
   # filter cannot be parallelized individually, so you may only achieve as much parallelism as there are
   # partition filters. Accepts values from 1-1024 inclusive.
   parallel: 1
-  # Will not back up any records if set to true.
+  # Don't back up any records.
   no-records: false
-  # Will not back up any indexes if set to true.
+  # Don't back up any indexes.
   no-indexes: false
-  # Will not back up any UDFs if set to true.
+  # Don't back up any UDFs.
   no-udfs: false
-  # Limit total returned records per second (rps).
-  # Do not apply rps limit if records-per-second is zero.
+  # Limit total returned records per second (RPS). If 0, no limit is applied.
   records-per-second: 0
   # Maximum number of retries before aborting the current transaction.
   max-retries: 5
-  # Total transaction timeout in milliseconds. 0 - no timeout.
+  # Total transaction timeout (in ms). If 0, no timeout is applied.
   total-timeout: 0
-  # Socket timeout in milliseconds. If this value is 0, it's set to total-timeout.
+  # Socket timeout (in ms). If 0, the value for total-timeout is used.
   # If both this and total-timeout are 0, there is no socket idle time limit.
   socket-timeout: 10000
   # The limits for read/write storage bandwidth in MiB/s.
+  # Default is 0 (no limit).
   bandwidth: 0
-  # Remove an existing backup file `output-file` or entire directory `directory` and replace with the new backup.
+  # Remove an existing backup file (-o) or entire directory (-d) and replace with the new backup.
   remove-files: false
-  # Remove existing backup file `output-file` or files `directory` without performing a backup.
+  # Remove existing backup file (-o) or files (-d) without performing a backup.
   remove-artifacts: false
-  # Backup to a single backup file. Use - for stdout. Required, unless `directory` or `estimate` is used.
+  # Backup to a single backup file. Use '-' for stdout. Required, unless -d or -e is used.
+  # file-limit will be ignored if this parameter is used.
   output-file: ""
   # When using directory parameter, prepend a prefix to the names of the generated files.
+  # Not applicable when output-file is used.
   output-file-prefix: ""
-  # Rotate backup files when their size crosses the given value (in megabytes). Only used when backing up to a directory.
+  # Rotate backup files when their size crosses the given
+  # value (in MiB). Only used when backing up to a directory.
   file-limit: 250
   # Do not include bin data in the backup. Use this flag for data sampling or troubleshooting.
-  # On restore all records, that don't contain bin data will be skipped.
+  # On restore, all records not containing bin data will be skipped.
   no-bins: false
-  # Only include records that have no ttl set (persistent records).
+  # Only include records that have no TTL set (persistent records).
   no-ttl-only: false
   # Backup records after record digest in record's partition plus all succeeding
   # partitions. Used to resume backup with last record received from previous
   # incomplete backup.
-  # This argument is mutually exclusive to partition-list.
+  # This argument is mutually exclusive with partition-list.
   # Format: Base64 encoded string
-  # Example: EjRWeJq83vEjRRI0VniavN7x
+  # Example: EjRWeJq83vEjRRI0VniavN7xI0U=
   after-digest: ""
   # <YYYY-MM-DD_HH:MM:SS>
-  # Perform an incremental backup; only include records
-  # that changed after the given date and time. The system's
+  # Perform an incremental backup; only include records 
+  # that changed after the given date and time. The system's 
   # local timezone applies. If only HH:MM:SS is specified, then
-  # today's date is assumed as the date. If only YYYY-MM-DD is
+  # today's date is assumed as the date. If only YYYY-MM-DD is 
   # specified, then 00:00:00 (midnight) is assumed as the time.
   modified-after: ""
   # <YYYY-MM-DD_HH:MM:SS>
-  # Only include records that last changed before the given date and time.
-  # May combined with modified-after to specify a range.
+  # Only include records that last changed before the given
+  # date and time. May combined with modified-after to specify a range.
   modified-before: ""
-  # Base64 encoded expression. Use the encoded filter expression in each scan call,
-  # which can be used to do a partial backup. The expression to be used can be Base64
+  # Base64 encoded filter expression. Use the encoded filter expression in each scan call,
+  # which can be used to do a partial backup. The expression to be used can be Base64 
   # encoded through any client. This argument is mutually exclusive with multi-set backup.
   filter-exp: ""
-  # Specifies how to perform the query of the database run for each backup.
-  # By default, asbackup runs parallel workers for partitions.
-  # If this flag is set to true, asbackup launches parallel workers for nodes.
-  # The number of parallel workers is set by the `parallel`.
-  # This option is mutually exclusive with `continue` and `estimate`.
-  parallel-nodes: false
+
   # <addr 1>:<port 1>[,<addr 2>:<port 2>[,...]]
   # <node name 1>[,<node name 2>[,...]]
-  # To get the correct node address, use 'service-tls-std' if a database configured to use TLS
-  # and 'service-clear-std' info command if no TLS is configured.
+  # To get the correct node address, use the info command 'service-tls-std' if the database is configured to use TLS
+  # or 'service-clear-std' if no TLS is configured.
   # To get the node name, use the 'node:' info command.
   # Back up the given cluster nodes only.
-  # The job is parallelized by number of nodes unless `parallel` is set less than nodes number.
-  # This argument is mutually exclusive with `partition-list` and `after-digest` parameters.
-  # Default: backup all nodes in the cluster
+  # The job is parallelized by the number of nodes unless parallel is lower than the number of nodes.
+  # This argument is mutually exclusive with partition-list, after-digest, rack-list, prefer-racks arguments.
+  # Default: back up all nodes in the cluster
   node-list:
     - "127.0.0.1:3000"
     - "127.0.0.1:3005"
   # List of partitions <filter[,<filter>[...]]> to back up. Partition filters can be ranges,
   # individual partitions, or records after a specific digest within a single partition.
-  # This argument is mutually exclusive to after-digest.
+  # To use this argument, parallel must be set equal to or greater
+  # than the number of elements in the partition list
+  # This argument is mutually exclusive with after-digest.
   # Filter: <begin partition>[-<partition count>]|<digest>
   # begin partition: 0-4095
   # partition count: 1-4096 Default: 1
   # digest: Base64 encoded string
   # Examples: 0-1000, 1000-1000, 2222, EjRWeJq83vEjRRI0VniavN7xI0U=
   # Default: 0-4096 (all partitions)
-  partition-list: 
+  partition-list:
     - "0-1000"
   # <rack id 1>[,<rack id 2>[,...]]
   # A list of Aerospike Database rack IDs to prefer when reading records for a backup.
+  # This argument is mutually exclusive with rack-list and node-list.
   prefer-racks:
     - "1"
   # <rack id 1>[,<rack id 2>[,...]]
   # A list of Aerospike Database rack IDs to backup.
   # Unlike prefer-racks, only specified racks will be backed up.
+  # This argument is mutually exclusive with prefer-racks and node-list.
   rack-list:
     - "1"
   # The number of records approximately to back up. 0 - all records
   max-records: 0
   # The amount of milliseconds to sleep between retries after an error.
-  # This field is ignored when `max-retries` is zero.
+  # This field is ignored when max-retries is zero.
   sleep-between-retries: 5
-  # If true, do not apply base-64 encoding to BLOBs and instead write raw binary data, resulting in smaller backup files.
+  # If true, do not apply Base64 encoding to BLOBs and instead write raw binary data,
+  # resulting in smaller backup files.
+  # Deprecated.
   compact: false
-  # Estimate the backed-up record size from a random sample of
+  # Estimate the backed-up record size from a random sample of 
   # 10,000 (default) records at 99.9999% confidence to estimate the full backup size.
-  # It ignores any filter: filter-exp, node-list, modified-after, modified-before, no-ttl-only,
-  # after-digest, partition-list
+  # It ignores any filter:  filter-exp, node-list, modified-after, modified-before, no-ttl-only,
+  # after-digest, partition-list.
   estimate: false
   # The number of samples to take when running a backup estimate.
   estimate-samples: 10000
   # Name of a state file that will be saved in backup directory.
   # Works only with file-limit parameter. As file-limit is reached and the file is closed,
   # the current state will be saved. Works only for default and/or partition backup.
-  # Not work with parallel-nodes or nodelist
+  # Not work with rack-list or nodelist.
   state-file-dst: ""
   # Resumes an interrupted/failed backup from where it was left off, given the .state file
   # that was generated from the interrupted/failed run.
@@ -565,50 +585,54 @@ backup:
   # Affects size if overlap on resuming backup after an error.
   # Used only with state-file-dst or continue.
   scan-page-size: 10000
-  # How many times to retry to send info commands before failing.
+  # Number of retries to send info commands before failing.
   info-max-retries: 3
   # Increases the delay between subsequent retry attempts.
   # The actual delay is calculated as: info-retry-interval * (info-retry-multiplier ^ attemptNumber)
   info-retries-multiplier: 1
-  # Set the initial interval for a retry in milliseconds when info commands are sent.
+  # Set the initial interval for a retry (in ms) when info commands are sent.
   info-retry-interval: 1000
-  # Set the timeout (ms) for asinfo commands sent from asrestore to the database.
+  # Set the timeout (in ms) for asinfo commands sent from asrestore to the database.
   # The info commands are to check version, get indexes, get udfs, count records, and check batch write support.
   info-timeout: 10000
-  # Buffer size in MiB for stdin and stdout operations. Is used for pipelining. (default 4)
+  # Buffer size in MiB for stdin and stdout operations. Used for pipelining.
   std-buffer-size: 4
+
 compression:
   # Enables compressing of backup files using the specified compression algorithm.
-  # Supported compression algorithms are: zstd, none\n"+
-  # Set the zstd compression level via the compression-level option.
-  mode: zstd
-  # zstd compression level.
+  # Supported compression algorithms are: ZSTD, NONE
+  # Set the ZSTD compression level via the compression-level option.
+  mode: NONE
+  # ZSTD compression level.
   level: 3
+
 encryption:
   # Enables encryption of backup files using the specified encryption algorithm.
-  # Supported encryption algorithms are: none, aes128, aes256.
-  # A private key must be given, either via the encryption-key-file option or
+  # Supported encryption algorithms are: NONE, AES128, AES256.
+  # A private key must be given, either with the encryption-key-file option or
   # the encryption-key-env option or the encryption-key-secret.
-  mode: aes128
-  # Grabs the encryption key from the given file, which must be in PEM format.
+  mode: NONE
+  # Gets the encryption key from the given file, which must be in PEM format.
   key-file: ""
-  # Grabs the encryption key from the given environment variable, which must be base-64 encoded.
+  # Gets the encryption key from the given environment variable, which must be Base64 encoded.
   key-env: ""
-  # Grabs the encryption key from secret-agent.
+  # Gets the encryption key from secret-agent.
   key-secret: ""
+
 secret-agent:
-  # Secret Agent connection type, supported types: tcp, unix.
-  connection-type: tcp
+  # Secret Agent connection type. Supported types: TCP, UNIX.
+  connection-type: TCP
   # Secret Agent host for TCP connection or socket file path for UDS connection.
   address: ""
   # Secret Agent port (only for TCP connection).
   port: 0
-  # Secret Agent connection and reading timeout in milliseconds.
+  # Secret Agent connection and reading timeout.
   timeout: 0
   # Path to ca file for encrypted connections.
   ca-file: ""
   # Whether Secret Agent responses are Base64 encoded.
   is-base64: false
+
 aws:
   s3:
     # Existing S3 bucket name
@@ -617,9 +641,9 @@ aws:
     region: ""
     # The S3 profile to use for credentials.
     profile: ""
-    # An alternate url endpoint to send S3 API calls to.
+    # An alternate URL endpoint to send S3 API calls to.
     endpoint-override: ""
-    # S3 access key id. If not set, profile auth info will be used.
+    # S3 access key ID. If not set, profile auth info will be used.
     access-key-id: ""
     # S3 secret access key. If not set, profile auth info will be used.
     secret-access-key: ""
@@ -634,31 +658,32 @@ aws:
     # OUTPOSTS,
     # GLACIER_IR,
     # SNOW,
-    # EXPRESS_ONEZONE
+    # EXPRESS_ONEZONE.
     storage-class: ""
     # Maximum number of attempts that should be made in case of an error.
-    retry-max-attempts: 100
-    # Max backoff duration in milliseconds between retried attempts.
+    retry-max-attempts: 10
+    # Max backoff duration (in ms) between retried attempts.
     retry-max-backoff: 90
-    # Provides the backoff in milliseconds strategy the retryer will use to determine the delay between retry attempts.
+    # Provides the backoff, (in ms), that the retryer will use to determine the delay between retry attempts.
     retry-backoff: 60
     # Chunk size controls the maximum number of megabytes of the object that the app will attempt to send to
     # the storage in a single request. Objects smaller than the size will be sent in a single request,
-    # while larger objects will be split over multiple requests
+    # while larger objects will be split over multiple requests.
     chunk-size: 5
     # Defines the max number of concurrent uploads to be performed to upload the file. 
     # Each concurrent upload will create a buffer of size s3-block-size.
     upload-concurrency: 3
     # Calculate checksum for each uploaded object.
     calculate-checksum: false
-    # MaxConnsPerHost optionally limits the total number of connections per host, 
+    # MaxConnsPerHost optionally limits the total number of connections per host,
     # including connections in the dialing, active, and idle states. On limit violation, dials will block.
-    # Zero means no limit.
+    # 0 means no limit.
     max-conns-per-host: 0
-    # Timeout specifies a time limit for requests made by this Client.
+    # Timeout (in ms) specifies a time limit for requests made by this Client.
     # The timeout includes connection time, any redirects, and reading the response body.
-    # Zero means no limit.
+    # 0 means no limit.
     request-timeout: 600
+
 gcp:
   storage:
     # Path to file containing service account JSON key.
@@ -667,13 +692,15 @@ gcp:
     bucket-name: ""
     # An alternate url endpoint to send GCP API calls to.
     endpoint-override: ""
-    # Max retries specifies the maximum number of attempts a failed operation will be retried before producing an error.
-    retry-max-attempts: 100
-    # Max backoff is the maximum value in milliseconds of the retry period.
+    # Max retries specifies the maximum number of attempts a failed operation will be retried
+    # before producing an error.
+    retry-max-attempts: 10
+    # Max backoff is the maximum value (in ms) of the retry period.
     retry-max-backoff: 90
-    # Initial backoff is the initial value in milliseconds of the retry period.
+    # Initial backoff is the initial value (in ms) of the retry period.
     retry-init-backoff: 60
-    # Multiplier is the factor by which the retry period increases. It should be greater than 1.
+    # Multiplier is the factor by which the retry period increases.
+    # It should be greater than 1.
     retry-backoff-multiplier: 2
     # Chunk size controls the maximum number of megabytes of the object that the app will attempt to send to
     # the storage in a single request. Objects smaller than the size will be sent in a single request,
@@ -681,14 +708,15 @@ gcp:
     chunk-size: 5
     # Calculate checksum for each uploaded object.
     calculate-checksum: false
-    # MaxConnsPerHost optionally limits the total number of connections per host, 
+    # MaxConnsPerHost optionally limits the total number of connections per host,
     # including connections in the dialing, active, and idle states. On limit violation, dials will block.
-    # Zero means no limit.
+    # 0 means no limit.
     max-conns-per-host: 0
-    # Timeout specifies a time limit for requests made by this Client.
+    # Timeout (in ms) specifies a time limit for requests made by this Client.
     # The timeout includes connection time, any redirects, and reading the response body.
-    # Zero means no limit.
+    # 0 means no limit.
     request-timeout: 600
+
 azure:
   blob:
     # Azure account name for account name, key authorization.
@@ -705,36 +733,39 @@ azure:
     endpoint-override: ""
     # Azure container Name.
     container-name: ""
+    # Azure access tier is applied to created backup files.
     # Tiers are: Archive, Cold, Cool, Hot, P10, P15, P20, P30, P4, P40, P50, P6, P60, P70, P80, Premium.
     access-tier: ""
-    # Max retries specifies the maximum number of attempts a failed operation will be retried before producing an error.
-    retry-max-attempts: 100
-    # Retry timeout in milliseconds indicates the maximum time allowed for any single try of an HTTP request.
+    # Max retries specifies the maximum number of attempts a failed operation will be retried
+    # before producing an error.
+    retry-max-attempts: 10
+    # Retry timeout (in ms) indicates the maximum time allowed for any single try of an HTTP request.
     # This is disabled by default. Specify a value greater than zero to enable.
     # NOTE: Setting this to a small value might cause premature HTTP request time-outs.
-    retry-timeout: 10
-    # Retry delay specifies the initial amount of delay in milliseconds to use before retrying an operation.
+    retry-timeout: 0
+    # Retry delay specifies the initial amount of delay (in ms) to use before retrying an operation.
     # The value is used only if the HTTP response does not contain a Retry-After header.
     # The delay increases exponentially with each retry up to the maximum specified by azure-retry-max-delay.
     retry-delay: 60
-    # Max retry delay specifies the maximum delay in milliseconds allowed before retrying an operation.
+    # Max retry delay specifies the maximum delay (in ms) allowed before retrying an operation.
     # Typically the value is greater than or equal to the value specified in azure-retry-delay.
     retry-max-delay: 90
-    # Block size defines the size of the buffer in MiB used during upload.
+    # Block size in MiB defines the size of the buffer used during upload.
     block-size: 5
-    # Defines the max number of concurrent uploads to be performed to upload the file. 
-    # Each concurrent upload will create a buffer of size s3-block-size.
-    upload-concurrency: 3
+    # Defines the max number of concurrent uploads to be performed to upload the file.
+    # Each concurrent upload will create a buffer of size azure-block-size.
+    upload-concurrency: 1
     # Calculate checksum for each uploaded object.
     calculate-checksum: false
-    # MaxConnsPerHost optionally limits the total number of connections per host, 
+    # MaxConnsPerHost optionally limits the total number of connections per host,
     # including connections in the dialing, active, and idle states. On limit violation, dials will block.
-    # Zero means no limit.
+    # 0 means no limit.
     max-conns-per-host: 0
-    # Timeout specifies a time limit for requests made by this Client.
+    # Timeout (in ms) specifies a time limit for requests made by this Client.
     # The timeout includes connection time, any redirects, and reading the response body.
-    # Zero means no limit.
+    # 0 means no limit.
     request-timeout: 600
+
 local:
   disk:
     # Buffer size in megabytes for local file writes.

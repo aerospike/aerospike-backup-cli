@@ -17,6 +17,7 @@ package flags
 import (
 	"testing"
 
+	"github.com/aerospike/aerospike-backup-cli/internal/models"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -61,7 +62,7 @@ func TestSecretAgent_NewFlagSet_DefaultValues(t *testing.T) {
 
 	result := secretAgent.GetSecretAgent()
 
-	assert.Equal(t, "tcp", result.ConnectionType)
+	assert.Equal(t, models.DefaultSecretAgentConnectionType, result.ConnectionType)
 	assert.Equal(t, "", result.Address)
 	assert.Equal(t, 0, result.Port)
 	assert.Equal(t, 0, result.TimeoutMillisecond)

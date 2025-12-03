@@ -50,12 +50,12 @@ func (f *Compression) NewFlagSet() *pflag.FlagSet {
 	flagSet.StringVarP(&f.Mode, "compress", "z",
 		models.DefaultCompressionMode,
 		descCompress+
-			"Supported compression algorithms are: zstd, none\n"+
-			"Set the zstd compression level via the --compression-level option.")
+			"Supported compression algorithms are: ZSTD, NONE\n"+
+			"Set the ZSTD compression level via the --compression-level option.")
 
 	flagSet.IntVar(&f.Level, "compression-level",
 		models.DefaultCompressionLevel,
-		"zstd compression level.")
+		"ZSTD compression level.")
 
 	return flagSet
 }
