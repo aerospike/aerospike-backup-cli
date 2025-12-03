@@ -299,7 +299,7 @@ func newBackupXDRConfig(params *BackupServiceConfig) *backup.ConfigBackupXDR {
 		ResultQueueSize:   params.BackupXDR.ResultQueueSize,
 		AckQueueSize:      params.BackupXDR.AckQueueSize,
 		MaxConnections:    params.BackupXDR.MaxConnections,
-		InfoPolingPeriod:  time.Duration(params.BackupXDR.InfoPolingPeriodMilliseconds) * time.Millisecond,
+		InfoPollingPeriod: time.Duration(params.BackupXDR.InfoPolingPeriodMilliseconds) * time.Millisecond,
 		StartTimeout:      time.Duration(params.BackupXDR.StartTimeoutMilliseconds) * time.Millisecond,
 		MaxThroughput:     params.BackupXDR.MaxThroughput,
 		Forward:           params.BackupXDR.Forward,

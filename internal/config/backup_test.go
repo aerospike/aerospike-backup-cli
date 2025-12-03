@@ -795,7 +795,7 @@ func TestNewBackupConfigs_XDRTimeouts(t *testing.T) {
 	assert.NotNil(t, xdrConfig)
 	assert.Equal(t, 5000*time.Millisecond, xdrConfig.ReadTimeout)
 	assert.Equal(t, 3000*time.Millisecond, xdrConfig.WriteTimeout)
-	assert.Equal(t, 1000*time.Millisecond, xdrConfig.InfoPolingPeriod)
+	assert.Equal(t, 1000*time.Millisecond, xdrConfig.InfoPollingPeriod)
 	assert.Equal(t, 10000*time.Millisecond, xdrConfig.StartTimeout)
 }
 
