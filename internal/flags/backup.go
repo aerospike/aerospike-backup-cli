@@ -98,7 +98,6 @@ func (f *Backup) NewFlagSet() *pflag.FlagSet {
 			"or 'service-clear-std' if no TLS is configured.\n"+
 			"To get the node name, use the 'node:' info command.\n"+
 			"Back up the given cluster nodes only.\n"+
-			"The job is parallelized by the number of nodes unless --parallel is lower than the number of nodes.\n"+
 			"This argument is mutually exclusive with --partition-list, --after-digest, --rack-list, --prefer-racks"+
 			" arguments.\n"+
 			"Default: back up all nodes in the cluster")
