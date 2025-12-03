@@ -667,7 +667,7 @@ func TestMapBackupXDRConfig(t *testing.T) {
 				assert.Equal(t, 1000, cfg.ResultQueueSize)
 				assert.Equal(t, 1000, cfg.AckQueueSize)
 				assert.Equal(t, 100, cfg.MaxConnections)
-				assert.Equal(t, time.Duration(1000)*time.Millisecond, cfg.InfoPolingPeriod)
+				assert.Equal(t, time.Duration(1000)*time.Millisecond, cfg.InfoPollingPeriod)
 			},
 		},
 		{
@@ -733,7 +733,7 @@ func TestMapBackupXDRConfig(t *testing.T) {
 				assert.Equal(t, 0, cfg.ResultQueueSize)
 				assert.Equal(t, 0, cfg.AckQueueSize)
 				assert.Equal(t, 0, cfg.MaxConnections)
-				assert.Equal(t, time.Duration(0), cfg.InfoPolingPeriod)
+				assert.Equal(t, time.Duration(0), cfg.InfoPollingPeriod)
 			},
 		},
 	}
