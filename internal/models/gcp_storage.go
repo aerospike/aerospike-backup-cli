@@ -85,8 +85,10 @@ func (g *GcpStorage) Validate(isBackup bool) error {
 		return fmt.Errorf("retry backoff multiplier must be positive")
 	}
 
-	if g.ChunkSize < 1 {
-		return fmt.Errorf("chunk size can't be less than 1")
+	if isBackup {
+		if g.ChunkSize < 1 {
+			return fmt.Errorf("chunk size can't be less than 1")
+		}
 	}
 
 	if g.MaxConnsPerHost < 0 {
