@@ -50,10 +50,14 @@ github.com/Microsoft/go-winio v0.6.2 h1:F2VQgta7ecxGYO8k3ZZz3RS8fVIXVxONVUPlNERo
 github.com/Microsoft/go-winio v0.6.2/go.mod h1:yd8OoFMLzJbo9gZq8j5qaps8bJ9aShtEA8Ipt1oGCvU=
 github.com/aerospike/aerospike-client-go/v8 v8.2.3-0.20251203101240-3088f2ce331e h1:vFKt0BHhg0ggbGF2zkI1r8H6eSs73NVoQeVHKSKtK/0=
 github.com/aerospike/aerospike-client-go/v8 v8.2.3-0.20251203101240-3088f2ce331e/go.mod h1:F3qwGJUMWOtqZha7O2VglfIDatH3Rj8wYhmI7bkHOfU=
+github.com/aerospike/aerospike-client-go/v8 v8.5.0 h1:5jRv6v9M9PgGXOxm1+XzqVM8dNOnaF7bed+tr45YPKc=
+github.com/aerospike/aerospike-client-go/v8 v8.5.0/go.mod h1:F3qwGJUMWOtqZha7O2VglfIDatH3Rj8wYhmI7bkHOfU=
 github.com/aerospike/backup-go v0.8.1-0.20251203133348-e7c9ab0e93d8 h1:Tk/+53gVEge4RdH9972Mz7VsSLF30Mcl/uCAT9Z/Oec=
 github.com/aerospike/backup-go v0.8.1-0.20251203133348-e7c9ab0e93d8/go.mod h1:flEhBDwjtFPC4TwP69Rhjn0ScCtdXkAlE2wyMWLMiWs=
 github.com/aerospike/tools-common-go v0.4.1-0.20251203133916-f7fd99a2b0e5 h1:rvRZU4L75PU8TyuK2E+0asusrPstVkvg/T3QjeAS6sk=
 github.com/aerospike/tools-common-go v0.4.1-0.20251203133916-f7fd99a2b0e5/go.mod h1:vLKajdMmXsCKp8gehb3qhz4ZZd3VT79jctqkBgr4ndc=
+github.com/aerospike/tools-common-go v0.4.1 h1:zGoNH9Bqhe6rrw+Hkppn667HB+4aMocl+CU+rgdVIw0=
+github.com/aerospike/tools-common-go v0.4.1/go.mod h1:cdnmZu5DxyDw8aoLcca1bgUb19mQOhmyfvNelCwjjII=
 github.com/aws/aws-sdk-go-v2 v1.40.0 h1:/WMUA0kjhZExjOQN2z3oLALDREea1A7TobfuiBrKlwc=
 github.com/aws/aws-sdk-go-v2 v1.40.0/go.mod h1:c9pm7VwuW0UPxAEYGyTmyurVcNrbF6Rt/wixFqDhcjE=
 github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.7.3 h1:DHctwEM8P8iTXFxC/QK0MRjwEpWQeM9yzidCRjldUz0=
