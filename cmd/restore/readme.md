@@ -67,7 +67,7 @@ Aerospike Client Flags:
       --tls-keyfile-password "env-b64:<env-var>,b64:<b64-pass>,file:<pass-file>,<clear-pass>"       The password used to decrypt the key file if encrypted.
       --tls-protocols "[[+][-]all] [[+][-]TLSv1] [[+][-]TLSv1.1] [[+][-]TLSv1.2] [[+][-]TLSv1.3]"   Set the TLS protocol selection criteria. This format is the same 
                                                                                                     as Apache's SSLProtocol documented at 
-                                                                                                    https://httpd.apache.org/docs/current/mod/mod_ssl.html#sslprotocol . (default +TLSv1.2)
+                                                                                                    https://httpd.apache.org/docs/current/mod/mod_ssl.html#sslprotocol (default +TLSv1.2)
       --services-alternate                                                                          Determines if the client should use "services-alternate" instead 
                                                                                                     of "services" in info request during cluster tending.
       --client-timeout int         Initial host connection timeout duration. The timeout when opening a connection
