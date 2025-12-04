@@ -40,8 +40,7 @@ ARG TARGETARCH
 RUN apk update && \
     apk upgrade --no-cache
 
-RUN apk add --no-cache shadow
-
+# adduser and addgroup are provided by busybox (no shadow package needed)
 RUN addgroup -g 65532 -S abtgroup && \
     adduser -S -u 65532 -G abtgroup -h /home/abtuser abtuser
 
