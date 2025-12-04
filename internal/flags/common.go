@@ -53,6 +53,7 @@ const (
 	descNoUDFsRestore = "Don't restore any UDFs."
 
 	descParallelBackup = "Maximum number of scan calls to run in parallel.\n" +
+		"The scan operation will be launched on all corresponding nodes in parallel, simultaneously.\n" +
 		"If only one partition range is given, or the entire namespace is being backed up, the range\n" +
 		"of partitions will be evenly divided by this number to be processed in parallel. Otherwise, each\n" +
 		"filter cannot be parallelized individually, so you may only achieve as much parallelism as there are\n" +
@@ -170,7 +171,7 @@ func (f *Common) NewFlagSet() *pflag.FlagSet {
 
 	flagSet.Int64VarP(&f.fields.InfoTimeout, "info-timeout", "T",
 		models.DefaultCommonInfoTimeout,
-		"Set the timeout (in ms) for asinfo commands sent from asrestore to the database.\n"+
+		"Set the timeout (in ms) for asinfo commands sent from aerospike-restore to the database.\n"+
 			"The info commands are to check version, get indexes, get udfs, count records, and check batch write support.")
 
 	flagSet.Int64Var(&f.fields.InfoRetryIntervalMilliseconds, "info-retry-interval",

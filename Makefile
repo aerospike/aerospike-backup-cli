@@ -25,8 +25,8 @@ IMAGE_REPO ?= aerospike/aerospike-backup-tools
 IMAGE_CACHE_FROM ?=
 IMAGE_CACHE_TO ?=
 IMAGE_OUTPUT ?= type=image,push=true
-BACKUP_BINARY_NAME = asbackup
-RESTORE_BINARY_NAME = asrestore
+BACKUP_BINARY_NAME = aerospike-backup
+RESTORE_BINARY_NAME = aerospike-restore
 TARGET_DIR = $(WORKSPACE)/dist
 PACKAGE_DIR= $(WORKSPACE)/scripts/package
 CMD_BACKUP_DIR = $(WORKSPACE)/cmd/$(BACKUP_BINARY_NAME)
