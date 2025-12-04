@@ -28,8 +28,8 @@ RUN --mount=type=secret,id=GOPROXY <<-EOF
         export GOPROXY="$(cat /run/secrets/GOPROXY)"
     fi
     OS=${TARGETOS} ARCH=${TARGETARCH} make build
-    xx-verify /app/aerospike-backup-cli/target/aerospike-backup_${TARGETOS}_${TARGETARCH}
-    xx-verify /app/aerospike-backup-cli/target/aerospike-restore_${TARGETOS}_${TARGETARCH}
+    xx-verify /app/aerospike-backup-cli/dist/aerospike-backup_${TARGETOS}_${TARGETARCH}
+    xx-verify /app/aerospike-backup-cli/dist/aerospike-restore_${TARGETOS}_${TARGETARCH}
 EOF
 
 FROM ${REGISTRY}/alpine:latest
@@ -40,16 +40,17 @@ ARG TARGETARCH
 RUN apk update && \
     apk upgrade --no-cache
 
-RUN apk add --no-cache shadow && \
-    addgroup -g 65532 -S abtgroup && \
+RUN apk add --no-cache shadow
+
+RUN addgroup -g 65532 -S abtgroup && \
     adduser -S -u 65532 -G abtgroup -h /home/abtuser abtuser
 
 COPY --chown=abtuser:abtgroup --chmod=0755 --from=builder \
-    /app/aerospike-backup-cli/target/aerospike-restore_${TARGETOS}_${TARGETARCH} \
+    /app/aerospike-backup-cli/dist/aerospike-restore_${TARGETOS}_${TARGETARCH} \
     /usr/bin/aerospike-restore
 
 COPY --chown=abtuser:abtgroup --chmod=0755 --from=builder \
-    /app/aerospike-backup-cli/target/aerospike-backup_${TARGETOS}_${TARGETARCH} \
+    /app/aerospike-backup-cli/dist/aerospike-backup_${TARGETOS}_${TARGETARCH} \
     /usr/bin/aerospike-backup
 
 USER abtuser
