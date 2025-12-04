@@ -60,6 +60,12 @@ const (
 		"partition filters. Accepts values from 1-1024 inclusive."
 	descParallelRestore = "The number of restore threads. Accepts values from 1-1024 inclusive.\n" +
 		"If not set, the default value is automatically calculated and appears as the number of CPUs on your machine."
+
+	descInfoTimeoutBackup = "Set the timeout (in ms) for asinfo commands sent from aerospike-backup to the database.\n" +
+		"The info commands are to check version, get indexes, get udfs, count records, and check batch write support."
+
+	descInfoTimeoutRestore = "Set the timeout (in ms) for asinfo commands sent from aerospike-restore to the database.\n" +
+		"The info commands are to check version, get indexes, get udfs, count records, and check batch write support."
 )
 
 type Common struct {
@@ -80,7 +86,7 @@ func (f *Common) NewFlagSet() *pflag.FlagSet {
 
 	var (
 		descNamespace, descSetList, descBinList, descNoRecords,
-		descNoIndexes, descNoUDFs, descParallel, descDirectory string
+		descNoIndexes, descNoUDFs, descParallel, descDirectory, descInfoTimeout string
 		defaultTotalTimeout int64
 		defaultParallel     int
 	)
@@ -97,6 +103,7 @@ func (f *Common) NewFlagSet() *pflag.FlagSet {
 		descParallel = descParallelBackup
 		defaultTotalTimeout = models.DefaultBackupTotalTimeout
 		defaultParallel = models.DefaultBackupParallel
+		descInfoTimeout = descInfoTimeoutBackup
 	case OperationRestore:
 		descNamespace = descNamespaceRestore
 		descDirectory = descDirectoryRestore
@@ -108,6 +115,7 @@ func (f *Common) NewFlagSet() *pflag.FlagSet {
 		descParallel = descParallelRestore
 		defaultTotalTimeout = models.DefaultRestoreTotalTimeout
 		defaultParallel = models.DefaultRestoreParallel
+		descInfoTimeout = descInfoTimeoutRestore
 	}
 
 	flagSet.StringVarP(&f.fields.Directory, "directory", "d",
@@ -171,8 +179,8 @@ func (f *Common) NewFlagSet() *pflag.FlagSet {
 
 	flagSet.Int64VarP(&f.fields.InfoTimeout, "info-timeout", "T",
 		models.DefaultCommonInfoTimeout,
-		"Set the timeout (in ms) for asinfo commands sent from aerospike-restore to the database.\n"+
-			"The info commands are to check version, get indexes, get udfs, count records, and check batch write support.")
+		descInfoTimeout,
+	)
 
 	flagSet.Int64Var(&f.fields.InfoRetryIntervalMilliseconds, "info-retry-interval",
 		models.DefaultCommonInfoRetryInterval,

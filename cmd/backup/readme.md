@@ -121,7 +121,7 @@ Backup Flags:
                                       Default is 0 (no limit). (DEPRECATED: use --bandwidth instead)
   -N, --bandwidth int                 The limits for read/write storage bandwidth in MiB/s.
                                       Default is 0 (no limit).
-  -T, --info-timeout int              Set the timeout (in ms) for asinfo commands sent from aerospike-restore to the database.
+  -T, --info-timeout int              Set the timeout (in ms) for asinfo commands sent from aerospike-backup to the database.
                                       The info commands are to check version, get indexes, get udfs, count records, and check batch write support. (default 10000)
       --info-retry-interval int       Set the initial interval for a retry (in ms) when info commands are sent. (default 1000)
       --info-retry-multiplier float   Increases the delay between subsequent retry attempts.
@@ -593,7 +593,7 @@ backup:
   info-retries-multiplier: 1
   # Set the initial interval for a retry (in ms) when info commands are sent.
   info-retry-interval: 1000
-  # Set the timeout (in ms) for asinfo commands sent from aerospike-restore to the database.
+  # Set the timeout (in ms) for asinfo commands sent from aerospike-backup to the database.
   # The info commands are to check version, get indexes, get udfs, count records, and check batch write support.
   info-timeout: 10000
   # Buffer size in MiB for stdin and stdout operations. Used for pipelining.
