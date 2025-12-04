@@ -5,9 +5,9 @@ before:
     - go mod tidy
 
 builds:
-  - id: "asbackup"
-    main: cmd/asbackup/main.go
-    binary: "asbackup"
+  - id: "aerospike-backup"
+    main: cmd/backup/main.go
+    binary: "aerospike-backup"
     goos:
       - linux
       - darwin
@@ -19,9 +19,9 @@ builds:
       - CGO_ENABLED=0
     ldflags:
       - -s -w -X 'main.appVersion={{.Version}}' -X 'main.commitHash={{.Commit}}' -X 'main.buildTime={{.Date}}'
-  - id: "asrestore"
-    main: cmd/asrestore/main.go
-    binary: "asrestore"
+  - id: "aerospike-restore"
+    main: cmd/restore/main.go
+    binary: "aerospike-restore"
     goos:
       - linux
       - darwin
@@ -35,7 +35,7 @@ builds:
       - -s -w -X 'main.appVersion={{.Version}}' -X 'main.commitHash={{.Commit}}' -X 'main.buildTime={{.Date}}'
 
 archives:
-  - id: "asbackup"
+  - id: "aerospike-backup"
     formats:  [ 'tar.gz' ]
     name_template: >-
       {{ .Binary }}-{{ .Version }}-
@@ -50,8 +50,8 @@ archives:
     files:
       - LICENSE
     ids:
-      - "asbackup"
-  - id: "asrestore"
+      - "aerospike-backup"
+  - id: "aerospike-restore"
     formats:  [ 'tar.gz' ]
     name_template: >-
       {{ .Binary }}-{{ .Version }}-
@@ -66,7 +66,7 @@ archives:
     files:
       - LICENSE
     ids:
-      - "asrestore"
+      - "aerospike-restore"
 
 release:
   prerelease: true
@@ -75,8 +75,8 @@ release:
   mode: prepend
   header: |
     ## Release {{ .Version }} ({{ .Date }})
-    - asbackup (CLI tool)
-    - asrestore (CLI tool)
+    - aerospike-backup (CLI tool)
+    - aerospike-restore (CLI tool)
     - backup-go (library)
 
 changelog:

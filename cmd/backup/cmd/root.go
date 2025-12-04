@@ -83,7 +83,7 @@ func NewCmd(appVersion, commitHash, buildTime string) (*cobra.Command, *Cmd) {
 	c.flagsCommon = flags.NewCommon(&c.flagsBackup.Common, flags.OperationBackup)
 
 	rootCmd := &cobra.Command{
-		Use:   "asbackup",
+		Use:   "aerospike-backup",
 		Short: "Aerospike backup CLI tool",
 		Long:  welcomeMessage,
 		RunE:  c.run,
@@ -253,10 +253,10 @@ func newHelpFunction(
 		fmt.Println(welcomeMessage)
 		fmt.Println(strings.Repeat("-", len(welcomeMessage)))
 		fmt.Println("\nUsage:")
-		fmt.Println("  asbackup [flags]")
+		fmt.Println("  aerospike-backup [flags]")
 
 		// Printing hint for xdr command.
-		//	fmt.Println("  asbackup xdr [flags]")
+		//	fmt.Println("  aerospike-backup xdr [flags]")
 
 		// Print section: App Flags
 		fmt.Println("\nGeneral Flags:")
@@ -284,10 +284,10 @@ func newHelpFunction(
 		fmt.Println("\nSecret Agent Flags:\n" +
 			"Options pertaining to the Aerospike Secret Agent.\n" +
 			"See documentation here: https://aerospike.com/docs/tools/secret-agent.\n" +
-			"Both asbackup and asrestore support getting all the cloud configuration parameters\n" +
+			"Both aerospike-backup and aerospike-restore support getting all the cloud configuration parameters\n" +
 			"from the Aerospike Secret Agent.\n" +
 			"To use a secret as an option, use this format: 'secrets:<resource_name>:<secret_name>' \n" +
-			"Example: asbackup --azure-account-name secret:resource1:azaccount")
+			"Example: aerospike-backup --azure-account-name secret:resource1:azaccount")
 		secretAgentFlagSet.PrintDefaults()
 
 		// Print section: Local Flags

@@ -46,7 +46,7 @@ func NewBackupWriter(
 		return nil, fmt.Errorf("failed to create backup writer: %w", err)
 	}
 
-	// If asbackup was launched with --remove-artifacts, we don't need to initialize all clients.
+	// If backup was launched with --remove-artifacts, we don't need to initialize all clients.
 	// We clean the folder on writer initialization and exit.
 	if params.Backup != nil && params.Backup.RemoveArtifacts {
 		return nil, nil

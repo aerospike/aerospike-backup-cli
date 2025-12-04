@@ -3,7 +3,7 @@
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/aerospike/aerospike-backup-cli)](https://pkg.go.dev/github.com/aerospike/aerospike-backup-cli)
 [![codecov](https://codecov.io/gh/aerospike/aerospike-backup-cli/graph/badge.svg?token=29G65BU7QX)](https://codecov.io/gh/aerospike/aerospike-backup-cli)
 
-The repository includes the [asbackup](cmd/asbackup) and [asrestore](cmd/asrestore) CLI tools,
+The repository includes the [aerospike-backup](cmd/backup) and [aerospike-restore](cmd/restore) CLI tools,
 built using [backup-go](https://github.com/aerospike/backup-go) library.
 Refer to their respective README files for usage instructions.
 Binaries for various platforms are released alongside the library and can be found under
@@ -36,13 +36,13 @@ Binaries for various platforms are released alongside the library and can be fou
 ### Basic Backup
 ```bash
 # Simple namespace backup
-asbackup -h 127.0.0.1:3000 -n test -d /backup/test-namespace
+aerospike-backup -h 127.0.0.1:3000 -n test -d /backup/test-namespace
 ```
 
 ### Basic Restore
 ```bash
 # Restore from backup directory
-asrestore -h 127.0.0.1:3000 -n test -d /backup/test-namespace
+aerospike-restore -h 127.0.0.1:3000 -n test -d /backup/test-namespace
 ```
 
 ## Installation
@@ -52,15 +52,15 @@ Download pre-built binaries from [GitHub Releases](https://github.com/aerospike/
 
 ```bash
 # Linux x64
-wget https://github.com/aerospike/aerospike-backup-cli/releases/download/<version>/asrestore-<version>-<arch>.tar.gz
-wget https://github.com/aerospike/aerospike-backup-cli/releases/download/<version>/asbackup-<version>-<arch>.tar.gz
+wget https://github.com/aerospike/aerospike-backup-cli/releases/download/<version>/aerospike-restore-<version>-<arch>.tar.gz
+wget https://github.com/aerospike/aerospike-backup-cli/releases/download/<version>/aerospike-backup-<version>-<arch>.tar.gz
 
 # Extract
-tar -xzvf asrestore-<version>-<arch>.tar.gz
-tar -xzvf asbackup-<version>-<arch>.tar.gz
+tar -xzvf aerospike-restore-<version>-<arch>.tar.gz
+tar -xzvf aerospike-backup-<version>-<arch>.tar.gz
 
 # Make executable
-chmod +x asbackup asrestore
+chmod +x aerospike-backup aerospike-restore
 ```
 
 ### Build from Source
@@ -91,8 +91,8 @@ A single docker image, including both tools, will be created.
 Usage example:
 
 ```bash
-docker run --rm aerospike-backup-tools:<tag> asrestore --help
-docker run --rm aerospike-backup-tools:<tag> asbackup --help
+docker run --rm aerospike-backup-tools:<tag> aerospike-restore --help
+docker run --rm aerospike-backup-tools:<tag> aerospike-backup --help
 ```
 
 ### Linux Packages
@@ -104,7 +104,7 @@ The generated packages and their `sha256` checksum files will be located in the 
 
 ## Configuration Reference
 
-Please look at [asbackup](cmd/asbackup/readme.md) and [asrestore](cmd/asrestore/readme.md) readme files for details.
+Please look at [aerospike-backup](cmd/backup/readme.md) and [aerospike-restore](cmd/restore/readme.md) readme files for details.
 
 ## License
 

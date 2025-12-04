@@ -22,7 +22,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/aerospike/aerospike-backup-cli/cmd/asrestore/cmd"
+	"github.com/aerospike/aerospike-backup-cli/cmd/restore/cmd"
 )
 
 var (
@@ -39,7 +39,7 @@ func main() {
 
 	go func() {
 		sig := <-sigChan
-		log.Printf("stopping asrestore: %v\n", sig)
+		log.Printf("stopping aerospike-restore: %v\n", sig)
 		cancel()
 	}()
 

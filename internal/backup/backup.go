@@ -31,7 +31,7 @@ import (
 )
 
 const (
-	idBackup = "asbackup-cli"
+	idBackup = "aerospike-backup"
 )
 
 var xdrSupportedVersion = asinfo.AerospikeVersion{Major: 8}
@@ -202,7 +202,7 @@ func NewService(
 // handling both XDR and scan backups.
 // Returns an error if the backup process encounters issues.
 func (s *Service) Run(ctx context.Context) error {
-	// If asbackup was called with --remove-artifacts, it would be nil.
+	// If aerospike-backup was called with --remove-artifacts, it would be nil.
 	if s == nil {
 		return nil
 	}

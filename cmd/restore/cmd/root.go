@@ -82,7 +82,7 @@ func NewCmd(appVersion, commitHash, buildTime string) (*cobra.Command, *Cmd) {
 	c.flagsCommon = flags.NewCommon(&c.flagsRestore.Common, flags.OperationRestore)
 
 	rootCmd := &cobra.Command{
-		Use:   "asrestore",
+		Use:   "aerospike-restore",
 		Short: "Aerospike restore CLI tool",
 		Long:  welcomeMessage,
 		RunE:  c.run,
@@ -245,7 +245,7 @@ func newHelpFunction(
 		// fmt.Println("are also incompatible in automatic mode (when mode is not set).")
 
 		fmt.Println("\nUsage:")
-		fmt.Println("  asrestore [flags]")
+		fmt.Println("  aerospike-restore [flags]")
 
 		// Print section: App Flags
 		fmt.Println("\nGeneral Flags:")
@@ -273,10 +273,10 @@ func newHelpFunction(
 		fmt.Println("\nSecret Agent Flags:\n" +
 			"Options pertaining to the Aerospike Secret Agent.\n" +
 			"See documentation here: https://aerospike.com/docs/tools/secret-agent.\n" +
-			"Both asbackup and asrestore support getting all the cloud configuration parameters\n" +
+			"Both aerospike-backup and aerospike-restore support getting all the cloud configuration parameters\n" +
 			"from the Aerospike Secret Agent.\n" +
 			"To use a secret as an option, use this format: 'secrets:<resource_name>:<secret_name>' \n" +
-			"Example: asbackup --azure-account-name secret:resource1:azaccount")
+			"Example: aerospike-backup --azure-account-name secret:resource1:azaccount")
 		secretAgentFlagSet.PrintDefaults()
 
 		// Print section: AWS Flags

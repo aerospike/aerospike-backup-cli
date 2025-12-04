@@ -1,25 +1,25 @@
-# Aerospike backup (asbackup)
-Aerospike Backup CLI tool. This page describes capabilities and configuration options of the Aerospike backup tool, `asbackup`.
+# Aerospike backup (aerospike-backup)
+Aerospike Backup CLI tool. This page describes capabilities and configuration options of the Aerospike backup tool, `aerospike-backup`.
 
 ## Overview
-`asbackup` backs up data from an Aerospike database according to a user-defined scope of specific namespaces, sets, or both. The scope supports further refinement with partition or time-based filters.
+`aerospike-backup` backs up data from an Aerospike database according to a user-defined scope of specific namespaces, sets, or both. The scope supports further refinement with partition or time-based filters.
 
-After you define the scope, `asbackup` scans the database and fetches the records that match the specified criteria. `asbackup` captures only the essential data needed for recovery and ignores non-critical system or secondary data.
+After you define the scope, `aerospike-backup` scans the database and fetches the records that match the specified criteria. `aerospike-backup` captures only the essential data needed for recovery and ignores non-critical system or secondary data.
 
-As `asbackup` identifies records for backup, it serializes the data into a predefined format and writes it to a backup file or directory. Serialization converts the in-memory representation of records into a stable format that can be safely stored on disk.
+As `aerospike-backup` identifies records for backup, it serializes the data into a predefined format and writes it to a backup file or directory. Serialization converts the in-memory representation of records into a stable format that can be safely stored on disk.
 
-`asbackup` supports backing up locally or to an Amazon S3 bucket, an Azure container, or a GCP bucket.
+`aerospike-backup` supports backing up locally or to an Amazon S3 bucket, an Azure container, or a GCP bucket.
 
-## `asbackup` limitations
-`asbackup` has the following limitations:
+## `aerospike-backup` limitations
+`aerospike-backup` has the following limitations:
 
-- `asbackup` requires read privileges or higher. See [Configuring Access Control in EE and FE](https://aerospike.com/docs/database/manage/security/rbac/#privileges) for more information.
+- `aerospike-backup` requires read privileges or higher. See [Configuring Access Control in EE and FE](https://aerospike.com/docs/database/manage/security/rbac/#privileges) for more information.
 - Direct backups are supported to S3, Azure, GCP, or you can use other services for storing the backup files after creating them locally.
-- ZSTD is the only compression algorithm available with `asbackup`. 
+- ZSTD is the only compression algorithm available with `aerospike-backup`. 
 - At compression levels 1–2, ZSTD may produce uncompressed (raw) blocks when the algorithm determines that compression would not reduce the data size, as per RFC 8878, which recommends sending uncompressed blocks when the compressed output would be larger than the original.
 
 ## Default backup content
-`asbackup` backs up the following data by default:
+`aerospike-backup` backs up the following data by default:
 
 - Keys
   - Key metadata: digest, TTL, generation count, and key
@@ -43,7 +43,7 @@ Release artifacts are automatically built and uploaded under GitHub Releases.
 ## Supported flags
 ```bash
 Usage:
-  asbackup [flags]
+  aerospike-backup [flags]
 
 General Flags:
   -Z, --help               Display help information.
@@ -56,8 +56,8 @@ General Flags:
 Aerospike Client Flags:
   -h, --host host[:tls-name][:port][,...]                                                           The Aerospike host. (default 127.0.0.1)
   -p, --port int                                                                                    The default Aerospike port. (default 3000)
-  -U, --user string                                                                                 The Aerospike user to use to connect to the Aerospike cluster.
-  -P, --password "env-b64:<env-var>,b64:<b64-pass>,file:<pass-file>,<clear-pass>"                   The Aerospike password to use to connect to the Aerospike 
+  -U, --user string                                                                                 The Aerospike user for the connection to the Aerospike cluster.
+  -P, --password "env-b64:<env-var>,b64:<b64-pass>,file:<pass-file>,<clear-pass>"                   The Aerospike password for the connection to the Aerospike 
                                                                                                     cluster.
       --auth INTERNAL,EXTERNAL,PKI                                                                  The authentication mode used by the Aerospike server. INTERNAL 
                                                                                                     uses standard user/pass. EXTERNAL uses external methods (like LDAP) 
@@ -76,7 +76,7 @@ Aerospike Client Flags:
       --tls-keyfile-password "env-b64:<env-var>,b64:<b64-pass>,file:<pass-file>,<clear-pass>"       The password used to decrypt the key file if encrypted.
       --tls-protocols "[[+][-]all] [[+][-]TLSv1] [[+][-]TLSv1.1] [[+][-]TLSv1.2] [[+][-]TLSv1.3]"   Set the TLS protocol selection criteria. This format is the same 
                                                                                                     as Apache's SSLProtocol documented at 
-                                                                                                    https://httpd.apache.org/docs/current/mod/mod_ssl.html#ssl protocol. (default +TLSv1.2)
+                                                                                                    https://httpd.apache.org/docs/current/mod/mod_ssl.html#sslprotocol . (default +TLSv1.2)
       --services-alternate                                                                          Determines if the client should use "services-alternate" instead 
                                                                                                     of "services" in info request during cluster tending.
       --client-timeout int         Initial host connection timeout duration. The timeout when opening a connection
@@ -107,6 +107,7 @@ Backup Flags:
   -I, --no-indexes                    Don't back up any indexes.
       --no-udfs                       Don't back up any UDFs.
   -w, --parallel int                  Maximum number of scan calls to run in parallel.
+                                      The scan operation will be launched on all corresponding nodes in parallel, simultaneously.
                                       If only one partition range is given, or the entire namespace is being backed up, the range
                                       of partitions will be evenly divided by this number to be processed in parallel. Otherwise, each
                                       filter cannot be parallelized individually, so you may only achieve as much parallelism as there are
@@ -120,7 +121,7 @@ Backup Flags:
                                       Default is 0 (no limit). (DEPRECATED: use --bandwidth instead)
   -N, --bandwidth int                 The limits for read/write storage bandwidth in MiB/s.
                                       Default is 0 (no limit).
-  -T, --info-timeout int              Set the timeout (in ms) for asinfo commands sent from asrestore to the database.
+  -T, --info-timeout int              Set the timeout (in ms) for asinfo commands sent from aerospike-backup to the database.
                                       The info commands are to check version, get indexes, get udfs, count records, and check batch write support. (default 10000)
       --info-retry-interval int       Set the initial interval for a retry (in ms) when info commands are sent. (default 1000)
       --info-retry-multiplier float   Increases the delay between subsequent retry attempts.
@@ -166,7 +167,6 @@ Backup Flags:
                                     or 'service-clear-std' if no TLS is configured.
                                     To get the node name, use the 'node:' info command.
                                     Back up the given cluster nodes only.
-                                    The job is parallelized by the number of nodes unless --parallel is lower than the number of nodes.
                                     This argument is mutually exclusive with --partition-list, --after-digest, --rack-list, --prefer-racks arguments.
                                     Default: back up all nodes in the cluster
   -X, --partition-list string       List of partitions <filter[,<filter>[...]]> to back up. Partition filters can be ranges,
@@ -227,10 +227,10 @@ Encryption Flags:
 Secret Agent Flags:
 Options pertaining to the Aerospike Secret Agent.
 See documentation here: https://aerospike.com/docs/tools/secret-agent.
-Both asbackup and asrestore support getting all the cloud configuration parameters
+Both aerospike-backup and aerospike-restore support getting all the cloud configuration parameters
 from the Aerospike Secret Agent.
 To use a secret as an option, use this format: 'secrets:<resource_name>:<secret_name>' 
-Example: asbackup --azure-account-name secret:resource1:azaccount
+Example: aerospike-backup --azure-account-name secret:resource1:azaccount
       --sa-connection-type string   Secret Agent connection type. Supported types: TCP, UNIX. (default "TCP")
       --sa-address string           Secret Agent host for TCP connection or socket file path for UDS connection.
       --sa-port int                 Secret Agent port (only for TCP connection).
@@ -456,6 +456,7 @@ backup:
     - "bin1"
     - "bin2"
   # Maximum number of scan calls to run in parallel.
+  # The scan operation will be launched on all corresponding nodes in parallel, simultaneously.
   # If only one partition range is given, or the entire namespace is being backed up, the range
   # of partitions will be evenly divided by this number to be processed in parallel. Otherwise, each
   # filter cannot be parallelized individually, so you may only achieve as much parallelism as there are
@@ -592,7 +593,7 @@ backup:
   info-retries-multiplier: 1
   # Set the initial interval for a retry (in ms) when info commands are sent.
   info-retry-interval: 1000
-  # Set the timeout (in ms) for asinfo commands sent from asrestore to the database.
+  # Set the timeout (in ms) for asinfo commands sent from aerospike-backup to the database.
   # The info commands are to check version, get indexes, get udfs, count records, and check batch write support.
   info-timeout: 10000
   # Buffer size in MiB for stdin and stdout operations. Used for pipelining.
