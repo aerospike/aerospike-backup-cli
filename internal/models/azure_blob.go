@@ -117,12 +117,12 @@ func (a *AzureBlob) Validate(isBackup bool) error {
 		return fmt.Errorf("retry max delay must be non-negative")
 	}
 
-	if a.BlockSize < 1 {
-		return fmt.Errorf("block size can't be less than 1")
-	}
-
 	switch isBackup {
 	case true:
+		if a.BlockSize < 1 {
+			return fmt.Errorf("block size can't be less than 1")
+		}
+
 		if a.UploadConcurrency < 1 {
 			return fmt.Errorf("upload concurrency can't be less than 1")
 		}
