@@ -90,7 +90,7 @@ func (g *GcpStorage) Validate(isBackup bool) error {
 			return fmt.Errorf("chunk size can't be less than 1")
 		}
 	}
-	
+
 	if g.MaxConnsPerHost < 0 {
 		return fmt.Errorf("max connections per host must be non-negative")
 	}
