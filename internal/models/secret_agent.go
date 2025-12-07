@@ -14,6 +14,13 @@
 
 package models
 
+import (
+	"fmt"
+	"strings"
+
+	sa "github.com/aerospike/backup-go/pkg/secret-agent"
+)
+
 // SecretAgent contains flags that will be mapped to SecretAgentConfig for backup and restore operations.
 type SecretAgent struct {
 	ConnectionType     string
@@ -22,4 +29,17 @@ type SecretAgent struct {
 	TimeoutMillisecond int
 	CaFile             string
 	IsBase64           bool
+}
+
+func (s *SecretAgent) Validate() error {
+	if s.ConnectionType == "" {
+		return fmt.Errorf("missing connection type")
+	}
+
+	if !strings.EqualFold(s.ConnectionType, sa.ConnectionTypeTCP) &&
+		!strings.EqualFold(s.ConnectionType, sa.ConnectionTypeUDS) {
+		return fmt.Errorf("unsupported connection type: %s", s.ConnectionType)
+	}
+
+	return nil
 }

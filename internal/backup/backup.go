@@ -83,6 +83,12 @@ func NewService(
 		return nil, err
 	}
 
+	if params.SecretAgent != nil {
+		if err := params.SecretAgent.Validate(); err != nil {
+			return nil, err
+		}
+	}
+
 	// Initializations.
 	backupConfig, backupXDRConfig, err := config.NewBackupConfigs(params, logger)
 	if err != nil {
@@ -122,50 +128,9 @@ func NewService(
 
 	infoPolicy, retryInfoPolicy := getInfoPolicies(params)
 
-	if params.BackupXDR != nil {
-		// To pass version check and stop XDR and unblock MRT we need asinfo client without backup client.
-		// So we init it separately in old fashion way.
-		infoClient, err := asinfo.NewClient(
-			aerospikeClient.Cluster(),
-			infoPolicy,
-			retryInfoPolicy,
-		)
-		if err != nil {
-			return nil, fmt.Errorf("failed to create info client: %w", err)
-		}
-
-		version, err := infoClient.GetVersion(ctx)
-		if err != nil {
-			return nil, fmt.Errorf("failed to get version: %w", err)
-		}
-
-		// TODO: move this logic to XDR handler.
-		if xdrSupportedVersion.IsGreater(version) {
-			return nil, fmt.Errorf("version %s is unsupported, only databse version %d+ is supproted",
-				version.String(), xdrSupportedVersion)
-		}
-
-		// Stop xdr.
-		if params.IsStopXDR() {
-			logger.Info("stopping XDR on the database")
-
-			if err = stopXDR(ctx, infoClient, backupXDRConfig.DC, backupXDRConfig.Namespace); err != nil {
-				return nil, fmt.Errorf("failed to stop XDR: %w", err)
-			}
-
-			return nil, nil
-		}
-
-		// Unblock mRT.
-		if params.IsUnblockMRT() {
-			logger.Info("enabling MRT writes on the database")
-
-			if err = unblockMrt(ctx, infoClient, backupXDRConfig.Namespace); err != nil {
-				return nil, fmt.Errorf("failed to enable MRT writes: %w", err)
-			}
-
-			return nil, nil
-		}
+	// Process XDR.
+	if err := initXdr(ctx, params, backupXDRConfig, aerospikeClient, infoPolicy, retryInfoPolicy, logger); err != nil {
+		return nil, err
 	}
 
 	logger.Info("initializing backup client", slog.String("id", idBackup))
@@ -196,6 +161,63 @@ func NewService(
 	}
 
 	return asb, nil
+}
+
+func initXdr(
+	ctx context.Context,
+	params *config.BackupServiceConfig,
+	backupXDRConfig *backup.ConfigBackupXDR,
+	aerospikeClient *aerospike.Client,
+	infoPolicy *aerospike.InfoPolicy,
+	retryInfoPolicy *models.RetryPolicy,
+	logger *slog.Logger) error {
+	if params.BackupXDR != nil {
+		// To pass version check and stop XDR and unblock MRT we need asinfo client without backup client.
+		// So we init it separately in old fashion way.
+		infoClient, err := asinfo.NewClient(
+			aerospikeClient.Cluster(),
+			infoPolicy,
+			retryInfoPolicy,
+		)
+		if err != nil {
+			return fmt.Errorf("failed to create info client: %w", err)
+		}
+
+		version, err := infoClient.GetVersion(ctx)
+		if err != nil {
+			return fmt.Errorf("failed to get version: %w", err)
+		}
+
+		// TODO: move this logic to XDR handler.
+		if xdrSupportedVersion.IsGreater(version) {
+			return fmt.Errorf("version %s is unsupported, only databse version %d+ is supproted",
+				version.String(), xdrSupportedVersion)
+		}
+
+		// Stop xdr.
+		if params.IsStopXDR() {
+			logger.Info("stopping XDR on the database")
+
+			if err = stopXDR(ctx, infoClient, backupXDRConfig.DC, backupXDRConfig.Namespace); err != nil {
+				return fmt.Errorf("failed to stop XDR: %w", err)
+			}
+
+			return nil
+		}
+
+		// Unblock mRT.
+		if params.IsUnblockMRT() {
+			logger.Info("enabling MRT writes on the database")
+
+			if err = unblockMrt(ctx, infoClient, backupXDRConfig.Namespace); err != nil {
+				return fmt.Errorf("failed to enable MRT writes: %w", err)
+			}
+
+			return nil
+		}
+	}
+
+	return nil
 }
 
 // Run executes the backup process for the Service based on its configuration and context,
