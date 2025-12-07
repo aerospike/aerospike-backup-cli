@@ -31,7 +31,12 @@ type SecretAgent struct {
 	IsBase64           bool
 }
 
+// Validate checks if SecretAgent params are valid.
 func (s *SecretAgent) Validate() error {
+	if s == nil {
+		return nil
+	}
+
 	if s.ConnectionType == "" {
 		return fmt.Errorf("missing connection type")
 	}

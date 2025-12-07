@@ -83,10 +83,8 @@ func NewService(
 		return nil, err
 	}
 
-	if params.SecretAgent != nil {
-		if err := params.SecretAgent.Validate(); err != nil {
-			return nil, err
-		}
+	if err := params.SecretAgent.Validate(); err != nil {
+		return nil, err
 	}
 
 	// Initializations.
@@ -130,12 +128,9 @@ func NewService(
 
 	// Process XDR.
 	shouldExit, err := initXdr(ctx, params, backupXDRConfig, aerospikeClient, infoPolicy, retryInfoPolicy, logger)
-	if err != nil {
+	// If we should exit, err will be nil.
+	if shouldExit || err != nil {
 		return nil, err
-	}
-
-	if shouldExit {
-		return nil, nil
 	}
 
 	logger.Info("initializing backup client", slog.String("id", idBackup))
