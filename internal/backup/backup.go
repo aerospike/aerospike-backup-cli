@@ -129,8 +129,13 @@ func NewService(
 	infoPolicy, retryInfoPolicy := getInfoPolicies(params)
 
 	// Process XDR.
-	if err := initXdr(ctx, params, backupXDRConfig, aerospikeClient, infoPolicy, retryInfoPolicy, logger); err != nil {
+	shouldExit, err := initXdr(ctx, params, backupXDRConfig, aerospikeClient, infoPolicy, retryInfoPolicy, logger)
+	if err != nil {
 		return nil, err
+	}
+
+	if shouldExit {
+		return nil, nil
 	}
 
 	logger.Info("initializing backup client", slog.String("id", idBackup))
@@ -170,7 +175,7 @@ func initXdr(
 	aerospikeClient *aerospike.Client,
 	infoPolicy *aerospike.InfoPolicy,
 	retryInfoPolicy *models.RetryPolicy,
-	logger *slog.Logger) error {
+	logger *slog.Logger) (bool, error) {
 	if params.BackupXDR != nil {
 		// To pass version check and stop XDR and unblock MRT we need asinfo client without backup client.
 		// So we init it separately in old fashion way.
@@ -180,17 +185,17 @@ func initXdr(
 			retryInfoPolicy,
 		)
 		if err != nil {
-			return fmt.Errorf("failed to create info client: %w", err)
+			return false, fmt.Errorf("failed to create info client: %w", err)
 		}
 
 		version, err := infoClient.GetVersion(ctx)
 		if err != nil {
-			return fmt.Errorf("failed to get version: %w", err)
+			return false, fmt.Errorf("failed to get version: %w", err)
 		}
 
 		// TODO: move this logic to XDR handler.
 		if xdrSupportedVersion.IsGreater(version) {
-			return fmt.Errorf("version %s is unsupported, only databse version %d+ is supproted",
+			return false, fmt.Errorf("version %s is unsupported, only databse version %d+ is supproted",
 				version.String(), xdrSupportedVersion)
 		}
 
@@ -199,10 +204,10 @@ func initXdr(
 			logger.Info("stopping XDR on the database")
 
 			if err = stopXDR(ctx, infoClient, backupXDRConfig.DC, backupXDRConfig.Namespace); err != nil {
-				return fmt.Errorf("failed to stop XDR: %w", err)
+				return false, fmt.Errorf("failed to stop XDR: %w", err)
 			}
 
-			return nil
+			return true, nil
 		}
 
 		// Unblock mRT.
@@ -210,14 +215,14 @@ func initXdr(
 			logger.Info("enabling MRT writes on the database")
 
 			if err = unblockMrt(ctx, infoClient, backupXDRConfig.Namespace); err != nil {
-				return fmt.Errorf("failed to enable MRT writes: %w", err)
+				return false, fmt.Errorf("failed to enable MRT writes: %w", err)
 			}
 
-			return nil
+			return true, nil
 		}
 	}
 
-	return nil
+	return false, nil
 }
 
 // Run executes the backup process for the Service based on its configuration and context,
