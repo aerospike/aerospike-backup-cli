@@ -57,7 +57,7 @@ func NewRestoreServiceConfig(
 ) (*RestoreServiceConfig, error) {
 	// If we have a config file, load serviceConfig from it.
 	if app.ConfigFilePath != "" {
-		serviceConfig, err := decodeRestoreServiceConfig(app.ConfigFilePath)
+		serviceConfig, err := DecodeRestoreServiceConfig(app.ConfigFilePath)
 		if err != nil {
 			return nil, fmt.Errorf("failed to load config file %s: %w", app.ConfigFilePath, err)
 		}
