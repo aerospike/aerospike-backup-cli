@@ -33,7 +33,8 @@ func TestSecretAgent_NewFlagSet(t *testing.T) {
 		"--sa-address", "/tmp/secret-agent.sock",
 		"--sa-port", "8080",
 		"--sa-timeout", "5000",
-		"--sa-cafile", "/path/to/ca.pem",
+		"--sa-ca-file", "/path/to/ca.pem",
+		"--sa-tls-name", "example.com",
 		"--sa-is-base64",
 	}
 
@@ -47,6 +48,7 @@ func TestSecretAgent_NewFlagSet(t *testing.T) {
 	assert.Equal(t, 8080, result.Port)
 	assert.Equal(t, 5000, result.TimeoutMillisecond)
 	assert.Equal(t, "/path/to/ca.pem", result.CaFile)
+	assert.Equal(t, "example.com", result.TLSName)
 	assert.True(t, result.IsBase64)
 }
 
@@ -63,9 +65,10 @@ func TestSecretAgent_NewFlagSet_DefaultValues(t *testing.T) {
 	result := secretAgent.GetSecretAgent()
 
 	assert.Equal(t, models.DefaultSecretAgentConnectionType, result.ConnectionType)
-	assert.Equal(t, "", result.Address)
-	assert.Equal(t, 0, result.Port)
-	assert.Equal(t, 0, result.TimeoutMillisecond)
-	assert.Equal(t, "", result.CaFile)
+	assert.Equal(t, models.DefaultSecretAgentAddress, result.Address)
+	assert.Equal(t, models.DefaultSecretAgentPort, result.Port)
+	assert.Equal(t, models.DefaultSecretAgentTimeoutMillisecond, result.TimeoutMillisecond)
+	assert.Equal(t, models.DefaultSecretAgentCaFile, result.CaFile)
+	assert.Equal(t, models.DefaultSecretAgentTLSName, result.TLSName)
 	assert.False(t, result.IsBase64)
 }

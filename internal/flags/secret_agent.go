@@ -46,9 +46,13 @@ func (f *SecretAgent) NewFlagSet() *pflag.FlagSet {
 		models.DefaultSecretAgentTimeoutMillisecond,
 		"Secret Agent connection and reading timeout.")
 
-	flagSet.StringVar(&f.CaFile, "sa-cafile",
+	flagSet.StringVar(&f.CaFile, "sa-ca-file",
 		models.DefaultSecretAgentCaFile,
 		"Path to ca file for encrypted connections.")
+
+	flagSet.StringVar(&f.TLSName, "sa-tls-name",
+		models.DefaultSecretAgentTLSName,
+		"TLS name (SNI) for encrypted connections.")
 
 	flagSet.BoolVar(&f.IsBase64, "sa-is-base64",
 		models.DefaultSecretAgentIsBase64,
