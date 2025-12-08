@@ -111,7 +111,7 @@ func newS3Client(ctx context.Context, a *models.AwsS3) (*s3.Client, error) {
 								attempt = 1
 							}
 
-							base := time.Duration(a.RetryBackoff) * time.Millisecond // e.g. 6000 = 6s
+							base := time.Duration(a.RetryBackoff) * time.Millisecond
 							maxBackoff := time.Duration(a.RetryMaxBackoff) * time.Millisecond
 
 							// simple exponential: base * 2^(attempt-1)
