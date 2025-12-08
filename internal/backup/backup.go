@@ -269,7 +269,7 @@ func (s *Service) Run(ctx context.Context) error {
 		// Running ordinary backup.
 		h, err := s.backupClient.Backup(ctx, s.backupConfig, s.writer, s.reader)
 		if err != nil {
-			return fmt.Errorf("failed to start backup: %w", err)
+			return fmt.Errorf("failed to start backup: %w", errHumanize(err))
 		}
 
 		go logging.PrintBackupEstimate(ctx, h.GetStats(), h.GetMetrics, s.logger)
@@ -343,4 +343,15 @@ func getInfoPolicies(params *config.BackupServiceConfig) (*aerospike.InfoPolicy,
 	default:
 		return nil, nil
 	}
+}
+
+// errHumanize make errors human readable.
+func errHumanize(err error) error {
+	// This error is returned from the info command, so it is not aerospike.Error.
+	// Because if that, we can check only string.
+	if strings.Contains(err.Error(), "namespace not found on node") {
+		return fmt.Errorf("namespace not found on node")
+	}
+
+	return err
 }
