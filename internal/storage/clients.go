@@ -106,9 +106,22 @@ func newS3Client(ctx context.Context, a *models.AwsS3) (*s3.Client, error) {
 					func(so *retry.StandardOptions) {
 						so.MaxAttempts = a.RetryMaxAttempts
 						so.MaxBackoff = time.Duration(a.RetryMaxBackoff) * time.Millisecond
-						so.Backoff = retry.NewExponentialJitterBackoff(
-							time.Duration(a.RetryBackoff) * time.Millisecond,
-						)
+						so.Backoff = retry.BackoffDelayerFunc(func(attempt int, _ error) (time.Duration, error) {
+							if attempt < 1 {
+								attempt = 1
+							}
+
+							base := time.Duration(a.RetryBackoff) * time.Millisecond // e.g. 6000 = 6s
+							maxBackoff := time.Duration(a.RetryMaxBackoff) * time.Millisecond
+
+							// simple exponential: base * 2^(attempt-1)
+							delay := base << (attempt - 1)
+							if delay > maxBackoff {
+								delay = maxBackoff
+							}
+
+							return delay, nil
+						})
 					})
 			})
 		}),

@@ -272,7 +272,8 @@ Any AWS parameter can be retrieved from Secret Agent.
       --s3-calculate-checksum         Calculate checksum for each uploaded object.
       --s3-retry-max-attempts int     Maximum number of attempts that should be made in case of an error. (default 10)
       --s3-retry-max-backoff int      Max backoff duration (in ms) between retried attempts. (default 90000)
-      --s3-retry-backoff int          Provides the backoff, (in ms), that the retryer will use to determine the delay between retry attempts. (default 60000)
+      --s3-retry-backoff int          Provides the backoff, (in ms), that the retryer will use to determine the delay between retry attempts.
+                                      The delay increases exponentially with each retry up to the maximum specified by s3-retry-max-backoff. (default 60000)
       --s3-max-conns-per-host int     MaxConnsPerHost optionally limits the total number of connections per host,
                                       including connections in the dialing, active, and idle states. On limit violation, dials will block.
                                       0 means no limit.
@@ -666,6 +667,7 @@ aws:
     # Max backoff duration (in ms) between retried attempts.
     retry-max-backoff: 90
     # Provides the backoff, (in ms), that the retryer will use to determine the delay between retry attempts.
+    # The delay increases exponentially with each retry up to the maximum specified by s3-retry-max-backoff.
     retry-backoff: 60
     # Chunk size controls the maximum number of megabytes of the object that the app will attempt to send to
     # the storage in a single request. Objects smaller than the size will be sent in a single request,
