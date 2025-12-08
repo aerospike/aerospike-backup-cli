@@ -54,6 +54,14 @@ func (f *SecretAgent) NewFlagSet() *pflag.FlagSet {
 		models.DefaultSecretAgentTLSName,
 		"TLS name (SNI) for encrypted connections.")
 
+	flagSet.StringVar(&f.CertFile, "sa-cert-file",
+		models.DefaultSecretAgentCertFile,
+		"Path to a client certificate file for mutual TLS authentication.")
+
+	flagSet.StringVar(&f.KeyFile, "sa-key-file",
+		models.DefaultSecretAgentKeyFile,
+		"Path to a client private key file for mutual TLS authentication.")
+
 	flagSet.BoolVar(&f.IsBase64, "sa-is-base64",
 		models.DefaultSecretAgentIsBase64,
 		"Whether Secret Agent responses are Base64 encoded.")

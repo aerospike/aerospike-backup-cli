@@ -47,6 +47,8 @@ func testSecretAgent() *models.SecretAgent {
 		Port:               8080,
 		TimeoutMillisecond: 1000,
 		CaFile:             "/path/to/ca.pem",
+		CertFile:           "/path/to/cert.pem",
+		KeyFile:            "/path/to/key.pem",
 		TLSName:            "example.com",
 		IsBase64:           true,
 	}
@@ -315,6 +317,8 @@ func TestMapSecretAgentConfig_Success(t *testing.T) {
 	assert.Equal(t, 8080, *secretAgentConfig.Port)
 	assert.Equal(t, 1000, *secretAgentConfig.TimeoutMillisecond)
 	assert.Equal(t, "/path/to/ca.pem", *secretAgentConfig.CaFile)
+	assert.Equal(t, "/path/to/cert.pem", *secretAgentConfig.CertFile)
+	assert.Equal(t, "/path/to/key.pem", *secretAgentConfig.KeyFile)
 	assert.Equal(t, "example.com", *secretAgentConfig.TLSName)
 	assert.True(t, *secretAgentConfig.IsBase64)
 }

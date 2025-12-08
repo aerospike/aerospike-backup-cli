@@ -358,6 +358,8 @@ type SecretAgent struct {
 	Port               *int    `yaml:"port"`
 	TimeoutMillisecond *int    `yaml:"timeout"`
 	CaFile             *string `yaml:"ca-file"`
+	CertFile           *string `yaml:"cert-file"`
+	KeyFile            *string `yaml:"key-file"`
 	TLSName            *string `yaml:"tls-name"`
 	IsBase64           *bool   `yaml:"is-base64"`
 }
@@ -369,6 +371,8 @@ func defaultSecretAgent() *SecretAgent {
 		Port:               intPtr(models.DefaultSecretAgentPort),
 		TimeoutMillisecond: intPtr(models.DefaultSecretAgentTimeoutMillisecond),
 		CaFile:             stringPtr(models.DefaultSecretAgentCaFile),
+		CertFile:           stringPtr(models.DefaultSecretAgentCertFile),
+		KeyFile:            stringPtr(models.DefaultSecretAgentKeyFile),
 		TLSName:            stringPtr(models.DefaultSecretAgentTLSName),
 		IsBase64:           boolPtr(models.DefaultSecretAgentIsBase64),
 	}
@@ -385,6 +389,8 @@ func (s *SecretAgent) ToModelSecretAgent() *models.SecretAgent {
 		Port:               derefInt(s.Port),
 		TimeoutMillisecond: derefInt(s.TimeoutMillisecond),
 		CaFile:             derefString(s.CaFile),
+		CertFile:           derefString(s.CertFile),
+		KeyFile:            derefString(s.KeyFile),
 		TLSName:            derefString(s.TLSName),
 		IsBase64:           derefBool(s.IsBase64),
 	}
