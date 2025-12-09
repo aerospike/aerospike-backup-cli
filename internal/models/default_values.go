@@ -115,6 +115,9 @@ const (
 	DefaultSecretAgentPort               = 0
 	DefaultSecretAgentTimeoutMillisecond = 0
 	DefaultSecretAgentCaFile             = ""
+	DefaultSecretAgentTLSName            = ""
+	DefaultSecretAgentCertFile           = ""
+	DefaultSecretAgentKeyFile            = ""
 	DefaultSecretAgentIsBase64           = false
 )
 

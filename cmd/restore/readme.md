@@ -213,7 +213,10 @@ Example: abs-backup-cli --azure-account-name secret:resource1:azaccount
       --sa-address string           Secret Agent host for TCP connection or socket file path for UDS connection.
       --sa-port int                 Secret Agent port (only for TCP connection).
       --sa-timeout int              Secret Agent connection and reading timeout.
-      --sa-cafile string            Path to ca file for encrypted connections.
+      --sa-ca-file string           Path to ca file for encrypted connections.
+      --sa-tls-name string          TLS name (SNI) for encrypted connections.
+      --sa-cert-file string         Path to a client certificate file for mutual TLS authentication.
+      --sa-key-file string          Path to a client private key file for mutual TLS authentication.
       --sa-is-base64                Whether Secret Agent responses are Base64 encoded.
 
 AWS Storage Flags:
@@ -584,6 +587,13 @@ secret-agent:
   timeout: 0
   # Path to ca file for encrypted connections.
   ca-file: ""
+  # TLS name (SNI) for encrypted connections.
+  tls-name: ""
+  # Path to a client certificate file for mutual TLS authentication.
+  cert-file: ""
+  # Path to a client private key file for mutual TLS authentication.
+  key-file: ""
+  # Whether Secret Agent responses are Base64 encoded.
   # Whether Secret Agent responses are Base64 encoded.
   is-base64: false
 

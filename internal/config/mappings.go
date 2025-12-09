@@ -169,6 +169,26 @@ func newSecretAgentConfig(s *models.SecretAgent) *backup.SecretAgentConfig {
 		c.CaFile = &s.CaFile
 	}
 
+	if s.TLSName != "" {
+		c.TLSName = &s.TLSName
+	}
+
+	if s.CertFile != "" {
+		c.CertFile = &s.CertFile
+	}
+
+	if s.KeyFile != "" {
+		c.KeyFile = &s.KeyFile
+	}
+
+	if s.CertFile != "" {
+		c.CertFile = &s.CertFile
+	}
+
+	if s.KeyFile != "" {
+		c.KeyFile = &s.KeyFile
+	}
+
 	if s.IsBase64 {
 		c.IsBase64 = &s.IsBase64
 	}

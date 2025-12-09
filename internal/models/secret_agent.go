@@ -27,8 +27,13 @@ type SecretAgent struct {
 	Address            string
 	Port               int
 	TimeoutMillisecond int
-	CaFile             string
-	IsBase64           bool
+
+	CaFile   string
+	TLSName  string
+	CertFile string
+	KeyFile  string
+
+	IsBase64 bool
 }
 
 // Validate checks if SecretAgent params are valid.
