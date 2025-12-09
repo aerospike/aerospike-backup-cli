@@ -37,7 +37,6 @@ func TestAwsS3_NewFlagSet(t *testing.T) {
 		"--s3-chunk-size", "1",
 		"--s3-retry-max-attempts", "10",
 		"--s3-retry-max-backoff", "10",
-		"--s3-retry-backoff", "10",
 		"--s3-upload-concurrency", "10",
 		"--s3-max-conns-per-host", "10",
 		"--s3-request-timeout", "10",
@@ -109,7 +108,7 @@ func TestAwsS3_NewFlagSet_DefaultValues(t *testing.T) {
 	assert.NoError(t, err)
 	result = awsS3.GetAwsS3()
 
-	assert.Equal(t, models.DefaultS3RestorePollDuration, result.RestorePollDuration, "The default value for s3-retry-backoff should be 6000")
+	assert.Equal(t, models.DefaultS3RestorePollDuration, result.RestorePollDuration, "The default value for s3-restore-poll-duration should be 6000")
 	assert.Equal(t, models.DefaultCloudRetryReadBackoff, result.RetryReadBackoff, "The default value for s3-retry-read-backoff should be 0")
 	assert.Equal(t, models.DefaultCloudRetryReadMultiplier, result.RetryReadMultiplier, "The default value for s3-retry-read-multiplier should be 0")
 	assert.Equal(t, models.DefaultCloudRetryReadMaxAttempts, result.RetryReadMaxAttempts, "The default value for s3-retry-read-max-attempts should be 0")
