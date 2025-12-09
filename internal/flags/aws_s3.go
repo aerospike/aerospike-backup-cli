@@ -120,11 +120,8 @@ func (f *AwsS3) NewFlagSet() *pflag.FlagSet {
 
 	flagSet.IntVar(&f.RetryMaxBackoff, "s3-retry-max-backoff",
 		models.DefaultS3RetryMaxBackoff,
-		"Max backoff duration (in ms) between retried attempts.")
-
-	flagSet.IntVar(&f.RetryBackoff, "s3-retry-backoff",
-		models.DefaultS3RetryBackoff,
-		"Provides the backoff, (in ms), that the retryer will use to determine the delay between retry attempts.")
+		"Max backoff duration (in ms) between retried attempts.\n"+
+			"The delay increases exponentially with each retry up to the maximum specified by s3-retry-max-backoff.")
 
 	flagSet.IntVar(&f.MaxConnsPerHost, "s3-max-conns-per-host",
 		models.DefaultCloudMaxConnsPerHost,

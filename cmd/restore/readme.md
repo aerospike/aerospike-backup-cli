@@ -88,7 +88,7 @@ Aerospike Client Flags:
 Restore Flags:
   -d, --directory string              The directory that holds the backup files. Required, unless --input-file is used.
   -n, --namespace string              Used to restore to a different namespace. Example: source-ns,destination-ns
-  -s, --set string                    Only restore the given sets from the backup.
+  -s, --set-list string               Only restore the given sets from the backup.
                                       Default: restore all sets.
   -B, --bin-list string               Only restore the given bins in the backup.
                                       If empty, include all bins.
@@ -236,8 +236,8 @@ Any AWS parameter can be retrieved from Secret Agent.
                                           Used in combination with initial delay. (default 2)
       --s3-retry-read-max-attempts uint   The maximum number of retry attempts that will be made. If set to 0, no retries will be performed. (default 3)
       --s3-retry-max-attempts int         Maximum number of attempts that should be made in case of an error. (default 10)
-      --s3-retry-max-backoff int          Max backoff duration (in ms) between retried attempts. (default 90000)
-      --s3-retry-backoff int              Provides the backoff, (in ms), that the retryer will use to determine the delay between retry attempts. (default 60000)
+      --s3-retry-max-backoff int          Max backoff duration (in ms) between retried attempts.
+                                          The delay increases exponentially with each retry up to the maximum specified by s3-retry-max-backoff. (default 90000)
       --s3-max-conns-per-host int         MaxConnsPerHost optionally limits the total number of connections per host,
                                           including connections in the dialing, active, and idle states. On limit violation, dials will block.
                                           0 means no limit.
@@ -609,9 +609,8 @@ aws:
     # Maximum number of attempts that should be made in case of an error.
     retry-max-attempts: 10
     # Max backoff duration (in ms) between retried attempts.
-    retry-max-backoff: 90
-    # Provides the backoff, (in ms), that the retryer will use to determine the delay between retry attempts.
-    retry-backoff: 60
+    # The delay increases exponentially with each retry up to the maximum specified by s3-retry-max-backoff.
+    retry-max-backoff: 90000
     # The initial delay (in ms) between retry attempts. 
     # In case of connection errors tool will retry reading the object from the last known position.
     retry-read-backoff: 1
@@ -627,7 +626,7 @@ aws:
     # Timeout (in ms) specifies a time limit for requests made by this Client.
     # The timeout includes connection time, any redirects, and reading the response body.
     # 0 means no limit.
-    request-timeout: 600
+    request-timeout: 600000
 
 gcp:
   storage:
@@ -641,9 +640,9 @@ gcp:
     # before producing an error.
     retry-max-attempts: 10
     # Max backoff is the maximum value (in ms) of the retry period.
-    retry-max-backoff: 90
+    retry-max-backoff: 90000
     # Initial backoff is the initial value (in ms) of the retry period.
-    retry-init-backoff: 60
+    retry-init-backoff: 60000
     # Multiplier is the factor by which the retry period increases.
     # It should be greater than 1.
     retry-backoff-multiplier: 2
@@ -662,7 +661,7 @@ gcp:
     # Timeout (in ms) specifies a time limit for requests made by this Client.
     # The timeout includes connection time, any redirects, and reading the response body.
     # 0 means no limit.
-    request-timeout: 600
+    request-timeout: 600000
 
 azure:
   blob:
@@ -695,10 +694,10 @@ azure:
     # Retry delay specifies the initial amount of delay (in ms) to use before retrying an operation.
     # The value is used only if the HTTP response does not contain a Retry-After header.
     # The delay increases exponentially with each retry up to the maximum specified by azure-retry-max-delay.
-    retry-delay: 60
+    retry-delay: 60000
     # Max retry delay specifies the maximum delay (in ms) allowed before retrying an operation.
     # Typically the value is greater than or equal to the value specified in azure-retry-delay.
-    retry-max-delay: 90
+    retry-max-delay: 90000
     # The initial delay (in ms) between retry attempts. 
     # In case of connection errors tool will retry reading the object from the last known position.
     retry-read-backoff: 1
@@ -714,5 +713,5 @@ azure:
     # Timeout (in ms) specifies a time limit for requests made by this Client.
     # The timeout includes connection time, any redirects, and reading the response body.
     # 0 means no limit.
-    request-timeout: 600
+    request-timeout: 600000
 ```

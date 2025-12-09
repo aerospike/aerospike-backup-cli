@@ -191,7 +191,7 @@ func initXdr(
 
 		// TODO: move this logic to XDR handler.
 		if xdrSupportedVersion.IsGreater(version) {
-			return false, fmt.Errorf("version %s is unsupported, only databse version %d+ is supproted",
+			return false, fmt.Errorf("version %s is unsupported, only databse version %d+ is supported",
 				version.String(), xdrSupportedVersion)
 		}
 

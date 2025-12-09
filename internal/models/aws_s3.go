@@ -36,7 +36,6 @@ type AwsS3 struct {
 
 	RetryMaxAttempts int
 	RetryMaxBackoff  int
-	RetryBackoff     int
 
 	ChunkSize         int
 	UploadConcurrency int
@@ -103,10 +102,6 @@ func (a *AwsS3) Validate(isBackup bool) error {
 
 	if a.RetryMaxBackoff < 0 {
 		return fmt.Errorf("retry max backoff must be non-negative")
-	}
-
-	if a.RetryBackoff < 0 {
-		return fmt.Errorf("retry backoff must be non-negative")
 	}
 
 	switch isBackup {
