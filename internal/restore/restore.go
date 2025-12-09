@@ -28,7 +28,7 @@ import (
 	bModels "github.com/aerospike/backup-go/models"
 )
 
-const idRestore = "aerospike-restore"
+const idRestore = "abs-restore-cli"
 
 // Service represents a type used to handle Aerospike data recovery operations with configurable restore settings.
 type Service struct {

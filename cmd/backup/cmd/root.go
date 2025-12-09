@@ -83,7 +83,7 @@ func NewCmd(appVersion, commitHash, buildTime string) (*cobra.Command, *Cmd) {
 	c.flagsCommon = flags.NewCommon(&c.flagsBackup.Common, flags.OperationBackup)
 
 	rootCmd := &cobra.Command{
-		Use:   "aerospike-backup",
+		Use:   "abs-backup-cli",
 		Short: "Aerospike backup CLI tool",
 		Long:  welcomeMessage,
 		RunE:  c.run,
@@ -274,10 +274,10 @@ func newHelpFunction(
 		fmt.Println(welcomeMessage)
 		fmt.Println(strings.Repeat("-", len(welcomeMessage)))
 		fmt.Println("\nUsage:")
-		fmt.Println("  aerospike-backup [flags]")
+		fmt.Println("  abs-backup-cli [flags]")
 
 		// Printing hint for xdr command.
-		//	fmt.Println("  aerospike-backup xdr [flags]")
+		//	fmt.Println("  abs-backup-cli xdr [flags]")
 
 		// Print section: App Flags
 		fmt.Println("\nGeneral Flags:")
@@ -305,10 +305,10 @@ func newHelpFunction(
 		fmt.Println("\nSecret Agent Flags:\n" +
 			"Options pertaining to the Aerospike Secret Agent.\n" +
 			"See documentation here: https://aerospike.com/docs/tools/secret-agent.\n" +
-			"Both aerospike-backup and aerospike-restore support getting all the cloud configuration parameters\n" +
+			"Both abs-backup-cli and abs-restore-cli support getting all the cloud configuration parameters\n" +
 			"from the Aerospike Secret Agent.\n" +
 			"To use a secret as an option, use this format: 'secrets:<resource_name>:<secret_name>' \n" +
-			"Example: aerospike-backup --azure-account-name secret:resource1:azaccount")
+			"Example: abs-backup-cli --azure-account-name secret:resource1:azaccount")
 		secretAgentFlagSet.PrintDefaults()
 
 		// Print section: Local Flags

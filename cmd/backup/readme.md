@@ -1,25 +1,25 @@
-# Aerospike backup (aerospike-backup)
-Aerospike Backup CLI tool. This page describes capabilities and configuration options of the Aerospike backup tool, `aerospike-backup`.
+# Aerospike backup (abs-backup-cli)
+Aerospike Backup CLI tool. This page describes capabilities and configuration options of the Aerospike backup tool, `abs-backup-cli`.
 
 ## Overview
-`aerospike-backup` backs up data from an Aerospike database according to a user-defined scope of specific namespaces, sets, or both. The scope supports further refinement with partition or time-based filters.
+`abs-backup-cli` backs up data from an Aerospike database according to a user-defined scope of specific namespaces, sets, or both. The scope supports further refinement with partition or time-based filters.
 
-After you define the scope, `aerospike-backup` scans the database and fetches the records that match the specified criteria. `aerospike-backup` captures only the essential data needed for recovery and ignores non-critical system or secondary data.
+After you define the scope, `abs-backup-cli` scans the database and fetches the records that match the specified criteria. `abs-backup-cli` captures only the essential data needed for recovery and ignores non-critical system or secondary data.
 
-As `aerospike-backup` identifies records for backup, it serializes the data into a predefined format and writes it to a backup file or directory. Serialization converts the in-memory representation of records into a stable format that can be safely stored on disk.
+As `abs-backup-cli` identifies records for backup, it serializes the data into a predefined format and writes it to a backup file or directory. Serialization converts the in-memory representation of records into a stable format that can be safely stored on disk.
 
-`aerospike-backup` supports backing up locally or to an Amazon S3 bucket, an Azure container, or a GCP bucket.
+`abs-backup-cli` supports backing up locally or to an Amazon S3 bucket, an Azure container, or a GCP bucket.
 
-## `aerospike-backup` limitations
-`aerospike-backup` has the following limitations:
+## `abs-backup-cli` limitations
+`abs-backup-cli` has the following limitations:
 
-- `aerospike-backup` requires read privileges or higher. See [Configuring Access Control in EE and FE](https://aerospike.com/docs/database/manage/security/rbac/#privileges) for more information.
+- `abs-backup-cli` requires read privileges or higher. See [Configuring Access Control in EE and FE](https://aerospike.com/docs/database/manage/security/rbac/#privileges) for more information.
 - Direct backups are supported to S3, Azure, GCP, or you can use other services for storing the backup files after creating them locally.
-- ZSTD is the only compression algorithm available with `aerospike-backup`. 
+- ZSTD is the only compression algorithm available with `abs-backup-cli`. 
 - At compression levels 1–2, ZSTD may produce uncompressed (raw) blocks when the algorithm determines that compression would not reduce the data size, as per RFC 8878, which recommends sending uncompressed blocks when the compressed output would be larger than the original.
 
 ## Default backup content
-`aerospike-backup` backs up the following data by default:
+`abs-backup-cli` backs up the following data by default:
 
 - Keys
   - Key metadata: digest, TTL, generation count, and key
@@ -43,7 +43,7 @@ Release artifacts are automatically built and uploaded under GitHub Releases.
 ## Supported flags
 ```bash
 Usage:
-  aerospike-backup [flags]
+  abs-backup-cli [flags]
 
 General Flags:
   -Z, --help               Display help information.
@@ -121,7 +121,7 @@ Backup Flags:
                                       Default is 0 (no limit). (DEPRECATED: use --bandwidth instead)
   -N, --bandwidth int                 The limits for read/write storage bandwidth in MiB/s.
                                       Default is 0 (no limit).
-  -T, --info-timeout int              Set the timeout (in ms) for asinfo commands sent from aerospike-backup to the database.
+  -T, --info-timeout int              Set the timeout (in ms) for asinfo commands sent from abs-backup-cli to the database.
                                       The info commands are to check version, get indexes, get udfs, count records, and check batch write support. (default 10000)
       --info-retry-interval int       Set the initial interval for a retry (in ms) when info commands are sent. (default 1000)
       --info-retry-multiplier float   Increases the delay between subsequent retry attempts.
@@ -227,10 +227,10 @@ Encryption Flags:
 Secret Agent Flags:
 Options pertaining to the Aerospike Secret Agent.
 See documentation here: https://aerospike.com/docs/tools/secret-agent.
-Both aerospike-backup and aerospike-restore support getting all the cloud configuration parameters
+Both abs-backup-cli and abs-restore-cli support getting all the cloud configuration parameters
 from the Aerospike Secret Agent.
 To use a secret as an option, use this format: 'secrets:<resource_name>:<secret_name>' 
-Example: aerospike-backup --azure-account-name secret:resource1:azaccount
+Example: abs-backup-cli --azure-account-name secret:resource1:azaccount
       --sa-connection-type string   Secret Agent connection type. Supported types: TCP, UNIX. (default "TCP")
       --sa-address string           Secret Agent host for TCP connection or socket file path for UDS connection.
       --sa-port int                 Secret Agent port (only for TCP connection).
@@ -593,7 +593,7 @@ backup:
   info-retries-multiplier: 1
   # Set the initial interval for a retry (in ms) when info commands are sent.
   info-retry-interval: 1000
-  # Set the timeout (in ms) for asinfo commands sent from aerospike-backup to the database.
+  # Set the timeout (in ms) for asinfo commands sent from abs-backup-cli to the database.
   # The info commands are to check version, get indexes, get udfs, count records, and check batch write support.
   info-timeout: 10000
   # Buffer size in MiB for stdin and stdout operations. Used for pipelining.
