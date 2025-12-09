@@ -67,16 +67,6 @@ func NewBackupServiceConfig(
 	azureBlob *models.AzureBlob,
 	local *models.Local,
 ) (*BackupServiceConfig, error) {
-	// If we have a config file, load serviceConfig from it.
-	if app.ConfigFilePath != "" {
-		serviceConfig, err := decodeBackupServiceConfig(app.ConfigFilePath)
-		if err != nil {
-			return nil, fmt.Errorf("failed to load config file %s: %w", app.ConfigFilePath, err)
-		}
-
-		return serviceConfig, nil
-	}
-
 	return &BackupServiceConfig{
 		App:          app,
 		ClientConfig: clientConfig,

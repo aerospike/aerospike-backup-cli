@@ -83,7 +83,7 @@ func NewCmd(appVersion, commitHash, buildTime string) (*cobra.Command, *Cmd) {
 	c.flagsCommon = flags.NewCommon(&c.flagsBackup.Common, flags.OperationBackup)
 
 	rootCmd := &cobra.Command{
-		Use:   "aerospike-backup",
+		Use:   "abs-backup-cli",
 		Short: "Aerospike backup CLI tool",
 		Long:  welcomeMessage,
 		RunE:  c.run,
@@ -192,15 +192,45 @@ func (c *Cmd) run(cmd *cobra.Command, _ []string) error {
 		return nil
 	}
 
+	// Init app.
+	serviceConfig, err := c.newServiceConfig()
+	if err != nil {
+		return fmt.Errorf("failed to initialize app: %w", err)
+	}
+
 	// Init logger.
-	logger, err := logging.NewLogger(c.flagsApp.LogLevel, c.flagsApp.Verbose, c.flagsApp.LogJSON)
+	logger, err := logging.NewLogger(serviceConfig.App.LogLevel, serviceConfig.App.Verbose, serviceConfig.App.LogJSON)
 	if err != nil {
 		return fmt.Errorf("failed to initialize logger: %w", err)
 	}
 	// After initialization replace logger.
 	c.Logger = logger
 
-	// Init app.
+	asb, err := backup.NewService(cmd.Context(), serviceConfig, logger)
+	if err != nil {
+		return fmt.Errorf("backup initialization failed: %w", err)
+	}
+
+	if err = asb.Run(cmd.Context()); err != nil {
+		return fmt.Errorf("backup failed: %w", err)
+	}
+
+	return nil
+}
+
+// newServiceConfig returns a new *config.BackupServiceConfig based on the flags or config file.
+func (c *Cmd) newServiceConfig() (*config.BackupServiceConfig, error) {
+	app := c.flagsApp.GetApp()
+	// If we have a config file, load serviceConfig from it.
+	if app != nil && app.ConfigFilePath != "" {
+		serviceConfig, err := config.DecodeBackupServiceConfig(app.ConfigFilePath)
+		if err != nil {
+			return nil, fmt.Errorf("failed to load config file %s: %w", app.ConfigFilePath, err)
+		}
+
+		return serviceConfig, nil
+	}
+
 	serviceConfig, err := config.NewBackupServiceConfig(
 		c.flagsApp.GetApp(),
 		c.flagsAerospike.NewAerospikeConfig(),
@@ -216,19 +246,10 @@ func (c *Cmd) run(cmd *cobra.Command, _ []string) error {
 		c.flagsLocal.GetLocal(),
 	)
 	if err != nil {
-		return fmt.Errorf("failed to initialize app: %w", err)
+		return nil, err
 	}
 
-	asb, err := backup.NewService(cmd.Context(), serviceConfig, logger)
-	if err != nil {
-		return fmt.Errorf("backup initialization failed: %w", err)
-	}
-
-	if err = asb.Run(cmd.Context()); err != nil {
-		return fmt.Errorf("backup failed: %w", err)
-	}
-
-	return nil
+	return serviceConfig, nil
 }
 
 func (c *Cmd) printVersion() {
@@ -253,10 +274,10 @@ func newHelpFunction(
 		fmt.Println(welcomeMessage)
 		fmt.Println(strings.Repeat("-", len(welcomeMessage)))
 		fmt.Println("\nUsage:")
-		fmt.Println("  aerospike-backup [flags]")
+		fmt.Println("  abs-backup-cli [flags]")
 
 		// Printing hint for xdr command.
-		//	fmt.Println("  aerospike-backup xdr [flags]")
+		//	fmt.Println("  abs-backup-cli xdr [flags]")
 
 		// Print section: App Flags
 		fmt.Println("\nGeneral Flags:")
@@ -284,10 +305,10 @@ func newHelpFunction(
 		fmt.Println("\nSecret Agent Flags:\n" +
 			"Options pertaining to the Aerospike Secret Agent.\n" +
 			"See documentation here: https://aerospike.com/docs/tools/secret-agent.\n" +
-			"Both aerospike-backup and aerospike-restore support getting all the cloud configuration parameters\n" +
+			"Both abs-backup-cli and abs-restore-cli support getting all the cloud configuration parameters\n" +
 			"from the Aerospike Secret Agent.\n" +
 			"To use a secret as an option, use this format: 'secrets:<resource_name>:<secret_name>' \n" +
-			"Example: aerospike-backup --azure-account-name secret:resource1:azaccount")
+			"Example: abs-backup-cli --azure-account-name secret:resource1:azaccount")
 		secretAgentFlagSet.PrintDefaults()
 
 		// Print section: Local Flags

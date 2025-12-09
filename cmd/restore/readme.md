@@ -1,19 +1,19 @@
-# Aerospike restore (aerospike-restore)
-Aerospike Restore CLI tool. This page describes capabilities and configuration options of the Aerospike restore tool, `aerospike-restore`.
+# Aerospike restore (abs-restore-cli)
+Aerospike Restore CLI tool. This page describes capabilities and configuration options of the Aerospike restore tool, `abs-restore-cli`.
 
 ## Overview
-`aerospike-restore` restores backups created with `aerospike-backup`. With the `aerospike-restore` tool, you can restore to specific bins or sets, secure connections using username/password credentials or TLS (or both), and use configuration files to automate restore operations.
+`abs-restore-cli` restores backups created with `abs-backup-cli`. With the `abs-restore-cli` tool, you can restore to specific bins or sets, secure connections using username/password credentials or TLS (or both), and use configuration files to automate restore operations.
 
 ## Considerations for Aerospike restore
-When using `aerospike-restore`, be aware of the following considerations:
+When using `abs-restore-cli`, be aware of the following considerations:
 
 - The TTL of restored keys is preserved, but the last-update-time and generation count are reset to the current time.
-- `aerospike-restore` creates records from the backup. If records exist in the namespace on the cluster, you can configure a write policy to determine whether the backup records or the records in the namespace take precedence when using `aerospike-restore`.
+- `abs-restore-cli` creates records from the backup. If records exist in the namespace on the cluster, you can configure a write policy to determine whether the backup records or the records in the namespace take precedence when using `abs-restore-cli`.
 - If a restore transaction fails, you can configure timeout options for retries.
 - Restore is cluster-configuration-agnostic. A backup can be restored to a cluster of any size and configuration. Restored data is evenly distributed among cluster nodes, regardless of cluster configuration.
 
-## Privileges required for `aerospike-restore`
-The privileges required to run `aerospike-restore` depend on the type of objects in the namespace.
+## Privileges required for `abs-restore-cli`
+The privileges required to run `abs-restore-cli` depend on the type of objects in the namespace.
 
 - If the namespace does not contain [user-defined functions](https://aerospike.com/docs/database/learn/architecture/udf) or [secondary indexes](https://aerospike.com/docs/database/learn/architecture/data-storage/secondary-index), `read-write` is the minimum necessary privilege.
 - If the namespace contains [user-defined functions](https://aerospike.com/docs/database/learn/architecture/udf), `udf-admin` is the minimum necessary privilege to restore UDFs for Database 6.0 or later. Otherwise, use `data-admin`.
@@ -34,7 +34,7 @@ Version artifacts are automatically built and uploaded under releases in GitHub.
 ## Supported flags
 ```
 Usage:
-  aerospike-restore [flags]
+  abs-restore-cli [flags]
 
 General Flags:
   -Z, --help               Display help information.
@@ -106,7 +106,7 @@ Restore Flags:
                                       Default is 0 (no limit). (DEPRECATED: use --bandwidth instead)
   -N, --bandwidth int                 The limits for read/write storage bandwidth in MiB/s.
                                       Default is 0 (no limit).
-  -T, --info-timeout int              Set the timeout (in ms) for asinfo commands sent from aerospike-restore to the database.
+  -T, --info-timeout int              Set the timeout (in ms) for asinfo commands sent from abs-restore-cli to the database.
                                       The info commands are to check version, get indexes, get udfs, count records, and check batch write support. (default 10000)
       --info-retry-interval int       Set the initial interval for a retry (in ms) when info commands are sent. (default 1000)
       --info-retry-multiplier float   Increases the delay between subsequent retry attempts.
@@ -118,11 +118,11 @@ Restore Flags:
                                   
       --directory-list string     A comma-separated list of paths to directories that hold the backup files. Required,
                                   unless -i or -d is used. The paths may not contain commas.
-                                  Example: 'aerospike-restore --directory-list /path/to/dir1/,/path/to/dir2'
+                                  Example: 'abs-restore-cli --directory-list /path/to/dir1/,/path/to/dir2'
                                   
       --parent-directory string   A common root path for all paths used in --directory-list.
                                   This path is prepended to all entries in --directory-list.
-                                  Example: 'aerospike-restore --parent-directory /common/root/path
+                                  Example: 'abs-restore-cli --parent-directory /common/root/path
                                   --directory-list /path/to/dir1/,/path/to/dir2'
                                   
   -u, --unique                    Skip modifying records that already exist in the namespace.
@@ -139,13 +139,13 @@ Restore Flags:
                                   AEROSPIKE_FAIL_FORBIDDEN,
                                   AEROSPIKE_BIN_TYPE_ERROR,
                                   AEROSPIKE_BIN_NOT_FOUND.
-                                  By default, these errors are not ignored and aerospike-restore terminates.
+                                  By default, these errors are not ignored and abs-restore-cli terminates.
       --disable-batch-writes      Disables the use of batch writes when restoring records to the Aerospike cluster.
                                   By default, the cluster is checked for batch write support. Only set this flag if you explicitly
-                                  don't want batch writes to be used or if aerospike-restore is failing to work because it cannot recognize
+                                  don't want batch writes to be used or if abs-restore-cli is failing to work because it cannot recognize
                                   that batch writes are disabled.
                                   
-      --max-async-batches int     To send data to Aerospike Database, aerospike-restore creates write workers that work in parallel.
+      --max-async-batches int     To send data to Aerospike Database, abs-restore-cli creates write workers that work in parallel.
                                   This value is the number of workers that form batches and send them to the database.
                                   For Aerospike Database versions prior to 6.0, 'batches' are only a logical grouping of records,
                                   and each record is uploaded individually.
@@ -159,8 +159,8 @@ Restore Flags:
                                   Default is 128 with batch writes enabled. If you disable batch writes,
                                   this flag is superseded because each worker sends writes one by one.
                                   All three batch flags are linked. If --disable-batch-writes=false,
-                                  aerospike-restore uses batch write workers to send data to the database.
-                                  aerospike-restore creates a number of workers equal to --max-async-batches that work in parallel,
+                                  abs-restore-cli uses batch write workers to send data to the database.
+                                  abs-restore-cli creates a number of workers equal to --max-async-batches that work in parallel,
                                   and form and send a number of records equal to --batch-size to the database.
                                    (default 128)
       --extra-ttl int             For records with expirable void-times, add N seconds of extra-ttl to the
@@ -205,10 +205,10 @@ Encryption Flags:
 Secret Agent Flags:
 Options pertaining to the Aerospike Secret Agent.
 See documentation here: https://aerospike.com/docs/tools/secret-agent.
-Both aerospike-backup and aerospike-restore support getting all the cloud configuration parameters
+Both abs-backup-cli and abs-restore-cli support getting all the cloud configuration parameters
 from the Aerospike Secret Agent.
 To use a secret as an option, use this format: 'secrets:<resource_name>:<secret_name>' 
-Example: aerospike-backup --azure-account-name secret:resource1:azaccount
+Example: abs-backup-cli --azure-account-name secret:resource1:azaccount
       --sa-connection-type string   Secret Agent connection type. Supported types: TCP, UNIX. (default "TCP")
       --sa-address string           Secret Agent host for TCP connection or socket file path for UDS connection.
       --sa-port int                 Secret Agent port (only for TCP connection).
@@ -460,29 +460,29 @@ restore:
   input-file: ""
   # A comma-separated list of paths to directories that hold the backup files. Required,
   # unless -i or -d is used. The paths may not contain commas.
-  # Example: 'aerospike-restore directory-list /path/to/dir1/,/path/to/dir2'
+  # Example: 'abs-restore-cli directory-list /path/to/dir1/,/path/to/dir2'
   directory-list:
     - "dir1"
     - "dir2"
   # A common root path for all paths used in directory-list.
   # This path is prepended to all entries in directory-list.
-  # Example: 'aerospike-restore parent-directory /common/root/path
+  # Example: 'abs-restore-cli parent-directory /common/root/path
   # directory-list /path/to/dir1/,/path/to/dir2'
   parent-directory: ""
   # Disables the use of batch writes when restoring records to the Aerospike cluster.
   # By default, the cluster is checked for batch write support. Only set this flag if you explicitly
-  # don't want batch writes to be used or if aerospike-restore is failing to work because it cannot recognize
+  # don't want batch writes to be used or if abs-restore-cli is failing to work because it cannot recognize
   # that batch writes are disabled.
   disable-batch-writes: false
   # The max allowed number of records to simultaneously upload to Aerospike.
   # Default is 128 with batch writes enabled. If you disable batch writes,
   # this flag is superseded because each worker sends writes one by one.
   # All three batch flags are linked. If disable-batch-writes=false,
-  # aerospike-restore uses batch write workers to send data to the database.
-  # aerospike-restore creates a number of workers equal to max-async-batches that work in parallel,
+  # abs-restore-cli uses batch write workers to send data to the database.
+  # abs-restore-cli creates a number of workers equal to max-async-batches that work in parallel,
   # and form and send a number of records equal to batch-size to the database.
   batch-size: 128
-  # To send data to Aerospike Database, aerospike-restore creates write workers that work in parallel.
+  # To send data to Aerospike Database, abs-restore-cli creates write workers that work in parallel.
   # This value is the number of workers that form batches and send them to the database.
   # For Aerospike Database versions prior to 6.0, 'batches' are only a logical grouping of records,
   # and each record is uploaded individually.
@@ -503,7 +503,7 @@ restore:
   # AEROSPIKE_FAIL_FORBIDDEN,
   # AEROSPIKE_BIN_TYPE_ERROR,
   # AEROSPIKE_BIN_NOT_FOUND.
-  # By default, these errors are not ignored and aerospike-restore terminates.
+  # By default, these errors are not ignored and abs-restore-cli terminates.
   ignore-record-error: false
   # Skip modifying records that already exist in the namespace.
   unique: false
@@ -514,7 +514,7 @@ restore:
   replace: false
   # Don't check the generation of records that already exist in the namespace.
   no-generation: false
-  # Set the timeout (in ms) for asinfo commands sent from aerospike-restore to the database.
+  # Set the timeout (in ms) for asinfo commands sent from abs-restore-cli to the database.
   # The info commands are to check version, get indexes, get udfs, count records, and check batch write support.
   info-timeout: 10000
   # Number of retries to send info commands before failing.
