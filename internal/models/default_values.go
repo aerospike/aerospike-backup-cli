@@ -37,7 +37,6 @@ const (
 	DefaultS3RestorePollDuration = int64(60000)
 	DefaultS3RetryMaxAttempts    = 10
 	DefaultS3RetryMaxBackoff     = 90000
-	DefaultS3RetryBackoff        = 60000
 	DefaultS3ChunkSize           = 5
 	DefaultS3UploadConcurrency   = 0
 )

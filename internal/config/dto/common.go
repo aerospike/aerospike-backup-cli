@@ -401,7 +401,6 @@ type AwsS3 struct {
 	AccessTier           *string  `yaml:"access-tier"`
 	RetryMaxAttempts     *int     `yaml:"retry-max-attempts"`
 	RetryMaxBackoff      *int     `yaml:"retry-max-backoff"`
-	RetryBackoff         *int     `yaml:"retry-backoff"`
 	ChunkSize            *int     `yaml:"chunk-size"`
 	UploadConcurrency    *int     `yaml:"upload-concurrency"`
 	CalculateChecksum    *bool    `yaml:"calculate-checksum"`
@@ -425,7 +424,6 @@ func defaultAwsS3() *AwsS3 {
 		AccessTier:           stringPtr(models.DefaultS3AccessTier),
 		RetryMaxAttempts:     intPtr(models.DefaultS3RetryMaxAttempts),
 		RetryMaxBackoff:      intPtr(models.DefaultS3RetryMaxBackoff),
-		RetryBackoff:         intPtr(models.DefaultS3RetryBackoff),
 		ChunkSize:            intPtr(models.DefaultS3ChunkSize),
 		UploadConcurrency:    intPtr(models.DefaultS3UploadConcurrency),
 		CalculateChecksum:    boolPtr(models.DefaultCloudCalculateChecksum),
@@ -453,7 +451,6 @@ func (a *AwsS3) ToModelAwsS3() *models.AwsS3 {
 		AccessTier:          derefString(a.AccessTier),
 		RetryMaxAttempts:    derefInt(a.RetryMaxAttempts),
 		RetryMaxBackoff:     derefInt(a.RetryMaxBackoff),
-		RetryBackoff:        derefInt(a.RetryBackoff),
 		ChunkSize:           derefInt(a.ChunkSize),
 		UploadConcurrency:   derefInt(a.UploadConcurrency),
 		RestorePollDuration: derefInt64(a.RestorePollDuration),

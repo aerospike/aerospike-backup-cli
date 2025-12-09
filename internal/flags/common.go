@@ -126,7 +126,7 @@ func (f *Common) NewFlagSet() *pflag.FlagSet {
 		models.DefaultCommonNamespace,
 		descNamespace)
 
-	flagSet.StringVarP(&f.fields.SetList, "set", "s",
+	flagSet.StringVarP(&f.fields.SetList, "set-list", "s",
 		models.DefaultCommonSetList,
 		descSetList)
 

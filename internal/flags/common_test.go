@@ -33,7 +33,7 @@ func TestCommon_NewFlagSet(t *testing.T) {
 	args := []string{
 		"--directory", "/path/to/backup",
 		"--namespace", "test-namespace",
-		"--set", "set1,set2",
+		"--set-list", "set1,set2",
 		"--records-per-second", "5000",
 		"--bin-list", "bin1,bin2",
 		"--parallel", "10",

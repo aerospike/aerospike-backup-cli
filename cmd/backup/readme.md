@@ -97,7 +97,7 @@ Aerospike Client Flags:
 Backup Flags:
   -d, --directory string              The directory that holds the backup files. Required, unless -o or -e is used.
   -n, --namespace string              The namespace to be backed up. Required.
-  -s, --set string                    The set(s) to be backed up. Accepts comma-separated values with no spaces: 'set1,set2,set3'
+  -s, --set-list string               The set(s) to be backed up. Accepts comma-separated values with no spaces: 'set1,set2,set3'
                                       If multiple sets are being backed up, filter-exp cannot be used.
                                       If empty, include all sets.
   -B, --bin-list string               Only include the given bins in the backup.
@@ -271,9 +271,8 @@ Any AWS parameter can be retrieved from Secret Agent.
                                       Each concurrent upload will create a buffer of size s3-block-size.
       --s3-calculate-checksum         Calculate checksum for each uploaded object.
       --s3-retry-max-attempts int     Maximum number of attempts that should be made in case of an error. (default 10)
-      --s3-retry-max-backoff int      Max backoff duration (in ms) between retried attempts. (default 90000)
-      --s3-retry-backoff int          Provides the backoff, (in ms), that the retryer will use to determine the delay between retry attempts.
-                                      The delay increases exponentially with each retry up to the maximum specified by s3-retry-max-backoff. (default 60000)
+      --s3-retry-max-backoff int      Max backoff duration (in ms) between retried attempts.
+                                      The delay increases exponentially with each retry up to the maximum specified by s3-retry-max-backoff. (default 90000)
       --s3-max-conns-per-host int     MaxConnsPerHost optionally limits the total number of connections per host,
                                       including connections in the dialing, active, and idle states. On limit violation, dials will block.
                                       0 means no limit.
@@ -665,10 +664,8 @@ aws:
     # Maximum number of attempts that should be made in case of an error.
     retry-max-attempts: 10
     # Max backoff duration (in ms) between retried attempts.
-    retry-max-backoff: 90
-    # Provides the backoff, (in ms), that the retryer will use to determine the delay between retry attempts.
     # The delay increases exponentially with each retry up to the maximum specified by s3-retry-max-backoff.
-    retry-backoff: 60
+    retry-max-backoff: 90000
     # Chunk size controls the maximum number of megabytes of the object that the app will attempt to send to
     # the storage in a single request. Objects smaller than the size will be sent in a single request,
     # while larger objects will be split over multiple requests.
@@ -685,7 +682,7 @@ aws:
     # Timeout (in ms) specifies a time limit for requests made by this Client.
     # The timeout includes connection time, any redirects, and reading the response body.
     # 0 means no limit.
-    request-timeout: 600
+    request-timeout: 600000
 
 gcp:
   storage:
@@ -699,9 +696,9 @@ gcp:
     # before producing an error.
     retry-max-attempts: 10
     # Max backoff is the maximum value (in ms) of the retry period.
-    retry-max-backoff: 90
+    retry-max-backoff: 90000
     # Initial backoff is the initial value (in ms) of the retry period.
-    retry-init-backoff: 60
+    retry-init-backoff: 60000
     # Multiplier is the factor by which the retry period increases.
     # It should be greater than 1.
     retry-backoff-multiplier: 2
@@ -718,7 +715,7 @@ gcp:
     # Timeout (in ms) specifies a time limit for requests made by this Client.
     # The timeout includes connection time, any redirects, and reading the response body.
     # 0 means no limit.
-    request-timeout: 600
+    request-timeout: 600000
 
 azure:
   blob:
@@ -749,10 +746,10 @@ azure:
     # Retry delay specifies the initial amount of delay (in ms) to use before retrying an operation.
     # The value is used only if the HTTP response does not contain a Retry-After header.
     # The delay increases exponentially with each retry up to the maximum specified by azure-retry-max-delay.
-    retry-delay: 60
+    retry-delay: 60000
     # Max retry delay specifies the maximum delay (in ms) allowed before retrying an operation.
     # Typically the value is greater than or equal to the value specified in azure-retry-delay.
-    retry-max-delay: 90
+    retry-max-delay: 90000
     # Block size in MiB defines the size of the buffer used during upload.
     block-size: 5
     # Defines the max number of concurrent uploads to be performed to upload the file.
@@ -767,7 +764,7 @@ azure:
     # Timeout (in ms) specifies a time limit for requests made by this Client.
     # The timeout includes connection time, any redirects, and reading the response body.
     # 0 means no limit.
-    request-timeout: 600
+    request-timeout: 600000
 
 local:
   disk:
