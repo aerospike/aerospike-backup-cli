@@ -23,10 +23,11 @@ import (
 
 	"github.com/aerospike/aerospike-backup-cli/internal/config"
 	"github.com/aerospike/aerospike-backup-cli/internal/logging"
+	"github.com/aerospike/aerospike-backup-cli/internal/models"
 	"github.com/aerospike/aerospike-backup-cli/internal/storage"
 	"github.com/aerospike/aerospike-client-go/v8"
 	"github.com/aerospike/backup-go"
-	"github.com/aerospike/backup-go/models"
+	bModels "github.com/aerospike/backup-go/models"
 	"github.com/aerospike/backup-go/pkg/asinfo"
 )
 
@@ -169,7 +170,7 @@ func initXdr(
 	backupXDRConfig *backup.ConfigBackupXDR,
 	aerospikeClient *aerospike.Client,
 	infoPolicy *aerospike.InfoPolicy,
-	retryInfoPolicy *models.RetryPolicy,
+	retryInfoPolicy *bModels.RetryPolicy,
 	logger *slog.Logger) (bool, error) {
 	if params.BackupXDR != nil {
 		// To pass version check and stop XDR and unblock MRT we need asinfo client without backup client.
@@ -262,7 +263,7 @@ func (s *Service) Run(ctx context.Context) error {
 			return fmt.Errorf("failed to backup indexes and udfs: %w", err)
 		}
 
-		stats := models.SumBackupStats(h.GetStats(), hXdr.GetStats())
+		stats := bModels.SumBackupStats(h.GetStats(), hXdr.GetStats())
 		logging.ReportBackup(stats, true, s.isLogJSON, s.logger)
 	default:
 		s.logger.Info("starting scan backup")
@@ -326,7 +327,7 @@ func unblockMrt(ctx context.Context, infoClient *asinfo.Client, namespace string
 	return nil
 }
 
-func getInfoPolicies(params *config.BackupServiceConfig) (*aerospike.InfoPolicy, *models.RetryPolicy) {
+func getInfoPolicies(params *config.BackupServiceConfig) (*aerospike.InfoPolicy, *bModels.RetryPolicy) {
 	switch {
 	case params.BackupXDR != nil:
 		return config.NewInfoPolicy(params.BackupXDR.InfoTimeout), config.NewRetryPolicy(
@@ -345,12 +346,12 @@ func getInfoPolicies(params *config.BackupServiceConfig) (*aerospike.InfoPolicy,
 	}
 }
 
-// errHumanize make errors human readable.
+// errHumanize simplifies technical error messages.
 func errHumanize(err error) error {
 	// This error is returned from the info command, so it is not aerospike.Error.
 	// Because if that, we can check only string.
-	if strings.Contains(err.Error(), "namespace not found on node") {
-		return fmt.Errorf("namespace not found on node")
+	if strings.Contains(err.Error(), models.ErrNodeNotFoundText) {
+		return models.ErrNodeNotFound
 	}
 
 	return err
