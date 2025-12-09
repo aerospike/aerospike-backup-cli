@@ -39,7 +39,7 @@ func main() {
 
 	go func() {
 		sig := <-sigChan
-		log.Printf("stopping aerospike-backup: %v\n", sig)
+		log.Printf("stopping backup: %v\n", sig)
 		cancel()
 	}()
 
