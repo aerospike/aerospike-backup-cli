@@ -101,7 +101,7 @@ func TestDecodeBackupServiceConfig(t *testing.T) {
 			filename:  "invalid.yaml",
 			content:   invalidYAML,
 			setupFile: true,
-			wantErr:   "faield to decode config file",
+			wantErr:   "failed to decode config file",
 		},
 		{
 			name:      "empty file",
@@ -179,7 +179,7 @@ func TestDecodeRestoreServiceConfig(t *testing.T) {
 			filename:  "invalid.yaml",
 			content:   invalidYAML,
 			setupFile: true,
-			wantErr:   "faield to decode config file",
+			wantErr:   "failed to decode config file",
 		},
 		{
 			name:      "empty file",
@@ -257,14 +257,14 @@ func TestDecodeFromFile(t *testing.T) {
 			filename:  "invalid.yaml",
 			content:   invalidYAML,
 			setupFile: true,
-			wantErr:   "faield to decode config file",
+			wantErr:   "failed to decode config file",
 		},
 		{
 			name:      "unknown fields in yaml",
 			filename:  "unknown_fields.yaml",
 			content:   "unknown_field: value\napp:\n  log-level: info",
 			setupFile: true,
-			wantErr:   "faield to decode config file",
+			wantErr:   "failed to decode config file",
 		},
 	}
 

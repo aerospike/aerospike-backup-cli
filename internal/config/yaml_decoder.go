@@ -119,7 +119,7 @@ func decodeFromFile(filename string, params any) error {
 	yamlDec.KnownFields(true)
 
 	if err := yamlDec.Decode(params); err != nil {
-		return fmt.Errorf("faield to decode config file %s: %w", filename, err)
+		return fmt.Errorf("failed to decode config file %s: %w", filename, err)
 	}
 
 	return nil
