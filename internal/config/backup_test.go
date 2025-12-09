@@ -74,31 +74,6 @@ func TestNewBackupServiceConfig_WithoutConfigFile(t *testing.T) {
 	assert.Equal(t, azureBlob, config.AzureBlob)
 }
 
-func TestNewBackupServiceConfig_WithInvalidConfigFile(t *testing.T) {
-	t.Parallel()
-
-	app := &models.App{ConfigFilePath: "/non/existent/path.yml"}
-
-	config, err := NewBackupServiceConfig(
-		app,
-		nil,
-		nil,
-		nil,
-		nil,
-		nil,
-		nil,
-		nil,
-		nil,
-		nil,
-		nil,
-		nil,
-	)
-
-	assert.Error(t, err)
-	assert.Nil(t, config)
-	assert.Contains(t, err.Error(), "failed to load config file")
-}
-
 func TestBackupServiceConfig_IsXDR(t *testing.T) {
 	t.Parallel()
 

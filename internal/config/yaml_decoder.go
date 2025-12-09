@@ -22,9 +22,9 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// decodeBackupServiceConfig reads a backup configuration file and decodes it into BackupServiceConfig.
+// DecodeBackupServiceConfig reads a backup configuration file and decodes it into BackupServiceConfig.
 // Returns an error on failure.
-func decodeBackupServiceConfig(filename string) (*BackupServiceConfig, error) {
+func DecodeBackupServiceConfig(filename string) (*BackupServiceConfig, error) {
 	backupDto := dto.DefaultBackup()
 	if err := decodeFromFile(filename, &backupDto); err != nil {
 		return nil, err
@@ -63,9 +63,9 @@ func dtoToBackupServiceConfig(dtoBackup *dto.Backup) (*BackupServiceConfig, erro
 	}, nil
 }
 
-// decodeRestoreServiceConfig reads a restore configuration file and decodes it into RestoreServiceConfig.
+// DecodeRestoreServiceConfig reads a restore configuration file and decodes it into RestoreServiceConfig.
 // Returns an error on failure.
-func decodeRestoreServiceConfig(filename string) (*RestoreServiceConfig, error) {
+func DecodeRestoreServiceConfig(filename string) (*RestoreServiceConfig, error) {
 	restoreDto := dto.DefaultRestore()
 	if err := decodeFromFile(filename, restoreDto); err != nil {
 		return nil, err
