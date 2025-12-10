@@ -57,7 +57,7 @@ type Cluster struct {
 	ClientTimeout      *int64        `yaml:"client-timeout"`
 	ClientIdleTimeout  *int64        `yaml:"client-idle-timeout"`
 	ClientLoginTimeout *int64        `yaml:"client-login-timeout"`
-	ServiceAlternate   *bool         `yaml:"service-alternate"`
+	ServiceAlternate   *bool         `yaml:"services-alternate"`
 	TLS                *ClusterTLS   `yaml:"tls"`
 }
 
@@ -78,11 +78,11 @@ func defaultClusterSeed() *ClusterSeed {
 type ClusterTLS struct {
 	Name            *string `yaml:"name"`
 	Protocols       *string `yaml:"protocols"`
-	CaFile          *string `yaml:"ca-file"`
-	CaPath          *string `yaml:"ca-path"`
-	CertFile        *string `yaml:"cert-file"`
-	KeyFile         *string `yaml:"key-file"`
-	KeyFilePassword *string `yaml:"key-file-password"`
+	CaFile          *string `yaml:"cafile"`
+	CaPath          *string `yaml:"capath"`
+	CertFile        *string `yaml:"certfile"`
+	KeyFile         *string `yaml:"keyfile"`
+	KeyFilePassword *string `yaml:"keyfile-password"`
 }
 
 func defaultClusterTLS() *ClusterTLS {
@@ -296,7 +296,7 @@ func (c *Cluster) ToModelClientPolicy() *models.ClientPolicy {
 // Compression represents the configuration for data compression, including the mode and compression level
 // parsed from a YAML file.
 type Compression struct {
-	Mode  *string `yaml:"mode"`
+	Mode  *string `yaml:"compress"`
 	Level *int    `yaml:"level"`
 }
 
@@ -322,7 +322,7 @@ func (c *Compression) ToModelCompression() *models.Compression {
 // It includes fields for mode, key file, key environment variable, and key secret
 // parsed from a YAML file.
 type Encryption struct {
-	Mode      *string `yaml:"mode"`
+	Mode      *string `yaml:"encrypt"`
 	KeyFile   *string `yaml:"key-file"`
 	KeyEnv    *string `yaml:"key-env"`
 	KeySecret *string `yaml:"key-secret"`
@@ -407,7 +407,7 @@ type AwsS3 struct {
 	SecretAccessKey      *string  `yaml:"secret-access-key"`
 	RestorePollDuration  *int64   `yaml:"restore-poll-duration"`
 	StorageClass         *string  `yaml:"storage-class"`
-	AccessTier           *string  `yaml:"access-tier"`
+	AccessTier           *string  `yaml:"tier"`
 	RetryMaxAttempts     *int     `yaml:"retry-max-attempts"`
 	RetryMaxBackoff      *int     `yaml:"retry-max-backoff"`
 	ChunkSize            *int     `yaml:"chunk-size"`
@@ -475,7 +475,7 @@ func (a *AwsS3) ToModelAwsS3() *models.AwsS3 {
 }
 
 type GcpStorage struct {
-	KeyFile                *string  `yaml:"key-file"`
+	KeyFile                *string  `yaml:"key-path"`
 	BucketName             *string  `yaml:"bucket-name"`
 	EndpointOverride       *string  `yaml:"endpoint-override"`
 	RetryMaxAttempts       *int     `yaml:"retry-max-attempts"`
@@ -541,7 +541,7 @@ type AzureBlob struct {
 	TenantID             *string  `yaml:"tenant-id"`
 	ClientID             *string  `yaml:"client-id"`
 	ClientSecret         *string  `yaml:"client-secret"`
-	EndpointOverride     *string  `yaml:"endpoint-override"`
+	EndpointOverride     *string  `yaml:"endpoint"`
 	ContainerName        *string  `yaml:"container-name"`
 	AccessTier           *string  `yaml:"access-tier"`
 	RestorePollDuration  *int64   `yaml:"rehydrate-poll-duration"`

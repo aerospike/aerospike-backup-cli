@@ -160,7 +160,7 @@ type BackupConfig struct {
 	InfoMaxRetries                *uint    `yaml:"info-max-retries"`
 	InfoRetriesMultiplier         *float64 `yaml:"info-retry-multiplier"`
 	InfoRetryIntervalMilliseconds *int64   `yaml:"info-retry-interval"`
-	StdBufferSize                 *int     `yaml:"std-buffer-size"`
+	StdBufferSize                 *int     `yaml:"std-buffer"`
 }
 
 func defaultBackupConfig() *BackupConfig {
