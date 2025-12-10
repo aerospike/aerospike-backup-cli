@@ -403,7 +403,7 @@ cluster:
   client-login-timeout: 10000
   # Determines if the client should use "services-alternate" instead
   # of "services" in info request during cluster tending.
-  service-alternate: false
+  services-alternate: false
   tls:
     # The server TLS context to use to authenticate the connection to Aerospike.
     name: ""
@@ -613,7 +613,7 @@ aws:
     secret-access-key: ""
     # If is set, tool will try to restore archived files to the specified tier.
     # Tiers are: Standard, Bulk, Expedited.
-    access-tier: ""
+    tier: ""
     # How often ((in ms)) a backup client checks object status when restoring an archived object.
     restore-poll-duration: 60000
     # Maximum number of attempts that should be made in case of an error.

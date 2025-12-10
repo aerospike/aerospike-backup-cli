@@ -422,7 +422,7 @@ cluster:
   client-login-timeout: 10000
   # Determines if the client should use "services-alternate" instead
   # of "services" in info request during cluster tending.
-  service-alternate: false
+  services-alternate: false
   tls:
     # The server TLS context to use to authenticate the connection to Aerospike.
     name: ""
