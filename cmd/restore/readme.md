@@ -403,7 +403,7 @@ cluster:
   client-login-timeout: 10000
   # Determines if the client should use "services-alternate" instead
   # of "services" in info request during cluster tending.
-  service-alternate: false
+  services-alternate: false
   tls:
     # The server TLS context to use to authenticate the connection to Aerospike.
     name: ""
@@ -412,15 +412,15 @@ cluster:
     # https://httpd.apache.org/docs/current/mod/mod_ssl.html#sslprotocol.
     protocols: "+TLSv1.2"
     # The CA used when connecting to Aerospike.
-    ca-file: ""
+    cafile: ""
     # A path containing CAs for connecting to Aerospike.
-    ca-path: ""
+    capath: ""
     # The certificate file for mutual TLS authentication with Aerospike.
-    cert-file: ""
+    certfile: ""
     # The key file used for mutual TLS authentication with Aerospike.
-    key-file: ""
+    keyfile: ""
     # The password used to decrypt the key file if encrypted.
-    key-file-password: ""
+    keyfile-password: ""
 
 restore:
   # The directory that holds the backup files. Required, unless input-file is used.
@@ -551,14 +551,14 @@ restore:
   # If set to true, metadata from separate file will be restored after all records have been processed.
   apply-metadata-last: false
   # Buffer size in MiB for stdin and stdout operations. Used for pipelining.
-  std-buffer-size: 4
+  std-buffer: 4
 
 compression:
   # Enables decompressing of backup files using the specified compression algorithm.
   # This must match the compression mode used when backing up the data.
   # Supported compression algorithms are: ZSTD, NONE
   # Set the ZSTD compression level via the compression-level option.
-  mode: NONE
+  compress: NONE
   # ZSTD compression level.
   level: 3
 
@@ -568,7 +568,7 @@ encryption:
   # Supported encryption algorithms are: NONE, AES128, AES256.
   # A private key must be given, either with the encryption-key-file option or
   # the encryption-key-env option or the encryption-key-secret.
-  mode: NONE
+  encrypt: NONE
   # Gets the encryption key from the given file, which must be in PEM format.
   key-file: ""
   # Gets the encryption key from the given environment variable, which must be Base64 encoded.
@@ -613,7 +613,7 @@ aws:
     secret-access-key: ""
     # If is set, tool will try to restore archived files to the specified tier.
     # Tiers are: Standard, Bulk, Expedited.
-    access-tier: ""
+    tier: ""
     # How often ((in ms)) a backup client checks object status when restoring an archived object.
     restore-poll-duration: 60000
     # Maximum number of attempts that should be made in case of an error.
@@ -641,7 +641,7 @@ aws:
 gcp:
   storage:
     # Path to file containing service account JSON key.
-    key-file: ""
+    key-path: ""
     # Name of the Google cloud storage bucket.
     bucket-name: ""
     # An alternate url endpoint to send GCP API calls to.
@@ -686,7 +686,7 @@ azure:
     # Azure client secret for Azure Active Directory authorization.
     client-secret: ""
     # Azure endpoint.
-    endpoint-override: ""
+    endpoint: ""
     # Azure container Name.
     container-name: ""
     # If is set, tool will try to rehydrate archived files to the specified tier.

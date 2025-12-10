@@ -36,9 +36,9 @@ backup:
   namespace: test
   directory: test
 compression:
-  mode: zstd
+  compress: zstd
 encryption:
-  mode: none
+  encrypt: none
 `
 
 	validRestoreYAML = `
@@ -53,9 +53,9 @@ restore:
   namespace: test
   directory: test
 compression:
-  mode: zstd
+  compress: zstd
 encryption:
-  mode: none
+  encrypt: none
 `
 
 	invalidYAML = `

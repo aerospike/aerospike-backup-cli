@@ -142,7 +142,7 @@ type RestoreConfig struct {
 	InfoRetriesMultiplier         *float64 `yaml:"info-retry-multiplier"`
 	InfoRetryIntervalMilliseconds *int64   `yaml:"info-retry-interval"`
 	ApplyMetadataLast             *bool    `yaml:"apply-metadata-last"`
-	StdBufferSize                 *int     `yaml:"std-buffer-size"`
+	StdBufferSize                 *int     `yaml:"std-buffer"`
 }
 
 func defaultRestoreConfig() *RestoreConfig {
