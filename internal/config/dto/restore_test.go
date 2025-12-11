@@ -49,7 +49,6 @@ func TestDefaultRestoreConfig(t *testing.T) {
 	assert.Equal(t, models.DefaultCommonNoIndexes, derefBool(config.NoIndexes))
 	assert.Equal(t, models.DefaultCommonNoUDFs, derefBool(config.NoUDFs))
 	assert.Equal(t, models.DefaultCommonRecordsPerSecond, derefInt(config.RecordsPerSecond))
-	assert.Equal(t, models.DefaultCommonMaxRetries, derefInt(config.MaxRetries))
 	assert.Equal(t, int64(models.DefaultCommonSocketTimeout), derefInt64(config.SocketTimeout))
 	assert.Equal(t, int64(models.DefaultCommonInfoTimeout), derefInt64(config.InfoTimeout))
 	assert.Equal(t, uint(models.DefaultCommonInfoMaxRetries), derefUint(config.InfoMaxRetries))
@@ -88,7 +87,6 @@ func TestRestoreConfig_ToModelRestore(t *testing.T) {
 		NoIndexes:                     boolPtr(true),
 		NoUDFs:                        boolPtr(false),
 		RecordsPerSecond:              intPtr(1000),
-		MaxRetries:                    intPtr(5),
 		TotalTimeout:                  int64Ptr(30000),
 		SocketTimeout:                 int64Ptr(10000),
 		Bandwidth:                     int64Ptr(50000000),
@@ -130,7 +128,6 @@ func TestRestoreConfig_ToModelRestore(t *testing.T) {
 	assert.True(t, model.NoIndexes)
 	assert.False(t, model.NoUDFs)
 	assert.Equal(t, 1000, model.RecordsPerSecond)
-	assert.Equal(t, 5, model.MaxRetries)
 	assert.Equal(t, int64(30000), model.TotalTimeout)
 	assert.Equal(t, int64(10000), model.SocketTimeout)
 	assert.Equal(t, int64(50000000), model.Bandwidth)
@@ -199,7 +196,6 @@ func TestRestore_ToModelRestore_DefaultToModel(t *testing.T) {
 	assert.Equal(t, models.DefaultCommonNoIndexes, model.NoIndexes)
 	assert.Equal(t, models.DefaultCommonNoUDFs, model.NoUDFs)
 	assert.Equal(t, models.DefaultCommonRecordsPerSecond, model.RecordsPerSecond)
-	assert.Equal(t, models.DefaultCommonMaxRetries, model.MaxRetries)
 	assert.Equal(t, int64(models.DefaultRestoreTotalTimeout), model.TotalTimeout)
 	assert.Equal(t, int64(models.DefaultCommonSocketTimeout), model.SocketTimeout)
 	assert.Equal(t, int64(models.DefaultCommonBandwidth), model.Bandwidth)

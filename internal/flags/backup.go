@@ -30,6 +30,10 @@ func NewBackup() *Backup {
 func (f *Backup) NewFlagSet() *pflag.FlagSet {
 	flagSet := &pflag.FlagSet{}
 
+	flagSet.IntVar(&f.MaxRetries, "max-retries",
+		models.DefaultBackupMaxRetries,
+		"Maximum number of retries before aborting the current transaction.")
+
 	flagSet.BoolVarP(&f.RemoveFiles, "remove-files", "r",
 		models.DefaultBackupRemoveFiles,
 		"Remove an existing backup file (-o) or entire directory (-d) and replace with the new backup.")

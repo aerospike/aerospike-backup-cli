@@ -232,7 +232,6 @@ func newWritePolicy(r *models.Restore) *aerospike.WritePolicy {
 	p := aerospike.NewWritePolicy(0, 0)
 
 	p.SendKey = true
-	p.MaxRetries = r.MaxRetries
 	p.TotalTimeout = time.Duration(r.TotalTimeout) * time.Millisecond
 	p.SocketTimeout = time.Duration(r.SocketTimeout) * time.Millisecond
 	p.RecordExistsAction = recordExistsAction(r.Replace, r.Uniq)
