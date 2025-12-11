@@ -462,8 +462,8 @@ func TestMapScanPolicy_Success(t *testing.T) {
 		FilterExpression:    "k1EDpHRlc3Q=",
 		PreferRacks:         "rack1",
 		NoBins:              true,
+		MaxRetries:          3,
 		Common: models.Common{
-			MaxRetries:    3,
 			TotalTimeout:  10000,
 			SocketTimeout: 3000,
 		},
@@ -486,7 +486,6 @@ func TestMapWritePolicy_Success(t *testing.T) {
 		Replace: true,
 		Uniq:    false,
 		Common: models.Common{
-			MaxRetries:    3,
 			TotalTimeout:  5000,
 			SocketTimeout: 1500,
 		},
@@ -494,7 +493,6 @@ func TestMapWritePolicy_Success(t *testing.T) {
 
 	writePolicy := newWritePolicy(restoreModel)
 	assert.Equal(t, aerospike.REPLACE, writePolicy.RecordExistsAction)
-	assert.Equal(t, 3, writePolicy.MaxRetries)
 	assert.Equal(t, 5000*time.Millisecond, writePolicy.TotalTimeout)
 	assert.Equal(t, 1500*time.Millisecond, writePolicy.SocketTimeout)
 }

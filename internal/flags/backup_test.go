@@ -35,6 +35,7 @@ func TestBackup_NewFlagSet(t *testing.T) {
 		"--modified-after", "2023-09-02_12:00:00",
 		"--max-records", "1000",
 		"--no-bins",
+		"--max-retries", "3",
 		"--sleep-between-retries", "10",
 		"--filter-exp", "encoded-filter-exp",
 		"--remove-artifacts",
@@ -67,6 +68,7 @@ func TestBackup_NewFlagSet(t *testing.T) {
 	assert.Equal(t, "1,2,3,4", result.PreferRacks, "The prefer-racks flag should be parsed correctly")
 	assert.Equal(t, "1,2,3,4", result.RackList, "The rack-list flag should be parsed correctly")
 	assert.Equal(t, "4000,1-236,EjRWeJq83vEjRRI0VniavN7xI0U=", result.PartitionList, "The partition-list flag should be parsed correctly")
+	assert.Equal(t, 3, result.MaxRetries, "The max-retries flag should be parsed correctly")
 }
 
 func TestBackup_NewFlagSet_DefaultValues(t *testing.T) {
@@ -97,4 +99,5 @@ func TestBackup_NewFlagSet_DefaultValues(t *testing.T) {
 	assert.Equal(t, "", result.PreferRacks, "The default value for prefer-racks should be empty string")
 	assert.Equal(t, "", result.RackList, "The default value for rack list should be empty string")
 	assert.Equal(t, "", result.PartitionList, "The default value for partition-list should be empty string")
+	assert.Equal(t, 5, result.MaxRetries, "The default value for max-retries should be 5")
 }

@@ -77,7 +77,6 @@ func (r *Restore) ToModelRestore() *models.Restore {
 			NoIndexes:                     derefBool(r.Restore.NoIndexes),
 			NoUDFs:                        derefBool(r.Restore.NoUDFs),
 			RecordsPerSecond:              derefInt(r.Restore.RecordsPerSecond),
-			MaxRetries:                    derefInt(r.Restore.MaxRetries),
 			TotalTimeout:                  derefInt64(r.Restore.TotalTimeout),
 			SocketTimeout:                 derefInt64(r.Restore.SocketTimeout),
 			Bandwidth:                     derefInt64(r.Restore.Bandwidth),
@@ -117,7 +116,6 @@ type RestoreConfig struct {
 	NoIndexes                     *bool    `yaml:"no-indexes"`
 	NoUDFs                        *bool    `yaml:"no-udfs"`
 	RecordsPerSecond              *int     `yaml:"records-per-second"`
-	MaxRetries                    *int     `yaml:"max-retries"`
 	TotalTimeout                  *int64   `yaml:"total-timeout"`
 	SocketTimeout                 *int64   `yaml:"socket-timeout"`
 	Bandwidth                     *int64   `yaml:"bandwidth"`
@@ -155,7 +153,6 @@ func defaultRestoreConfig() *RestoreConfig {
 		NoIndexes:                     boolPtr(models.DefaultCommonNoIndexes),
 		NoUDFs:                        boolPtr(models.DefaultCommonNoUDFs),
 		RecordsPerSecond:              intPtr(models.DefaultCommonRecordsPerSecond),
-		MaxRetries:                    intPtr(models.DefaultCommonMaxRetries),
 		SocketTimeout:                 int64Ptr(models.DefaultCommonSocketTimeout),
 		InfoTimeout:                   int64Ptr(models.DefaultCommonInfoTimeout),
 		InfoMaxRetries:                uintPtr(models.DefaultCommonInfoMaxRetries),

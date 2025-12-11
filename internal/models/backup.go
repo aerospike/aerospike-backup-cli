@@ -23,7 +23,7 @@ import (
 // (common for backup and restore flags are in Common).
 type Backup struct {
 	Common
-
+	MaxRetries          int
 	OutputFile          string
 	RemoveFiles         bool
 	ModifiedBefore      string

@@ -271,7 +271,7 @@ Any AWS parameter can be retrieved from Secret Agent.
                                       the storage in a single request. Objects smaller than the size will be sent in a single request,
                                       while larger objects will be split over multiple requests. (default 5)
       --s3-upload-concurrency int     Defines the max number of concurrent uploads to be performed to upload the file.
-                                      Each concurrent upload will create a buffer of size s3-block-size.
+                                      Each concurrent upload will create a buffer of size s3-chunk-size.
       --s3-calculate-checksum         Calculate checksum for each uploaded object.
       --s3-retry-max-attempts int     Maximum number of attempts that should be made in case of an error. (default 10)
       --s3-retry-max-backoff int      Max backoff duration (in ms) between retried attempts.
@@ -680,7 +680,7 @@ aws:
     # while larger objects will be split over multiple requests.
     chunk-size: 5
     # Defines the max number of concurrent uploads to be performed to upload the file. 
-    # Each concurrent upload will create a buffer of size s3-block-size.
+    # Each concurrent upload will create a buffer of size s3-chunk-size.
     upload-concurrency: 3
     # Calculate checksum for each uploaded object.
     calculate-checksum: false

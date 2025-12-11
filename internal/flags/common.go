@@ -154,10 +154,6 @@ func (f *Common) NewFlagSet() *pflag.FlagSet {
 		models.DefaultCommonRecordsPerSecond,
 		"Limit total returned records per second (RPS). If 0, no limit is applied.")
 
-	flagSet.IntVar(&f.fields.MaxRetries, "max-retries",
-		models.DefaultCommonMaxRetries,
-		"Maximum number of retries before aborting the current transaction.")
-
 	flagSet.Int64Var(&f.fields.TotalTimeout, "total-timeout",
 		defaultTotalTimeout,
 		"Total transaction timeout (in ms). If 0, no timeout is applied. ")

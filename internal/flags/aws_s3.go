@@ -83,7 +83,7 @@ func (f *AwsS3) NewFlagSet() *pflag.FlagSet {
 		flagSet.IntVar(&f.UploadConcurrency, "s3-upload-concurrency",
 			models.DefaultS3UploadConcurrency,
 			"Defines the max number of concurrent uploads to be performed to upload the file.\n"+
-				"Each concurrent upload will create a buffer of size s3-block-size.")
+				"Each concurrent upload will create a buffer of size s3-chunk-size.")
 
 		flagSet.BoolVar(&f.CalculateChecksum, "s3-calculate-checksum",
 			models.DefaultCloudCalculateChecksum,

@@ -113,7 +113,7 @@ const (
 	DefaultSecretAgentConnectionType     = "TCP"
 	DefaultSecretAgentAddress            = ""
 	DefaultSecretAgentPort               = 0
-	DefaultSecretAgentTimeoutMillisecond = 0
+	DefaultSecretAgentTimeoutMillisecond = 10000
 	DefaultSecretAgentCaFile             = ""
 	DefaultSecretAgentTLSName            = ""
 	DefaultSecretAgentCertFile           = ""
@@ -131,7 +131,6 @@ const (
 	DefaultCommonNoIndexes             = false
 	DefaultCommonNoUDFs                = false
 	DefaultCommonRecordsPerSecond      = 0
-	DefaultCommonMaxRetries            = 5
 	DefaultCommonSocketTimeout         = 10000
 	DefaultCommonInfoTimeout           = 10000
 	DefaultCommonInfoMaxRetries        = 3
@@ -168,6 +167,7 @@ const (
 	DefaultBackupRackList            = ""
 	DefaultBackupTotalTimeout        = 0
 	DefaultBackupParallel            = 1
+	DefaultBackupMaxRetries          = 5
 )
 
 // Restore.
