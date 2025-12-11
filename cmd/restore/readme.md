@@ -98,7 +98,6 @@ Restore Flags:
   -w, --parallel int                  The number of restore threads. Accepts values from 1-1024 inclusive.
                                       If not set, the default value is automatically calculated and appears as the number of CPUs on your machine.
   -L, --records-per-second int        Limit total returned records per second (RPS). If 0, no limit is applied.
-      --max-retries int               Maximum number of retries before aborting the current transaction. (default 5)
       --total-timeout int             Total transaction timeout (in ms). If 0, no timeout is applied.  (default 10000)
       --socket-timeout int            Socket timeout (in ms). If 0, the value for --total-timeout is used.
                                       If both this and --total-timeout are 0, there is no socket idle time limit. (default 10000)
@@ -212,7 +211,7 @@ Example: abs-backup-cli --azure-account-name secret:resource1:azaccount
       --sa-connection-type string   Secret Agent connection type. Supported types: TCP, UNIX. (default "TCP")
       --sa-address string           Secret Agent host for TCP connection or socket file path for UDS connection.
       --sa-port int                 Secret Agent port (only for TCP connection).
-      --sa-timeout int              Secret Agent connection and reading timeout.
+      --sa-timeout int              Secret Agent connection and reading timeout. (default 10000)
       --sa-ca-file string           Path to ca file for encrypted connections.
       --sa-tls-name string          TLS name (SNI) for encrypted connections.
       --sa-cert-file string         Path to a client certificate file for mutual TLS authentication.
@@ -448,8 +447,6 @@ restore:
   no-udfs: false
   # Limit total returned records per second (RPS). If 0, no limit is applied.
   records-per-second: 0
-  # Maximum number of retries before aborting the current transaction.
-  max-retries: 5
   # Total transaction timeout (in ms). If 0, no timeout is applied.
   total-timeout: 10000
   # Socket timeout (in ms). If 0, the value for total-timeout is used.
@@ -584,7 +581,7 @@ secret-agent:
   # Secret Agent port (only for TCP connection).
   port: 0
   # Secret Agent connection and reading timeout.
-  timeout: 0
+  timeout: 10000
   # Path to ca file for encrypted connections.
   ca-file: ""
   # TLS name (SNI) for encrypted connections.
