@@ -120,7 +120,13 @@ func NewService(
 		racks = params.Backup.PreferRacks
 	}
 
-	aerospikeClient, err := storage.NewAerospikeClient(params.ClientConfig, params.ClientPolicy, racks, 0, logger)
+	aerospikeClient, err := storage.NewAerospikeClient(
+		params.ClientConfig,
+		params.ClientPolicy,
+		racks,
+		0,
+		logger,
+		secretAgent)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create aerospike client: %w", err)
 	}
