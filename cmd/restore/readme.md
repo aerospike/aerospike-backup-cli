@@ -250,7 +250,7 @@ Any AWS parameter can be retrieved from Secret Agent.
 GCP Storage Flags:
 For GCP storage, the bucket name must be set with --gcp-bucket-name flag.
 --directory path will only contain the folder name.
-The flag --gcp-endpoint-override is also mandatory, as each storage account has different service address.
+The flag --gcp-endpoint-override  is optional, and is used for tests or any other GCP emulator.
 Any GCP parameter can be retrieved from Secret Agent.
       --gcp-key-path string                  Path to file containing service account JSON key.
       --gcp-bucket-name string               Name of the Google cloud storage bucket.
@@ -276,7 +276,7 @@ Any GCP parameter can be retrieved from Secret Agent.
 Azure Storage Flags:
 For Azure storage, the container name must be set with --azure-storage-container-name flag.
 --directory path will only contain folder name.
-The flag --azure-endpoint is optional, and is used for tests with Azurit or any other Azure emulator.
+The flag --azure-endpoint is also mandatory, as each storage account has different service address.
 For authentication, use --azure-account-name and --azure-account-key, or 
 --azure-tenant-id, --azure-client-id and --azure-client-secret.
 Any Azure parameter can be retrieved from Secret Agent.

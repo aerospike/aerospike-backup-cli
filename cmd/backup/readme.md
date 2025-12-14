@@ -113,7 +113,6 @@ Backup Flags:
                                       filter cannot be parallelized individually, so you may only achieve as much parallelism as there are
                                       partition filters. Accepts values from 1-1024 inclusive. (default 1)
   -L, --records-per-second int        Limit total returned records per second (RPS). If 0, no limit is applied.
-      --max-retries int               Maximum number of retries before aborting the current transaction. (default 5)
       --total-timeout int             Total transaction timeout (in ms). If 0, no timeout is applied. 
       --socket-timeout int            Socket timeout (in ms). If 0, the value for --total-timeout is used.
                                       If both this and --total-timeout are 0, there is no socket idle time limit. (default 10000)
@@ -128,6 +127,7 @@ Backup Flags:
                                       The actual delay is calculated as: info-retry-interval * (info-retry-multiplier ^ attemptNumber) (default 1)
       --info-max-retries uint         Number of retries to send info commands before failing. (default 3)
       --std-buffer int                Buffer size in MiB for stdin and stdout operations. Used for pipelining. (default 4)
+      --max-retries int             Maximum number of retries before aborting the current transaction. (default 5)
   -r, --remove-files                Remove an existing backup file (-o) or entire directory (-d) and replace with the new backup.
       --remove-artifacts            Remove existing backup file (-o) or files (-d) without performing a backup.
   -o, --output-file string          Backup to a single backup file. Use '-' for stdout. Required, unless -d or -e is used.
@@ -234,7 +234,7 @@ Example: abs-backup-cli --azure-account-name secret:resource1:azaccount
       --sa-connection-type string   Secret Agent connection type. Supported types: TCP, UNIX. (default "TCP")
       --sa-address string           Secret Agent host for TCP connection or socket file path for UDS connection.
       --sa-port int                 Secret Agent port (only for TCP connection).
-      --sa-timeout int              Secret Agent connection and reading timeout.
+      --sa-timeout int              Secret Agent connection and reading timeout. (default 10000)
       --sa-ca-file string           Path to ca file for encrypted connections.
       --sa-tls-name string          TLS name (SNI) for encrypted connections.
       --sa-cert-file string         Path to a client certificate file for mutual TLS authentication.
@@ -286,7 +286,7 @@ Any AWS parameter can be retrieved from Secret Agent.
 GCP Storage Flags:
 For GCP storage, the bucket name must be set with --gcp-bucket-name flag.
 --directory path will only contain the folder name.
-The flag --gcp-endpoint-override is also mandatory, as each storage account has different service address.
+The flag --gcp-endpoint-override  is optional, and is used for tests or any other GCP emulator.
 Any GCP parameter can be retrieved from Secret Agent.
       --gcp-key-path string                  Path to file containing service account JSON key.
       --gcp-bucket-name string               Name of the Google cloud storage bucket.
@@ -311,7 +311,7 @@ Any GCP parameter can be retrieved from Secret Agent.
 Azure Storage Flags:
 For Azure storage, the container name must be set with --azure-storage-container-name flag.
 --directory path will only contain folder name.
-The flag --azure-endpoint is optional, and is used for tests with Azurit or any other Azure emulator.
+The flag --azure-endpoint is also mandatory, as each storage account has different service address.
 For authentication, use --azure-account-name and --azure-account-key, or 
 --azure-tenant-id, --azure-client-id and --azure-client-secret.
 Any Azure parameter can be retrieved from Secret Agent.
