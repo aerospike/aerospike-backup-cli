@@ -567,7 +567,6 @@ backup:
   sleep-between-retries: 5
   # If true, do not apply Base64 encoding to BLOBs and instead write raw binary data,
   # resulting in smaller backup files.
-  # Deprecated.
   compact: false
   # Estimate the backed-up record size from a random sample of 
   # 10,000 (default) records at 99.9999% confidence to estimate the full backup size.
