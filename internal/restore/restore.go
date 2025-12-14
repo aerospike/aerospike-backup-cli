@@ -84,6 +84,7 @@ func NewService(
 			"",
 			warmUp,
 			logger,
+			restoreConfig.SecretAgentConfig,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("failed to create aerospike client: %w", err)

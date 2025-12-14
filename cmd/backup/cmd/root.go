@@ -327,7 +327,7 @@ func newHelpFunction(
 		fmt.Println("\nGCP Storage Flags:\n" +
 			"For GCP storage, the bucket name must be set with --gcp-bucket-name flag.\n" +
 			"--directory path will only contain the folder name.\n" +
-			"The flag --gcp-endpoint-override is also mandatory, as each storage account has different service address.\n" +
+			"The flag --gcp-endpoint-override  is optional, and is used for tests or any other GCP emulator.\n" +
 			"Any GCP parameter can be retrieved from Secret Agent.")
 		gcpFlagSet.PrintDefaults()
 
@@ -335,7 +335,7 @@ func newHelpFunction(
 		fmt.Println("\nAzure Storage Flags:\n" +
 			"For Azure storage, the container name must be set with --azure-storage-container-name flag.\n" +
 			"--directory path will only contain folder name.\n" +
-			"The flag --azure-endpoint is optional, and is used for tests with Azurit or any other Azure emulator.\n" +
+			"The flag --azure-endpoint is also mandatory, as each storage account has different service address.\n" +
 			"For authentication, use --azure-account-name and --azure-account-key, or \n" +
 			"--azure-tenant-id, --azure-client-id and --azure-client-secret.\n" +
 			"Any Azure parameter can be retrieved from Secret Agent.")

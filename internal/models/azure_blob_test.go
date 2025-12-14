@@ -20,6 +20,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const testEndpoint = "test-endpoint"
+
 func TestAzureBlob_Validate(t *testing.T) {
 	t.Parallel()
 
@@ -39,6 +41,7 @@ func TestAzureBlob_Validate(t *testing.T) {
 				RetryMaxDelay:     60,
 				BlockSize:         1024,
 				UploadConcurrency: 1,
+				Endpoint:          testEndpoint,
 			},
 			isBackup: true,
 			wantErr:  "",
@@ -53,6 +56,7 @@ func TestAzureBlob_Validate(t *testing.T) {
 				RetryMaxDelay:       60,
 				BlockSize:           1024,
 				RestorePollDuration: 10,
+				Endpoint:            testEndpoint,
 				StorageCommon: StorageCommon{
 					RetryReadMultiplier: 3,
 					RetryReadBackoff:    3,
@@ -70,10 +74,19 @@ func TestAzureBlob_Validate(t *testing.T) {
 			wantErr:  "container name is required",
 		},
 		{
+			name: "empty endpoint",
+			azure: &AzureBlob{
+				ContainerName: testBucketName,
+			},
+			isBackup: true,
+			wantErr:  "endpoint is required",
+		},
+		{
 			name: "negative retry max attempts",
 			azure: &AzureBlob{
 				ContainerName:    testBucketName,
 				RetryMaxAttempts: -1,
+				Endpoint:         testEndpoint,
 			},
 			isBackup: true,
 			wantErr:  "retry maximum attempts must be non-negative",
@@ -84,6 +97,7 @@ func TestAzureBlob_Validate(t *testing.T) {
 				ContainerName:    testBucketName,
 				RetryMaxAttempts: 3,
 				RetryTimeout:     -1,
+				Endpoint:         testEndpoint,
 			},
 			isBackup: true,
 			wantErr:  "retry try timeout must be non-negative",
@@ -95,6 +109,7 @@ func TestAzureBlob_Validate(t *testing.T) {
 				RetryMaxAttempts: 3,
 				RetryTimeout:     30,
 				RetryDelay:       -1,
+				Endpoint:         testEndpoint,
 			},
 			isBackup: true,
 			wantErr:  "retry delay must be non-negative",
@@ -107,6 +122,7 @@ func TestAzureBlob_Validate(t *testing.T) {
 				RetryTimeout:     30,
 				RetryDelay:       5,
 				RetryMaxDelay:    -1,
+				Endpoint:         testEndpoint,
 			},
 			isBackup: true,
 			wantErr:  "retry max delay must be non-negative",
@@ -120,6 +136,7 @@ func TestAzureBlob_Validate(t *testing.T) {
 				RetryDelay:       5,
 				RetryMaxDelay:    60,
 				BlockSize:        -1,
+				Endpoint:         testEndpoint,
 			},
 			isBackup: true,
 			wantErr:  "block size can't be less than 1",
@@ -134,6 +151,7 @@ func TestAzureBlob_Validate(t *testing.T) {
 				RetryMaxDelay:       60,
 				BlockSize:           1024,
 				RestorePollDuration: 0,
+				Endpoint:            testEndpoint,
 			},
 			isBackup: false,
 			wantErr:  "restore poll duration can't be less than 1",
@@ -149,6 +167,7 @@ func TestAzureBlob_Validate(t *testing.T) {
 				BlockSize:           1024,
 				RestorePollDuration: 0,
 				UploadConcurrency:   1,
+				Endpoint:            testEndpoint,
 			},
 			isBackup: true,
 			wantErr:  "",
@@ -163,6 +182,7 @@ func TestAzureBlob_Validate(t *testing.T) {
 				RetryMaxDelay:       0,
 				BlockSize:           1,
 				RestorePollDuration: 1,
+				Endpoint:            testEndpoint,
 				StorageCommon: StorageCommon{
 					RetryReadMultiplier: 3,
 					RetryReadBackoff:    3,
@@ -181,6 +201,7 @@ func TestAzureBlob_Validate(t *testing.T) {
 				BlockSize:         1024,
 				UploadConcurrency: 1,
 				StorageCommon:     StorageCommon{MaxConnsPerHost: -1},
+				Endpoint:          testEndpoint,
 			},
 			isBackup: true,
 			wantErr:  "max connections per host must be non-negative",
@@ -195,6 +216,7 @@ func TestAzureBlob_Validate(t *testing.T) {
 				RetryMaxDelay:       0,
 				BlockSize:           1,
 				RestorePollDuration: 1,
+				Endpoint:            testEndpoint,
 				StorageCommon: StorageCommon{
 					RetryReadMultiplier: 3,
 					RetryReadBackoff:    3,

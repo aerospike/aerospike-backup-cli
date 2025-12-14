@@ -31,6 +31,7 @@ import (
 	appConfig "github.com/aerospike/aerospike-backup-cli/internal/config"
 	"github.com/aerospike/aerospike-backup-cli/internal/models"
 	"github.com/aerospike/aerospike-client-go/v8"
+	"github.com/aerospike/backup-go"
 	"github.com/aerospike/tools-common-go/client"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/aws/retry"
@@ -52,6 +53,7 @@ func NewAerospikeClient(
 	racks string,
 	warmUp int,
 	logger *slog.Logger,
+	sa *backup.SecretAgentConfig,
 ) (*aerospike.Client, error) {
 	if len(cfg.Seeds) < 1 {
 		return nil, fmt.Errorf("at least one seed must be provided")
@@ -60,6 +62,20 @@ func NewAerospikeClient(
 	logger.Info("initializing Aerospike client",
 		slog.String("seeds", cfg.Seeds.String()),
 	)
+
+	if sa != nil {
+		var err error
+
+		cfg.User, err = backup.ParseSecret(sa, cfg.User)
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse secret for user: %w", err)
+		}
+
+		cfg.Password, err = backup.ParseSecret(sa, cfg.Password)
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse secret for password: %w", err)
+		}
+	}
 
 	p, err := cfg.NewClientPolicy()
 	if err != nil {

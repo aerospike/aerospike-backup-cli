@@ -101,6 +101,10 @@ func (a *AzureBlob) Validate(isBackup bool) error {
 		return fmt.Errorf("container name is required")
 	}
 
+	if a.Endpoint == "" {
+		return fmt.Errorf("endpoint is required")
+	}
+
 	if a.RetryMaxAttempts < 0 {
 		return fmt.Errorf("retry maximum attempts must be non-negative")
 	}

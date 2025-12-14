@@ -23,7 +23,8 @@ import (
 )
 
 const (
-	testBucket = "test-bucket"
+	testBucket   = "test-bucket"
+	testEndpoint = "test-endpoint"
 )
 
 func TestValidateStorages(t *testing.T) {
@@ -77,6 +78,7 @@ func TestValidateStorages(t *testing.T) {
 				RestorePollDuration: 1,
 				UploadConcurrency:   10,
 				BlockSize:           5,
+				Endpoint:            testEndpoint,
 			},
 			wantErr: false,
 		},
@@ -148,6 +150,7 @@ func TestValidateStorages(t *testing.T) {
 				RestorePollDuration: 1,
 				UploadConcurrency:   10,
 				BlockSize:           5,
+				Endpoint:            testEndpoint,
 			},
 			wantErr: false,
 		},
@@ -162,6 +165,7 @@ func TestValidateStorages(t *testing.T) {
 				RestorePollDuration: 1,
 				UploadConcurrency:   10,
 				BlockSize:           5,
+				Endpoint:            testEndpoint,
 			},
 			wantErr: false,
 		},
