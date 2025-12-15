@@ -424,6 +424,8 @@ cluster:
   # of "services" in info request during cluster tending.
   services-alternate: false
   tls:
+    #  Enable TLS authentication with Aerospike. If false, other TLS options are ignored.
+    enable: true
     # The server TLS context to use to authenticate the connection to Aerospike.
     name: ""
     # Set the TLS protocol selection criteria. This format is the same
