@@ -209,6 +209,10 @@ func newS3Writer(
 		opts = append(opts, options.WithStorageClass(a.StorageClass))
 	}
 
+	if a.CalculateChecksum {
+		opts = append(opts, options.WithChecksum())
+	}
+
 	chunkSize := a.ChunkSize * 1024 * 1024
 	opts = append(opts, options.WithChunkSize(chunkSize), options.WithUploadConcurrency(a.UploadConcurrency))
 
@@ -223,6 +227,10 @@ func newGcpWriter(
 	client, err := newGcpClient(ctx, g)
 	if err != nil {
 		return nil, err
+	}
+
+	if g.CalculateChecksum {
+		opts = append(opts, options.WithChecksum())
 	}
 
 	chunkSize := g.ChunkSize * 1024 * 1024
@@ -243,6 +251,10 @@ func newAzureWriter(
 
 	if a.AccessTier != "" {
 		opts = append(opts, options.WithAccessTier(a.AccessTier))
+	}
+
+	if a.CalculateChecksum {
+		opts = append(opts, options.WithChecksum())
 	}
 
 	chunkSize := a.BlockSize * 1024 * 1024
