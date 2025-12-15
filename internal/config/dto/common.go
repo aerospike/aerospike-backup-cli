@@ -76,7 +76,7 @@ func defaultClusterSeed() *ClusterSeed {
 }
 
 type ClusterTLS struct {
-	Name            *string `yaml:"name"`
+	Enable          *bool   `yaml:"enable"`
 	Protocols       *string `yaml:"protocols"`
 	CaFile          *string `yaml:"cafile"`
 	CaPath          *string `yaml:"capath"`
@@ -89,7 +89,7 @@ func defaultClusterTLS() *ClusterTLS {
 	flag := flags.NewDefaultTLSProtocolsFlag()
 
 	return &ClusterTLS{
-		Name:            stringPtr(""),
+		Enable:          boolPtr(false),
 		Protocols:       stringPtr(flag.String()),
 		CaFile:          stringPtr(""),
 		CaPath:          stringPtr(""),
@@ -165,12 +165,9 @@ func (c *Cluster) applySeeds(f *flags.AerospikeFlags) error {
 		return nil
 	}
 
-	var seeds flags.HostTLSPortSliceFlag
-	if err := seeds.Set(hostPorts); err != nil {
+	if err := f.Seeds.Set(hostPorts); err != nil {
 		return fmt.Errorf("failed to set seeds: %w", err)
 	}
-
-	f.Seeds = seeds
 
 	return nil
 }
@@ -181,101 +178,71 @@ func (c *Cluster) applyAuthAndUser(f *flags.AerospikeFlags) error {
 	}
 
 	if c.Password != nil && *c.Password != "" {
-		var psw flags.PasswordFlag
-		if err := psw.Set(*c.Password); err != nil {
+		if err := f.Password.Set(*c.Password); err != nil {
 			return fmt.Errorf("failed to set password: %w", err)
 		}
-
-		f.Password = psw
 	}
 
 	if c.Auth != nil && *c.Auth != "" {
-		var authMode flags.AuthModeFlag
-		if err := authMode.Set(*c.Auth); err != nil {
+		if err := f.AuthMode.Set(*c.Auth); err != nil {
 			return fmt.Errorf("failed to set auth mode: %w", err)
 		}
-
-		f.AuthMode = authMode
 	}
 
 	return nil
 }
 
-//nolint:gocyclo // Long mapping function.
 func (c *Cluster) applyTLS(f *flags.AerospikeFlags) error {
 	if c.TLS == nil {
 		return nil
 	}
 
-	// Name (also toggles enable if non-empty)
-	if c.TLS.Name != nil && *c.TLS.Name != "" {
-		f.TLSEnable = true
-	}
+	f.TLSEnable = derefBool(c.TLS.Enable)
 
-	f.TLSName = derefString(c.TLS.Name)
+	if !f.TLSEnable {
+		return nil
+	}
 
 	// Protocols
 	if c.TLS.Protocols != nil && *c.TLS.Protocols != "" {
-		var tlsProtocols flags.TLSProtocolsFlag
-		if err := tlsProtocols.Set(*c.TLS.Protocols); err != nil {
+		if err := f.TLSProtocols.Set(*c.TLS.Protocols); err != nil {
 			return fmt.Errorf("failed to set tls protocols: %w", err)
 		}
-
-		f.TLSEnable = true
-		f.TLSProtocols = tlsProtocols
 	}
 
 	// CA file
 	if c.TLS.CaFile != nil && *c.TLS.CaFile != "" {
-		var tlsRootCaFile flags.CertFlag
-		if err := tlsRootCaFile.Set(*c.TLS.CaFile); err != nil {
+		if err := f.TLSRootCAFile.Set(*c.TLS.CaFile); err != nil {
 			return fmt.Errorf("failed to set tls root ca file: %w", err)
 		}
-
-		f.TLSEnable = true
-		f.TLSRootCAFile = tlsRootCaFile
 	}
 
 	// CA path
 	if c.TLS.CaPath != nil && *c.TLS.CaPath != "" {
-		var tlsRootCaPath flags.CertPathFlag
-		if err := tlsRootCaPath.Set(*c.TLS.CaPath); err != nil {
+		if err := f.TLSRootCAPath.Set(*c.TLS.CaPath); err != nil {
 			return fmt.Errorf("failed to set tls root ca path: %w", err)
 		}
-
-		f.TLSEnable = true
-		f.TLSRootCAPath = tlsRootCaPath
 	}
 
 	// Cert file
 	if c.TLS.CertFile != nil && *c.TLS.CertFile != "" {
-		var tlsCertFile flags.CertFlag
-		if err := tlsCertFile.Set(*c.TLS.CertFile); err != nil {
+		if err := f.TLSCertFile.Set(*c.TLS.CertFile); err != nil {
 			return fmt.Errorf("failed to set tls cert file: %w", err)
 		}
-
-		f.TLSEnable = true
-		f.TLSCertFile = tlsCertFile
 	}
 
 	// Key file
 	if c.TLS.KeyFile != nil && *c.TLS.KeyFile != "" {
-		var tlsKeyFile flags.CertFlag
-		if err := tlsKeyFile.Set(*c.TLS.KeyFile); err != nil {
+		if err := f.TLSKeyFile.Set(*c.TLS.KeyFile); err != nil {
 			return fmt.Errorf("failed to set tls key file: %w", err)
 		}
-
-		f.TLSEnable = true
 	}
 
 	// Key password
 	if c.TLS.KeyFilePassword != nil && *c.TLS.KeyFilePassword != "" {
-		var tlsKeyFilePass flags.PasswordFlag
-		if err := tlsKeyFilePass.Set(*c.TLS.KeyFilePassword); err != nil {
+		if err := f.TLSKeyFilePass.Set(*c.TLS.KeyFilePassword); err != nil {
 			return fmt.Errorf("failed to set tls key file password: %w", err)
 		}
-
-		f.TLSEnable = true
 	}
 
 	return nil
