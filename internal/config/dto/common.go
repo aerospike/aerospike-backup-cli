@@ -77,7 +77,6 @@ func defaultClusterSeed() *ClusterSeed {
 
 type ClusterTLS struct {
 	Enable          *bool   `yaml:"enable"`
-	Name            *string `yaml:"name"`
 	Protocols       *string `yaml:"protocols"`
 	CaFile          *string `yaml:"cafile"`
 	CaPath          *string `yaml:"capath"`
@@ -91,7 +90,6 @@ func defaultClusterTLS() *ClusterTLS {
 
 	return &ClusterTLS{
 		Enable:          boolPtr(false),
-		Name:            stringPtr(""),
 		Protocols:       stringPtr(flag.String()),
 		CaFile:          stringPtr(""),
 		CaPath:          stringPtr(""),
@@ -200,7 +198,10 @@ func (c *Cluster) applyTLS(f *flags.AerospikeFlags) error {
 	}
 
 	f.TLSEnable = derefBool(c.TLS.Enable)
-	f.TLSName = derefString(c.TLS.Name)
+
+	if !f.TLSEnable {
+		return nil
+	}
 
 	// Protocols
 	if c.TLS.Protocols != nil && *c.TLS.Protocols != "" {
