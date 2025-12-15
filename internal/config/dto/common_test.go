@@ -55,6 +55,7 @@ func TestCluster_ToAerospikeConfig(t *testing.T) {
 	t.Run("error in TLS propagates", func(t *testing.T) {
 		c := &Cluster{
 			TLS: &ClusterTLS{
+				Enable:    boolPtr(true),
 				Protocols: stringPtr("InvalidProtocol"),
 			},
 		}
