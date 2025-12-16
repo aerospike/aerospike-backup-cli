@@ -19,6 +19,19 @@ import (
 	"github.com/spf13/pflag"
 )
 
+const (
+	descS3MaxConnsPerHostBackup = "Max connections per host optionally" +
+		" limits the total number of connections per host,\n" +
+		"including connections in the dialing, active, and idle states. On limit violation, dials will block.\n" +
+		"Should be greater than --parallel * --s3-upload-concurrency to avoid upload speed degradation.\n" +
+		"0 means no limit."
+	descS3MaxConnsPerHostRestore = "Max connections per host optionally" +
+		" limits the total number of connections per host,\n" +
+		"including connections in the dialing, active, and idle states. On limit violation, dials will block.\n" +
+		"Should be greater than --parallel to avoid download speed degradation.\n" +
+		"0 means no limit."
+)
+
 type AwsS3 struct {
 	operation int
 	models.AwsS3
@@ -32,6 +45,15 @@ func NewAwsS3(operation int) *AwsS3 {
 
 func (f *AwsS3) NewFlagSet() *pflag.FlagSet {
 	flagSet := &pflag.FlagSet{}
+
+	var descMaxConnsPerHost string
+
+	switch f.operation {
+	case OperationBackup:
+		descMaxConnsPerHost = descS3MaxConnsPerHostBackup
+	case OperationRestore:
+		descMaxConnsPerHost = descS3MaxConnsPerHostRestore
+	}
 
 	flagSet.StringVar(&f.BucketName, "s3-bucket-name",
 		models.DefaultS3BucketName,
@@ -125,9 +147,8 @@ func (f *AwsS3) NewFlagSet() *pflag.FlagSet {
 
 	flagSet.IntVar(&f.MaxConnsPerHost, "s3-max-conns-per-host",
 		models.DefaultCloudMaxConnsPerHost,
-		"MaxConnsPerHost optionally limits the total number of connections per host,\n"+
-			"including connections in the dialing, active, and idle states. On limit violation, dials will block.\n"+
-			"0 means no limit.")
+		descMaxConnsPerHost,
+	)
 
 	flagSet.IntVar(&f.RequestTimeout, "s3-request-timeout",
 		models.DefaultCloudRequestTimeout,
