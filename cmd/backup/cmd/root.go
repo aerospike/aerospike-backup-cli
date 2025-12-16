@@ -333,7 +333,7 @@ func newHelpFunction(
 
 		// Print section: Azure Flags
 		fmt.Println("\nAzure Storage Flags:\n" +
-			"For Azure storage, the container name must be set with --azure-storage-container-name flag.\n" +
+			"For Azure storage, the container name must be set with --azure-container-name flag.\n" +
 			"--directory path will only contain folder name.\n" +
 			"The flag --azure-endpoint is also mandatory, as each storage account has different service address.\n" +
 			"For authentication, use --azure-account-name and --azure-account-key, or \n" +

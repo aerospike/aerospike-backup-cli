@@ -20,8 +20,18 @@ import (
 )
 
 const (
-	descAccessTierBackup  = "Azure access tier is applied to created backup files."
-	descAccessTierRestore = "If is set, tool will try to rehydrate archived files to the specified tier."
+	descAccessTierBackup           = "Azure access tier is applied to created backup files."
+	descAccessTierRestore          = "If is set, tool will try to rehydrate archived files to the specified tier."
+	descAzureMaxConnsPerHostBackup = "Max connections per host optionally" +
+		" limits the total number of connections per host,\n" +
+		"including connections in the dialing, active, and idle states. On limit violation, dials will block.\n" +
+		"Should be greater than --parallel * --azure-upload-concurrency to avoid upload speed degradation.\n" +
+		"0 means no limit."
+	descAzureMaxConnsPerHostRestore = "Max connections per host optionally" +
+		" limits the total number of connections per host,\n" +
+		"including connections in the dialing, active, and idle states. On limit violation, dials will block.\n" +
+		"Should be greater than --parallel to avoid download speed degradation.\n" +
+		"0 means no limit."
 )
 
 type AzureBlob struct {
@@ -38,13 +48,15 @@ func NewAzureBlob(operation int) *AzureBlob {
 func (f *AzureBlob) NewFlagSet() *pflag.FlagSet {
 	flagSet := &pflag.FlagSet{}
 
-	var descAccessTier string
+	var descAccessTier, descMaxConnsPerHost string
 
 	switch f.operation {
 	case OperationBackup:
 		descAccessTier = descAccessTierBackup
+		descMaxConnsPerHost = descAzureMaxConnsPerHostBackup
 	case OperationRestore:
 		descAccessTier = descAccessTierRestore
+		descMaxConnsPerHost = descAzureMaxConnsPerHostRestore
 	}
 
 	flagSet.StringVar(&f.AccountName, "azure-account-name",
@@ -138,9 +150,7 @@ func (f *AzureBlob) NewFlagSet() *pflag.FlagSet {
 
 	flagSet.IntVar(&f.MaxConnsPerHost, "azure-max-conns-per-host",
 		models.DefaultCloudMaxConnsPerHost,
-		"MaxConnsPerHost optionally limits the total number of connections per host,\n"+
-			"including connections in the dialing, active, and idle states. On limit violation, dials will block.\n"+
-			"0 means no limit.")
+		descMaxConnsPerHost)
 
 	flagSet.IntVar(&f.RequestTimeout, "azure-request-timeout",
 		models.DefaultCloudRequestTimeout,

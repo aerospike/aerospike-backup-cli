@@ -240,8 +240,9 @@ Any AWS parameter can be retrieved from Secret Agent.
       --s3-retry-max-attempts int         Maximum number of attempts that should be made in case of an error. (default 10)
       --s3-retry-max-backoff int          Max backoff duration (in ms) between retried attempts.
                                           The delay increases exponentially with each retry up to the maximum specified by s3-retry-max-backoff. (default 90000)
-      --s3-max-conns-per-host int         MaxConnsPerHost optionally limits the total number of connections per host,
+      --s3-max-conns-per-host int         Max connections per host optionally limits the total number of connections per host,
                                           including connections in the dialing, active, and idle states. On limit violation, dials will block.
+                                          Should be greater than --parallel to avoid download speed degradation.
                                           0 means no limit.
       --s3-request-timeout int            Timeout (in ms) specifies a time limit for requests made by this Client.
                                           The timeout includes connection time, any redirects, and reading the response body.
@@ -266,15 +267,16 @@ Any GCP parameter can be retrieved from Secret Agent.
       --gcp-retry-init-backoff int           Initial backoff is the initial value (in ms) of the retry period. (default 60000)
       --gcp-retry-backoff-multiplier float   Multiplier is the factor by which the retry period increases.
                                              It should be greater than 1. (default 2)
-      --gcp-max-conns-per-host int           MaxConnsPerHost optionally limits the total number of connections per host,
+      --gcp-max-conns-per-host int           Max connections per host optionally limits the total number of connections per host,
                                              including connections in the dialing, active, and idle states. On limit violation, dials will block.
+                                             Should be greater than --parallel to avoid speed degradation.
                                              0 means no limit.
       --gcp-request-timeout int              Timeout (in ms) specifies a time limit for requests made by this Client.
                                              The timeout includes connection time, any redirects, and reading the response body.
                                              0 means no limit. (default 600000)
 
 Azure Storage Flags:
-For Azure storage, the container name must be set with --azure-storage-container-name flag.
+For Azure storage, the container name must be set with --azure-container-name flag.
 --directory path will only contain folder name.
 The flag --azure-endpoint is also mandatory, as each storage account has different service address.
 For authentication, use --azure-account-name and --azure-account-key, or 
@@ -305,8 +307,9 @@ Any Azure parameter can be retrieved from Secret Agent.
       --azure-retry-timeout int              Retry timeout (in ms) indicates the maximum time allowed for any single try of an HTTP request.
                                              This is disabled by default. Specify a value greater than zero to enable.
                                              NOTE: Setting this to a small value might cause premature HTTP request time-outs.
-      --azure-max-conns-per-host int         MaxConnsPerHost optionally limits the total number of connections per host,
+      --azure-max-conns-per-host int         Max connections per host optionally limits the total number of connections per host,
                                              including connections in the dialing, active, and idle states. On limit violation, dials will block.
+                                             Should be greater than --parallel to avoid download speed degradation.
                                              0 means no limit.
       --azure-request-timeout int            Timeout (in ms) specifies a time limit for requests made by this Client.
                                              The timeout includes connection time, any redirects, and reading the response body.
@@ -628,6 +631,7 @@ aws:
     retry-read-max-attempts: 3
     # MaxConnsPerHost optionally limits the total number of connections per host,
     # including connections in the dialing, active, and idle states. On limit violation, dials will block.
+    # Should be greater than parallel to avoid download speed degradation.
     # 0 means no limit.
     max-conns-per-host: 0
     # Timeout (in ms) specifies a time limit for requests made by this Client.
@@ -663,6 +667,7 @@ gcp:
     retry-read-max-attempts: 3
     # MaxConnsPerHost optionally limits the total number of connections per host,
     # including connections in the dialing, active, and idle states. On limit violation, dials will block.
+    # Should be greater than parallel to avoid speed degradation.
     # 0 means no limit.
     max-conns-per-host: 0
     # Timeout (in ms) specifies a time limit for requests made by this Client.
@@ -715,6 +720,7 @@ azure:
     retry-read-max-attempts: 3
     # MaxConnsPerHost optionally limits the total number of connections per host,
     # including connections in the dialing, active, and idle states. On limit violation, dials will block.
+    # Should be greater than parallel to avoid download speed degradation.
     # 0 means no limit.
     max-conns-per-host: 0
     # Timeout (in ms) specifies a time limit for requests made by this Client.

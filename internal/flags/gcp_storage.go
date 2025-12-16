@@ -92,8 +92,9 @@ func (f *GcpStorage) NewFlagSet() *pflag.FlagSet {
 
 	flagSet.IntVar(&f.MaxConnsPerHost, "gcp-max-conns-per-host",
 		models.DefaultCloudMaxConnsPerHost,
-		"MaxConnsPerHost optionally limits the total number of connections per host,\n"+
+		"Max connections per host optionally limits the total number of connections per host,\n"+
 			"including connections in the dialing, active, and idle states. On limit violation, dials will block.\n"+
+			"Should be greater than --parallel to avoid speed degradation.\n"+
 			"0 means no limit.")
 
 	flagSet.IntVar(&f.RequestTimeout, "gcp-request-timeout",
