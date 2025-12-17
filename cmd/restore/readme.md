@@ -231,6 +231,7 @@ Any AWS parameter can be retrieved from Secret Agent.
       --s3-endpoint-override string       An alternate URL endpoint to send S3 API calls to.
       --s3-tier string                    If is set, tool will try to restore archived files to the specified tier.
                                           Tiers are: Standard, Bulk, Expedited.
+                                          Attention! Once an archive restoration is initiated, it can’t be canceled.
       --s3-restore-poll-duration int      How often ((in ms)) a backup client checks object status when restoring an archived object. (default 60000)
       --s3-retry-read-backoff int         The initial delay (in ms) between retry attempts. In case of connection errors
                                           tool will retry reading the object from the last known position. (default 1000)
@@ -290,6 +291,7 @@ Any Azure parameter can be retrieved from Secret Agent.
       --azure-endpoint string                Azure endpoint.
       --azure-container-name string          Azure container Name.
       --azure-access-tier string             If is set, tool will try to rehydrate archived files to the specified tier.
+                                             Attention! Once an archive rehydration is initiated, it can’t be canceled.
                                              Tiers are: Archive, Cold, Cool, Hot, P10, P15, P20, P30, P4, P40, P50, P6, P60, P70, P80, Premium.
       --azure-rehydrate-poll-duration int    How often ((in ms)) a backup client checks object status when restoring an archived object. (default 60000)
       --azure-retry-read-backoff int         The initial delay (in ms) between retry attempts. In case of connection errors
@@ -613,6 +615,7 @@ aws:
     secret-access-key: ""
     # If is set, tool will try to restore archived files to the specified tier.
     # Tiers are: Standard, Bulk, Expedited.
+    # Attention! Once an archive restoration is initiated, it can’t be canceled.
     tier: ""
     # How often ((in ms)) a backup client checks object status when restoring an archived object.
     restore-poll-duration: 60000
@@ -693,6 +696,7 @@ azure:
     container-name: ""
     # If is set, tool will try to rehydrate archived files to the specified tier.
     # Tiers are: Archive, Cold, Cool, Hot, P10, P15, P20, P30, P4, P40, P50, P6, P60, P70, P80, Premium.
+    # Attention! Once an archive rehydration is initiated, it can’t be canceled.
     access-tier: ""
     # How often ((in ms)) a backup client checks object status when restoring an archived object.
     rehydrate-poll-duration: 60000
