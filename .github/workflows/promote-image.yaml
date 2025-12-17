@@ -40,13 +40,6 @@ jobs:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Login to JFrog Artifactory
-        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
-        with:
-          registry: ${{ vars.ARTIFACTORY_REGISTRY_URL }}
-          username: ${{ secrets.ARTIFACTORY_USER }}
-          password: ${{ secrets.ARTIFACTORY_TOKEN }}
-
       - name: Get Metadata
         run: |
           echo "Getting latest Git tag..."
