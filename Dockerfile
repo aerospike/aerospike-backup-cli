@@ -32,7 +32,7 @@ RUN --mount=type=secret,id=GOPROXY <<-EOF
     xx-verify /app/aerospike-backup-cli/dist/abs-restore-cli_${TARGETOS}_${TARGETARCH}
 EOF
 
-FROM ${REGISTRY}/alpine:latest
+FROM ${REGISTRY}/alpine:3.23
 
 ARG TARGETOS
 ARG TARGETARCH
