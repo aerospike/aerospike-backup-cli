@@ -1,5 +1,5 @@
 SHELL = bash
-NAME = aerospike-backup-tools
+NAME = aerospike-backup-cli
 WORKSPACE = $(shell pwd)
 VERSION ?= $(shell git describe --tags --exact-match 2>/dev/null || git rev-parse --abbrev-ref HEAD)
 MAINTAINER = "Aerospike <info@aerospike.com>"
@@ -21,7 +21,7 @@ NPROC := $(shell nproc 2>/dev/null || getconf _NPROCESSORS_ONLN)
 ARCHS ?= linux/amd64 linux/arm64
 PACKAGERS ?= deb rpm
 IMAGE_TAG ?= test
-IMAGE_REPO ?= aerospike/aerospike-backup-tools
+IMAGE_REPO ?= aerospike/aerospike-backup-cli
 IMAGE_CACHE_FROM ?=
 IMAGE_CACHE_TO ?=
 IMAGE_OUTPUT ?= type=image,push=true

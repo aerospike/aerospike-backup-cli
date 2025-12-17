@@ -79,7 +79,7 @@ target aerospike-backup-cli {
     "org.opencontainers.image.title"         = "Aerospike Backup CLI"
     "org.opencontainers.image.description"   = "Command-line tools for backing up and restoring Aerospike data"
     "org.opencontainers.image.documentation" = "https://github.com/aerospike/aerospike-backup-cli?tab=readme-ov-file#aerospike-backup-cli"
-    "org.opencontainers.image.base.name"     = "registry.access.redhat.com/ubi9/ubi-minimal"
+    "org.opencontainers.image.base.name"     = "docker.io/alpine:latest"
     "org.opencontainers.image.source"        = "https://github.com/aerospike/aerospike-backup-cli/tree/${GIT_BRANCH}"
     "org.opencontainers.image.vendor"        = "Aerospike"
     "org.opencontainers.image.version"       = "${VERSION}"
