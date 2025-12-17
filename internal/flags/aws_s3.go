@@ -114,8 +114,9 @@ func (f *AwsS3) NewFlagSet() *pflag.FlagSet {
 		flagSet.StringVar(&f.AccessTier, "s3-tier",
 			models.DefaultS3AccessTier,
 			"If is set, tool will try to restore archived files to the specified tier.\n"+
-				"Tiers are: Standard, Bulk, Expedited.\n"+
-				"Attention! This triggers an asynchronous process that cannot be terminated.")
+				"Attention! This triggers an asynchronous process that cannot be terminated.\n"+
+				"Tiers are: Standard, Bulk, Expedited.",
+		)
 
 		flagSet.Int64Var(&f.RestorePollDuration, "s3-restore-poll-duration",
 			models.DefaultS3RestorePollDuration,
