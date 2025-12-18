@@ -155,6 +155,11 @@ func printEstimate(
 		if rps > 0 {
 			recSize = uint64(float64(kbps) / float64(rps) * 1024)
 		}
+
+		logger.Debug("pipe metrics",
+			slog.Int("read", metrics.PipelineReadQueueSize),
+			slog.Int("write", metrics.PipelineWriteQueueSize),
+		)
 	}
 
 	logger.Info("progress",
@@ -164,11 +169,6 @@ func printEstimate(
 		slog.Uint64("rec/s", rps),
 		slog.Uint64("KiB/s", kbps),
 		slog.Uint64("B/rec", recSize),
-	)
-
-	logger.Debug("pipe metrics",
-		slog.Int("read", metrics.PipelineReadQueueSize),
-		slog.Int("write", metrics.PipelineWriteQueueSize),
 	)
 
 	return percentage, nil
