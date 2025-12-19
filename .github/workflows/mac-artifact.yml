@@ -44,6 +44,8 @@ jobs:
           fetch-depth: 0
       - name: Checkout aerospike-backup-cli submodule
         run: |
+          # Convert SSH URLs to HTTPS for public repositories
+          git config --global url."https://github.com/".insteadOf "git@github.com:"
           # Initialize and checkout the submodule
           git submodule update --init --recursive -- ${{ inputs.submodule || '.' }}
         working-directory: ${{ steps.checkout-dir.outputs.value }}
