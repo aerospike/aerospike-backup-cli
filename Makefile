@@ -28,6 +28,7 @@ IMAGE_OUTPUT ?= type=image,push=true
 BACKUP_BINARY_NAME = abs-backup-cli
 RESTORE_BINARY_NAME = abs-restore-cli
 TARGET_DIR = $(WORKSPACE)/dist
+BIN_DIR = $(WORKSPACE)/bin
 PACKAGE_DIR= $(WORKSPACE)/scripts/package
 CMD_BACKUP_DIR = $(WORKSPACE)/cmd/backup
 CMD_RESTORE_DIR = $(WORKSPACE)/cmd/restore
@@ -50,6 +51,7 @@ coverage:
 
 .PHONY: clean
 clean:
+	rm -Rf $(BIN_DIR)
 	rm -Rf $(TARGET_DIR)
 	@find . -type f -name 'nfpm-linux-*.yaml' -exec rm -v {} +
 
@@ -86,6 +88,15 @@ build:
 	$(GOBUILD) -o $(TARGET_DIR)/$(BACKUP_BINARY_NAME)_$(OS)_$(ARCH) $(CMD_BACKUP_DIR)
 	@echo "Building $(RESTORE_BINARY_NAME) with version $(VERSION)..."
 	$(GOBUILD) -o $(TARGET_DIR)/$(RESTORE_BINARY_NAME)_$(OS)_$(ARCH) $(CMD_RESTORE_DIR)
+
+# Build for aerospike-tools
+.PHONY: tools-build
+tools-build:
+	mkdir -p "$(BIN_DIR)"
+	@echo "Building $(BACKUP_BINARY_NAME) for tools with version $(VERSION)..."
+	$(GOBUILD) -o $(BIN_DIR)/$(BACKUP_BINARY_NAME) $(CMD_BACKUP_DIR)
+	@echo "Building $(RESTORE_BINARY_NAME) for tools with version $(VERSION)..."
+	$(GOBUILD) -o $(BIN_DIR)/$(RESTORE_BINARY_NAME) $(CMD_RESTORE_DIR)
 
 .PHONY: buildx
 buildx:

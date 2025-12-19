@@ -1,0 +1,90 @@
+name: Mac Artifact
+
+on:
+  push:
+    branches: [main, actionsHub]
+  pull_request:
+    branches: [main]
+  workflow_call:
+    inputs:
+      submodule:
+        description: The directory of the submodule, if this workflow is being called on a submodule
+        required: false
+        type: string
+
+jobs:
+  build:
+    strategy:
+      matrix: 
+        os: [macos-14, macos-15, macos-26]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
+        with:
+          egress-policy: audit
+
+      - name: Get checkout directory
+        uses: step-security/action-cond@45aa5a709bd075f11c74285d8b0ca4d527e5fbcf # v1.2.4
+        id: checkout-dir
+        with:
+          cond: ${{ inputs.submodule != '' }}
+          if_true: aerospike-tools # In this case we are expecting to checkout the tools package.
+          if_false: aerospike-backup-cli
+      - name: Get aerospike-backup-cli working directory
+        uses: step-security/action-cond@45aa5a709bd075f11c74285d8b0ca4d527e5fbcf # v1.2.4
+        id: working-dir
+        with:
+          cond: ${{ inputs.submodule != '' }}
+          if_true: aerospike-tools/${{ inputs.submodule }} # In this case we are expecting to checkout the tools package.
+          if_false: aerospike-backup-cli
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          path: ${{ steps.checkout-dir.outputs.value }}
+          fetch-depth: 0
+      - name: Print and get version
+        working-directory: ${{ steps.working-dir.outputs.value }}
+        id: tag
+        run: |
+          git describe --tags --always
+          echo "tag=$(git describe --tags --always)" >> $GITHUB_OUTPUT
+      - name: Get go version from go.mod
+        working-directory: ${{ steps.working-dir.outputs.value }}
+        run: |
+          echo "GO_VERSION=$(grep '^go ' go.mod | cut -d " " -f 2)" >> $GITHUB_ENV
+      - uses: actions/setup-go@19bb51245e9c80abacb2e91cc42b33fa478b8639 # v4.2.1
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          check-latest: true
+          cache: true
+          cache-dependency-path: ${{ steps.working-dir.outputs.value }}/go.sum
+      - uses: kenchan0130/actions-system-info@b98fe44bc35efcc60a9828cf4a04783a8b370bde # v1.3.0
+        id: system-info
+      - name: Cache backup CLI binaries
+        uses: actions/cache@6f8efc29b200d32929f49075959781ed54ec270c # v3.5.0
+        id: cache-backup-cli
+        env:
+          cache-name: cache-backup-cli
+          cache-index: "1"
+        with:
+          path: |
+            ${{ steps.working-dir.outputs.value }}/bin/abs-backup-cli
+            ${{ steps.working-dir.outputs.value }}/bin/abs-restore-cli
+          key: ${{ env.cache-name }}-${{ env.cache-index }}-${{ matrix.os }}-${{ runner.arch }}-${{ steps.system-info.outputs.release }}-${{ steps.tag.outputs.tag }}
+      - name: Build backup CLI binaries for tools
+        if: steps.cache-backup-cli.outputs.cache-hit != 'true'
+        working-directory: ${{ steps.working-dir.outputs.value }}
+        run: |
+          make tools-build
+      - name: Sanity Test backup CLI
+        working-directory: ${{ steps.working-dir.outputs.value }}
+        run: |
+          ./bin/abs-backup-cli --version
+          ./bin/abs-restore-cli --version
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ${{ steps.system-info.outputs.platform }}-${{ runner.arch }}-${{ matrix.os }}-${{ steps.system-info.outputs.release }}-backup-cli
+          path: |
+            ${{ steps.working-dir.outputs.value }}/bin/abs-backup-cli
+            ${{ steps.working-dir.outputs.value }}/bin/abs-restore-cli
+          if-no-files-found: error
