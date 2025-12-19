@@ -44,44 +44,14 @@ jobs:
           fetch-depth: 0
       - name: Checkout aerospike-backup-cli submodule
         run: |
-          # Convert SSH URLs to HTTPS for public repositories
-          git config --global url."https://github.com/".insteadOf "git@github.com:"
-          # Initialize and checkout the submodule
+          # Workaround to replace ssh with http in .gitmodules and add auth
+          # If the .gitmodules was http then we would just need to add the "token:"
+          # param to the above actions/checkout step since the token is persisted.
+          git config --file .gitmodules --get-regexp url | while read url; do
+            git config --file=.gitmodules $(echo "$url" | sed -E "s/git@github.com:|https:\/\/github.com\//https:\/\/${{ secrets.TOOLS_BUILD_PAT }}:${{ secrets.TOOLS_BUILD_PAT }}@github.com\//")
+          done
           git submodule update --init --recursive -- ${{ inputs.submodule || '.' }}
         working-directory: ${{ steps.checkout-dir.outputs.value }}
-      - name: Debug directories and paths
-        run: |
-          echo "=== DEBUG INFORMATION ==="
-          echo "Current directory: $(pwd)"
-          echo "Checkout directory: ${{ steps.checkout-dir.outputs.value }}"
-          echo "Working directory: ${{ steps.working-dir.outputs.value }}"
-          echo "Submodule input: '${{ inputs.submodule }}'"
-          echo ""
-          echo "=== CURRENT DIRECTORY CONTENTS ==="
-          ls -la
-          echo ""
-          if [ -d "${{ steps.checkout-dir.outputs.value }}" ]; then
-            echo "=== CHECKOUT DIRECTORY CONTENTS ==="
-            ls -la "${{ steps.checkout-dir.outputs.value }}"
-            echo ""
-          else
-            echo "❌ Checkout directory does not exist: ${{ steps.checkout-dir.outputs.value }}"
-          fi
-          if [ -d "${{ steps.working-dir.outputs.value }}" ]; then
-            echo "=== WORKING DIRECTORY CONTENTS ==="
-            ls -la "${{ steps.working-dir.outputs.value }}"
-            echo ""
-            if [ -f "${{ steps.working-dir.outputs.value }}/go.mod" ]; then
-              echo "✅ go.mod found!"
-              echo "=== GO.MOD CONTENTS ==="
-              head -5 "${{ steps.working-dir.outputs.value }}/go.mod"
-            else
-              echo "❌ go.mod NOT found in working directory"
-            fi
-          else
-            echo "❌ Working directory does not exist: ${{ steps.working-dir.outputs.value }}"
-          fi
-          echo "=== END DEBUG ==="
       - name: Print and get version
         working-directory: ${{ steps.working-dir.outputs.value }}
         id: tag
