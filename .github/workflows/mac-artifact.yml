@@ -42,6 +42,39 @@ jobs:
         with:
           path: ${{ steps.checkout-dir.outputs.value }}
           fetch-depth: 0
+      - name: Debug directories and paths
+        run: |
+          echo "=== DEBUG INFORMATION ==="
+          echo "Current directory: $(pwd)"
+          echo "Checkout directory: ${{ steps.checkout-dir.outputs.value }}"
+          echo "Working directory: ${{ steps.working-dir.outputs.value }}"
+          echo "Submodule input: '${{ inputs.submodule }}'"
+          echo ""
+          echo "=== CURRENT DIRECTORY CONTENTS ==="
+          ls -la
+          echo ""
+          if [ -d "${{ steps.checkout-dir.outputs.value }}" ]; then
+            echo "=== CHECKOUT DIRECTORY CONTENTS ==="
+            ls -la "${{ steps.checkout-dir.outputs.value }}"
+            echo ""
+          else
+            echo "❌ Checkout directory does not exist: ${{ steps.checkout-dir.outputs.value }}"
+          fi
+          if [ -d "${{ steps.working-dir.outputs.value }}" ]; then
+            echo "=== WORKING DIRECTORY CONTENTS ==="
+            ls -la "${{ steps.working-dir.outputs.value }}"
+            echo ""
+            if [ -f "${{ steps.working-dir.outputs.value }}/go.mod" ]; then
+              echo "✅ go.mod found!"
+              echo "=== GO.MOD CONTENTS ==="
+              head -5 "${{ steps.working-dir.outputs.value }}/go.mod"
+            else
+              echo "❌ go.mod NOT found in working directory"
+            fi
+          else
+            echo "❌ Working directory does not exist: ${{ steps.working-dir.outputs.value }}"
+          fi
+          echo "=== END DEBUG ==="
       - name: Print and get version
         working-directory: ${{ steps.working-dir.outputs.value }}
         id: tag
