@@ -312,7 +312,7 @@ func TestDumpFile(t *testing.T) {
 			name:     "valid struct dump",
 			filename: "valid_dump.yaml",
 			params: dto.Backup{
-				App: &dto.App{
+				App: dto.App{
 					LogLevel: &logLevel,
 				},
 			},
