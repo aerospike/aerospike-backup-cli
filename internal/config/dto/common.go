@@ -31,8 +31,8 @@ type App struct {
 }
 
 // defaultApp creates a new App with default values.
-func defaultApp() *App {
-	return &App{
+func defaultApp() App {
+	return App{
 		Verbose:  boolPtr(models.DefaultAppVerbose),
 		LogLevel: stringPtr(models.DefaultAppLogLevel),
 		LogJSON:  boolPtr(models.DefaultAppLogJSON),
@@ -99,8 +99,8 @@ func defaultClusterTLS() *ClusterTLS {
 	}
 }
 
-func defaultCluster() *Cluster {
-	return &Cluster{
+func defaultCluster() Cluster {
+	return Cluster{
 		Seeds:              []ClusterSeed{*defaultClusterSeed()},
 		TLS:                defaultClusterTLS(),
 		User:               stringPtr(""),
@@ -267,8 +267,8 @@ type Compression struct {
 	Level *int    `yaml:"level"`
 }
 
-func defaultCompression() *Compression {
-	return &Compression{
+func defaultCompression() Compression {
+	return Compression{
 		Mode:  stringPtr(models.DefaultCompressionMode),
 		Level: intPtr(models.DefaultCompressionLevel),
 	}
@@ -295,8 +295,8 @@ type Encryption struct {
 	KeySecret *string `yaml:"key-secret"`
 }
 
-func defaultEncryption() *Encryption {
-	return &Encryption{
+func defaultEncryption() Encryption {
+	return Encryption{
 		Mode:      stringPtr(models.DefaultEncryptionMode),
 		KeyFile:   stringPtr(models.DefaultEncryptionKeyFile),
 		KeyEnv:    stringPtr(models.DefaultEncryptionKeyEnv),
@@ -331,8 +331,8 @@ type SecretAgent struct {
 	IsBase64           *bool   `yaml:"is-base64"`
 }
 
-func defaultSecretAgent() *SecretAgent {
-	return &SecretAgent{
+func defaultSecretAgent() SecretAgent {
+	return SecretAgent{
 		ConnectionType:     stringPtr(models.DefaultSecretAgentConnectionType),
 		Address:            stringPtr(models.DefaultSecretAgentAddress),
 		Port:               intPtr(models.DefaultSecretAgentPort),
@@ -387,8 +387,8 @@ type AwsS3 struct {
 	RequestTimeout       *int     `yaml:"request-timeout"`
 }
 
-func defaultAwsS3() *AwsS3 {
-	return &AwsS3{
+func defaultAwsS3() AwsS3 {
+	return AwsS3{
 		BucketName:           stringPtr(models.DefaultS3BucketName),
 		Region:               stringPtr(models.DefaultS3Region),
 		Profile:              stringPtr(models.DefaultS3Profile),
@@ -458,8 +458,8 @@ type GcpStorage struct {
 	RequestTimeout         *int     `yaml:"request-timeout"`
 }
 
-func defaultGcpStorage() *GcpStorage {
-	return &GcpStorage{
+func defaultGcpStorage() GcpStorage {
+	return GcpStorage{
 		KeyFile:                stringPtr(models.DefaultGcpKeyFile),
 		BucketName:             stringPtr(models.DefaultGcpBucketName),
 		EndpointOverride:       stringPtr(models.DefaultGcpEndpoint),
@@ -526,8 +526,8 @@ type AzureBlob struct {
 	BlockSize            *int     `yaml:"block-size"`
 }
 
-func defaultAzureBlob() *AzureBlob {
-	return &AzureBlob{
+func defaultAzureBlob() AzureBlob {
+	return AzureBlob{
 		AccountName:          stringPtr(models.DefaultAzureAccountName),
 		AccountKey:           stringPtr(models.DefaultAzureAccountKey),
 		TenantID:             stringPtr(models.DefaultAzureTenantID),
@@ -588,8 +588,8 @@ type Local struct {
 	BufferSize int `yaml:"buffer-size"`
 }
 
-func defaultLocal() *Local {
-	return &Local{
+func defaultLocal() Local {
+	return Local{
 		BufferSize: models.DefaultLocalBufferSize,
 	}
 }

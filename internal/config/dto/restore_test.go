@@ -77,7 +77,7 @@ func TestDefaultRestoreConfig(t *testing.T) {
 }
 
 func TestRestoreConfig_ToModelRestore(t *testing.T) {
-	config := &RestoreConfig{
+	config := RestoreConfig{
 		Directory:                     stringPtr("/restore"),
 		Namespace:                     stringPtr("test"),
 		SetList:                       []string{"set1", "set2"},
@@ -160,15 +160,10 @@ func TestRestore_ToModelRestore_NilHandling(t *testing.T) {
 		var r *Restore
 		assert.Nil(t, r.ToModelRestore())
 	})
-
-	t.Run("nil restore config", func(t *testing.T) {
-		r := &Restore{Restore: nil}
-		assert.Nil(t, r.ToModelRestore())
-	})
 }
 
 func TestRestore_ToModelRestore_EmptyLists(t *testing.T) {
-	config := &RestoreConfig{
+	config := RestoreConfig{
 		SetList:       []string{},
 		BinList:       []string{},
 		DirectoryList: []string{},

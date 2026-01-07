@@ -22,20 +22,20 @@ import (
 
 // Restore is used to map yaml config.
 type Restore struct {
-	App         *App           `yaml:"app"`
-	Cluster     *Cluster       `yaml:"cluster"`
-	Restore     *RestoreConfig `yaml:"restore"`
-	Compression *Compression   `yaml:"compression"`
-	Encryption  *Encryption    `yaml:"encryption"`
-	SecretAgent *SecretAgent   `yaml:"secret-agent"`
+	App         App           `yaml:"app"`
+	Cluster     Cluster       `yaml:"cluster"`
+	Restore     RestoreConfig `yaml:"restore"`
+	Compression Compression   `yaml:"compression"`
+	Encryption  Encryption    `yaml:"encryption"`
+	SecretAgent SecretAgent   `yaml:"secret-agent"`
 	Aws         struct {
-		S3 *AwsS3 `yaml:"s3"`
+		S3 AwsS3 `yaml:"s3"`
 	} `yaml:"aws"`
 	Gcp struct {
-		Storage *GcpStorage `yaml:"storage"`
+		Storage GcpStorage `yaml:"storage"`
 	} `yaml:"gcp"`
 	Azure struct {
-		Blob *AzureBlob `yaml:"blob"`
+		Blob AzureBlob `yaml:"blob"`
 	} `yaml:"azure"`
 }
 
@@ -49,19 +49,19 @@ func DefaultRestore() *Restore {
 		Encryption:  defaultEncryption(),
 		SecretAgent: defaultSecretAgent(),
 		Aws: struct {
-			S3 *AwsS3 `yaml:"s3"`
+			S3 AwsS3 `yaml:"s3"`
 		}{S3: defaultAwsS3()},
 		Gcp: struct {
-			Storage *GcpStorage `yaml:"storage"`
+			Storage GcpStorage `yaml:"storage"`
 		}{Storage: defaultGcpStorage()},
 		Azure: struct {
-			Blob *AzureBlob `yaml:"blob"`
+			Blob AzureBlob `yaml:"blob"`
 		}{Blob: defaultAzureBlob()},
 	}
 }
 
 func (r *Restore) ToModelRestore() *models.Restore {
-	if r == nil || r.Restore == nil {
+	if r == nil {
 		return nil
 	}
 
@@ -143,8 +143,8 @@ type RestoreConfig struct {
 	StdBufferSize                 *int     `yaml:"std-buffer"`
 }
 
-func defaultRestoreConfig() *RestoreConfig {
-	return &RestoreConfig{
+func defaultRestoreConfig() RestoreConfig {
+	return RestoreConfig{
 		Directory:                     stringPtr(models.DefaultCommonDirectory),
 		Namespace:                     stringPtr(models.DefaultCommonNamespace),
 		SetList:                       []string{},
