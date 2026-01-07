@@ -22,23 +22,23 @@ import (
 
 // Backup is used to map yaml config.
 type Backup struct {
-	App         *App          `yaml:"app"`
-	Cluster     *Cluster      `yaml:"cluster"`
-	Backup      *BackupConfig `yaml:"backup"`
-	Compression *Compression  `yaml:"compression"`
-	Encryption  *Encryption   `yaml:"encryption"`
-	SecretAgent *SecretAgent  `yaml:"secret-agent"`
+	App         App          `yaml:"app"`
+	Cluster     Cluster      `yaml:"cluster"`
+	Backup      BackupConfig `yaml:"backup"`
+	Compression Compression  `yaml:"compression"`
+	Encryption  Encryption   `yaml:"encryption"`
+	SecretAgent SecretAgent  `yaml:"secret-agent"`
 	Aws         struct {
-		S3 *AwsS3 `yaml:"s3"`
+		S3 AwsS3 `yaml:"s3"`
 	} `yaml:"aws"`
 	Gcp struct {
-		Storage *GcpStorage `yaml:"storage"`
+		Storage GcpStorage `yaml:"storage"`
 	} `yaml:"gcp"`
 	Azure struct {
-		Blob *AzureBlob `yaml:"blob"`
+		Blob AzureBlob `yaml:"blob"`
 	} `yaml:"azure"`
 	Local struct {
-		Disk *Local `yaml:"disk"`
+		Disk Local `yaml:"disk"`
 	} `yaml:"local"`
 }
 
@@ -52,22 +52,22 @@ func DefaultBackup() *Backup {
 		Encryption:  defaultEncryption(),
 		SecretAgent: defaultSecretAgent(),
 		Aws: struct {
-			S3 *AwsS3 `yaml:"s3"`
+			S3 AwsS3 `yaml:"s3"`
 		}{S3: defaultAwsS3()},
 		Gcp: struct {
-			Storage *GcpStorage `yaml:"storage"`
+			Storage GcpStorage `yaml:"storage"`
 		}{Storage: defaultGcpStorage()},
 		Azure: struct {
-			Blob *AzureBlob `yaml:"blob"`
+			Blob AzureBlob `yaml:"blob"`
 		}{Blob: defaultAzureBlob()},
 		Local: struct {
-			Disk *Local `yaml:"disk"`
+			Disk Local `yaml:"disk"`
 		}{Disk: defaultLocal()},
 	}
 }
 
 func (b *Backup) ToModelBackup() *models.Backup {
-	if b == nil || b.Backup == nil {
+	if b == nil {
 		return nil
 	}
 
@@ -163,8 +163,8 @@ type BackupConfig struct {
 	StdBufferSize                 *int     `yaml:"std-buffer"`
 }
 
-func defaultBackupConfig() *BackupConfig {
-	return &BackupConfig{
+func defaultBackupConfig() BackupConfig {
+	return BackupConfig{
 		Directory:                     stringPtr(models.DefaultCommonDirectory),
 		Namespace:                     stringPtr(models.DefaultCommonNamespace),
 		SetList:                       []string{},

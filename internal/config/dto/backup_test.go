@@ -85,7 +85,7 @@ func TestDefaultBackupConfig(t *testing.T) {
 }
 
 func TestBackupConfig_ToModelBackup(t *testing.T) {
-	config := &BackupConfig{
+	config := BackupConfig{
 		Directory:                     stringPtr("/backup"),
 		Namespace:                     stringPtr("test"),
 		SetList:                       []string{"set1", "set2"},
@@ -182,15 +182,10 @@ func TestBackup_ToModelBackup_NilHandling(t *testing.T) {
 		var b *Backup
 		assert.Nil(t, b.ToModelBackup())
 	})
-
-	t.Run("nil backup config", func(t *testing.T) {
-		b := &Backup{Backup: nil}
-		assert.Nil(t, b.ToModelBackup())
-	})
 }
 
 func TestBackup_ToModelBackup_EmptyLists(t *testing.T) {
-	config := &BackupConfig{
+	config := BackupConfig{
 		SetList:       []string{},
 		BinList:       []string{},
 		NodeList:      []string{},
