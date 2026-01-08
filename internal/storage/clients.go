@@ -231,7 +231,6 @@ func newAzureClient(a *models.AzureBlob) (*azblob.Client, error) {
 			Transport: newHTTPClient(newTransport(a.MaxConnsPerHost), a.RequestTimeout),
 			Retry: policy.RetryOptions{
 				MaxRetries:    int32(a.RetryMaxAttempts),
-				TryTimeout:    time.Duration(a.RetryTimeout) * time.Millisecond,
 				RetryDelay:    time.Duration(a.RetryDelay) * time.Millisecond,
 				MaxRetryDelay: time.Duration(a.RetryMaxDelay) * time.Millisecond,
 				StatusCodes: []int{

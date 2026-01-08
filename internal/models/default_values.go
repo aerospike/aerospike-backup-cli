@@ -53,7 +53,6 @@ const (
 	DefaultAzureAccessTier          = ""
 	DefaultAzureRestorePollDuration = int64(60000)
 	DefaultAzureRetryMaxAttempts    = 10
-	DefaultAzureRetryTimeout        = 0
 	DefaultAzureRetryDelay          = 60000
 	DefaultAzureRetryMaxDelay       = 90000
 	DefaultAzureBlockSize           = 5

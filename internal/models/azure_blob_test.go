@@ -36,7 +36,6 @@ func TestAzureBlob_Validate(t *testing.T) {
 			azure: &AzureBlob{
 				ContainerName:     testBucketName,
 				RetryMaxAttempts:  3,
-				RetryTimeout:      30,
 				RetryDelay:        5,
 				RetryMaxDelay:     60,
 				BlockSize:         1024,
@@ -51,7 +50,6 @@ func TestAzureBlob_Validate(t *testing.T) {
 			azure: &AzureBlob{
 				ContainerName:       testBucketName,
 				RetryMaxAttempts:    3,
-				RetryTimeout:        30,
 				RetryDelay:          5,
 				RetryMaxDelay:       60,
 				BlockSize:           1024,
@@ -92,22 +90,10 @@ func TestAzureBlob_Validate(t *testing.T) {
 			wantErr:  "retry maximum attempts must be non-negative",
 		},
 		{
-			name: "negative retry timeout milliseconds",
-			azure: &AzureBlob{
-				ContainerName:    testBucketName,
-				RetryMaxAttempts: 3,
-				RetryTimeout:     -1,
-				Endpoint:         testEndpoint,
-			},
-			isBackup: true,
-			wantErr:  "retry try timeout must be non-negative",
-		},
-		{
 			name: "negative retry delay milliseconds",
 			azure: &AzureBlob{
 				ContainerName:    testBucketName,
 				RetryMaxAttempts: 3,
-				RetryTimeout:     30,
 				RetryDelay:       -1,
 				Endpoint:         testEndpoint,
 			},
@@ -119,7 +105,6 @@ func TestAzureBlob_Validate(t *testing.T) {
 			azure: &AzureBlob{
 				ContainerName:    testBucketName,
 				RetryMaxAttempts: 3,
-				RetryTimeout:     30,
 				RetryDelay:       5,
 				RetryMaxDelay:    -1,
 				Endpoint:         testEndpoint,
@@ -132,7 +117,6 @@ func TestAzureBlob_Validate(t *testing.T) {
 			azure: &AzureBlob{
 				ContainerName:    testBucketName,
 				RetryMaxAttempts: 3,
-				RetryTimeout:     30,
 				RetryDelay:       5,
 				RetryMaxDelay:    60,
 				BlockSize:        -1,
@@ -146,7 +130,6 @@ func TestAzureBlob_Validate(t *testing.T) {
 			azure: &AzureBlob{
 				ContainerName:       testBucketName,
 				RetryMaxAttempts:    3,
-				RetryTimeout:        30,
 				RetryDelay:          5,
 				RetryMaxDelay:       60,
 				BlockSize:           1024,
@@ -161,7 +144,6 @@ func TestAzureBlob_Validate(t *testing.T) {
 			azure: &AzureBlob{
 				ContainerName:       testBucketName,
 				RetryMaxAttempts:    3,
-				RetryTimeout:        30,
 				RetryDelay:          5,
 				RetryMaxDelay:       60,
 				BlockSize:           1024,
@@ -177,7 +159,6 @@ func TestAzureBlob_Validate(t *testing.T) {
 			azure: &AzureBlob{
 				ContainerName:       testBucketName,
 				RetryMaxAttempts:    0,
-				RetryTimeout:        0,
 				RetryDelay:          0,
 				RetryMaxDelay:       0,
 				BlockSize:           1,
@@ -195,7 +176,6 @@ func TestAzureBlob_Validate(t *testing.T) {
 			name: "negative max connections per host",
 			azure: &AzureBlob{
 				ContainerName:     testBucketName,
-				RetryTimeout:      30,
 				RetryDelay:        5,
 				RetryMaxDelay:     60,
 				BlockSize:         1024,
@@ -211,7 +191,6 @@ func TestAzureBlob_Validate(t *testing.T) {
 			azure: &AzureBlob{
 				ContainerName:       testBucketName,
 				RetryMaxAttempts:    0,
-				RetryTimeout:        0,
 				RetryDelay:          0,
 				RetryMaxDelay:       0,
 				BlockSize:           1,
