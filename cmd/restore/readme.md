@@ -306,9 +306,6 @@ Any Azure parameter can be retrieved from Secret Agent.
       --azure-retry-delay int                Retry delay specifies the initial amount of delay (in ms) to use before retrying an operation.
                                              The value is used only if the HTTP response does not contain a Retry-After header.
                                              The delay increases exponentially with each retry up to the maximum specified by azure-retry-max-delay. (default 60000)
-      --azure-retry-timeout int              Retry timeout (in ms) indicates the maximum time allowed for any single try of an HTTP request.
-                                             This is disabled by default. Specify a value greater than zero to enable.
-                                             NOTE: Setting this to a small value might cause premature HTTP request time-outs.
       --azure-max-conns-per-host int         Max connections per host optionally limits the total number of connections per host,
                                              including connections in the dialing, active, and idle states. On limit violation, dials will block.
                                              Should be greater than --parallel to avoid download speed degradation.
@@ -703,10 +700,6 @@ azure:
     # Max retries specifies the maximum number of attempts a failed operation will be retried
     # before producing an error.
     retry-max-attempts: 10
-    # Retry timeout (in ms) indicates the maximum time allowed for any single try of an HTTP request.
-    # This is disabled by default. Specify a value greater than zero to enable.
-    # NOTE: Setting this to a small value might cause premature HTTP request time-outs.
-    retry-timeout: 0
     # Retry delay specifies the initial amount of delay (in ms) to use before retrying an operation.
     # The value is used only if the HTTP response does not contain a Retry-After header.
     # The delay increases exponentially with each retry up to the maximum specified by azure-retry-max-delay.

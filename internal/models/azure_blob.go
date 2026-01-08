@@ -38,7 +38,6 @@ type AzureBlob struct {
 	RestorePollDuration int64
 
 	RetryMaxAttempts int
-	RetryTimeout     int
 	RetryDelay       int
 	RetryMaxDelay    int
 
@@ -107,10 +106,6 @@ func (a *AzureBlob) Validate(isBackup bool) error {
 
 	if a.RetryMaxAttempts < 0 {
 		return fmt.Errorf("retry maximum attempts must be non-negative")
-	}
-
-	if a.RetryTimeout < 0 {
-		return fmt.Errorf("retry try timeout must be non-negative")
 	}
 
 	if a.RetryDelay < 0 {

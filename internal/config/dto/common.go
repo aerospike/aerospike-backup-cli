@@ -513,7 +513,6 @@ type AzureBlob struct {
 	AccessTier           *string  `yaml:"access-tier"`
 	RestorePollDuration  *int64   `yaml:"rehydrate-poll-duration"`
 	RetryMaxAttempts     *int     `yaml:"retry-max-attempts"`
-	RetryTimeout         *int     `yaml:"retry-timeout"`
 	RetryDelay           *int     `yaml:"retry-delay"`
 	RetryMaxDelay        *int     `yaml:"retry-max-delay"`
 	UploadConcurrency    *int     `yaml:"upload-concurrency"`
@@ -538,7 +537,6 @@ func defaultAzureBlob() AzureBlob {
 		AccessTier:           stringPtr(models.DefaultAzureAccessTier),
 		RestorePollDuration:  int64Ptr(models.DefaultAzureRestorePollDuration),
 		RetryMaxAttempts:     intPtr(models.DefaultAzureRetryMaxAttempts),
-		RetryTimeout:         intPtr(models.DefaultAzureRetryTimeout),
 		RetryDelay:           intPtr(models.DefaultAzureRetryDelay),
 		RetryMaxDelay:        intPtr(models.DefaultAzureRetryMaxDelay),
 		UploadConcurrency:    intPtr(models.DefaultAzureUploadConcurrency),
@@ -567,7 +565,6 @@ func (a *AzureBlob) ToModelAzureBlob() *models.AzureBlob {
 		ContainerName:       derefString(a.ContainerName),
 		AccessTier:          derefString(a.AccessTier),
 		RetryMaxAttempts:    derefInt(a.RetryMaxAttempts),
-		RetryTimeout:        derefInt(a.RetryTimeout),
 		RetryDelay:          derefInt(a.RetryDelay),
 		RetryMaxDelay:       derefInt(a.RetryMaxDelay),
 		UploadConcurrency:   derefInt(a.UploadConcurrency),

@@ -40,7 +40,6 @@ func TestAzureBlob_NewFlagSetRestore(t *testing.T) {
 		"--azure-retry-max-attempts", "10",
 		"--azure-retry-max-delay", "10",
 		"--azure-retry-delay", "10",
-		"--azure-retry-timeout", "10",
 		"--azure-retry-read-backoff", "900",
 		"--azure-retry-read-multiplier", "1.5",
 		"--azure-retry-read-max-attempts", "5",
@@ -63,7 +62,6 @@ func TestAzureBlob_NewFlagSetRestore(t *testing.T) {
 	assert.Equal(t, 10, result.RetryMaxAttempts, "The azure-retry-max-attempts flag should be parsed correctly")
 	assert.Equal(t, 10, result.RetryMaxDelay, "The azure-retry-max-delay flag should be parsed correctly")
 	assert.Equal(t, 10, result.RetryDelay, "The azure-retry-delay flag should be parsed correctly")
-	assert.Equal(t, 10, result.RetryTimeout, "The azure-retry-timeout flag should be parsed correctly")
 	assert.Equal(t, 900, result.RetryReadBackoff, "The azure-retry-read-backoff flag should be parsed correctly")
 	assert.Equal(t, 1.5, result.RetryReadMultiplier, "The azure-retry-read-multiplier flag should be parsed correctly")
 	assert.Equal(t, uint(5), result.RetryReadMaxAttempts, "The azure-retry-read-max-attempts flag should be parsed correctly")
@@ -92,7 +90,6 @@ func TestAzureBlob_NewFlagSet_DefaultValuesRestore(t *testing.T) {
 	assert.Equal(t, models.DefaultAzureRetryMaxAttempts, result.RetryMaxAttempts, "The default value for azure-retry-max-attempts flag should be 100")
 	assert.Equal(t, models.DefaultAzureRetryMaxDelay, result.RetryMaxDelay, "The default value for azure-retry-max-delay flag should be 90")
 	assert.Equal(t, models.DefaultAzureRetryDelay, result.RetryDelay, "The default value for azure-retry-delay flag should be 60")
-	assert.Equal(t, models.DefaultAzureRetryTimeout, result.RetryTimeout, "The default value for azure-retry-timeout flag should be 0")
 	assert.Equal(t, models.DefaultCloudRetryReadBackoff, result.RetryReadBackoff, "The default value for azure-retry-read-backoff should be 0")
 	assert.Equal(t, models.DefaultCloudRetryReadMultiplier, result.RetryReadMultiplier, "The default value for azure-retry-read-multiplier should be 0")
 	assert.Equal(t, models.DefaultCloudRetryReadMaxAttempts, result.RetryReadMaxAttempts, "The default value for azure-retry-read-max-attempts should be 0")
