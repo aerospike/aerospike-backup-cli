@@ -250,7 +250,7 @@ func newAzureWriter(
 	}
 
 	if a.AccessTier != "" {
-		opts = append(opts, options.WithAccessTier(a.AccessTier))
+		opts = append(opts, options.WithStorageClass(a.AccessTier))
 	}
 
 	if a.CalculateChecksum {
