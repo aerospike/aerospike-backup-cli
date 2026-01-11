@@ -292,7 +292,7 @@ Any Azure parameter can be retrieved from Secret Agent.
       --azure-container-name string          Azure container Name.
       --azure-access-tier string             If is set, tool will try to rehydrate archived files to the specified tier.
                                              Attention! This triggers an asynchronous process that cannot be terminated.
-                                             Tiers are: Archive, Cold, Cool, Hot, P10, P15, P20, P30, P4, P40, P50, P6, P60, P70, P80, Premium.
+                                             Tiers are: Cold, Cool, Hot.
       --azure-rehydrate-poll-duration int    How often ((in ms)) a backup client checks object status when restoring an archived object. (default 60000)
       --azure-retry-read-backoff int         The initial delay (in ms) between retry attempts. In case of connection errors
                                              tool will retry reading the object from the last known position. (default 1000)
@@ -696,7 +696,7 @@ azure:
     container-name: ""
     # If is set, tool will try to rehydrate archived files to the specified tier.
     # Attention! This triggers an asynchronous process that cannot be terminated.
-    # Tiers are: Archive, Cold, Cool, Hot, P10, P15, P20, P30, P4, P40, P50, P6, P60, P70, P80, Premium.
+    # Tiers are: Cold, Cool, Hot.
     access-tier: ""
     # How often ((in ms)) a backup client checks object status when restoring an archived object.
     rehydrate-poll-duration: 60000
