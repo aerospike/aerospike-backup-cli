@@ -325,6 +325,7 @@ Any Azure parameter can be retrieved from Secret Agent.
       --azure-endpoint string          Azure endpoint.
       --azure-container-name string    Azure container Name.
       --azure-access-tier string       Azure access tier is applied to created backup files.
+                                       If not set, tier will be determined by the Azure storage account settings and rules.
                                        Tiers are: Cold, Cool, Hot.
       --azure-block-size int           Block size in MiB defines the size of the buffer used during upload. (default 5)
       --azure-upload-concurrency int   Defines the max number of concurrent uploads to be performed to upload the file.
@@ -744,6 +745,7 @@ azure:
     # Azure container Name.
     container-name: ""
     # Azure access tier is applied to created backup files.
+    # If not set, tier will be determined by the Azure storage account settings and rules.
     # Tiers are: Cold, Cool, Hot.
     access-tier: ""
     # Max retries specifies the maximum number of attempts a failed operation will be retried
