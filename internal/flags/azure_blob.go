@@ -20,7 +20,8 @@ import (
 )
 
 const (
-	descAccessTierBackup  = "Azure access tier is applied to created backup files."
+	descAccessTierBackup = "Azure access tier is applied to created backup files.\n" +
+		"If not set, tier will be determined by the Azure storage account settings and rules."
 	descAccessTierRestore = "If is set, tool will try to rehydrate archived files to the specified tier.\n" +
 		"Attention! This triggers an asynchronous process that cannot be terminated."
 	descAzureMaxConnsPerHostBackup = "Max connections per host optionally" +
