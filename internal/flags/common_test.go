@@ -36,7 +36,8 @@ func TestCommon_NewFlagSet(t *testing.T) {
 		"--set-list", "set1,set2",
 		"--records-per-second", "5000",
 		"--bin-list", "bin1,bin2",
-		"--parallel", "10",
+		"--parallel-read", "10",
+		"--parallel-write", "10",
 		"--no-records",
 		"--no-indexes",
 		"--no-udfs",
@@ -59,7 +60,8 @@ func TestCommon_NewFlagSet(t *testing.T) {
 	assert.Equal(t, "set1,set2", result.SetList, "The set list flag should be parsed correctly")
 	assert.Equal(t, 5000, result.RecordsPerSecond, "The records-per-second flag should be parsed correctly")
 	assert.Equal(t, "bin1,bin2", result.BinList, "The bin-list flag should be parsed correctly")
-	assert.Equal(t, 10, result.Parallel, "The parallel flag should be parsed correctly")
+	assert.Equal(t, 10, result.ParallelRead, "The parallel-read flag should be parsed correctly")
+	assert.Equal(t, 10, result.ParallelWrite, "The parallel-write flag should be parsed correctly")
 	assert.True(t, result.NoRecords, "The no-records flag should be parsed correctly")
 	assert.True(t, result.NoIndexes, "The no-indexes flag should be parsed correctly")
 	assert.True(t, result.NoUDFs, "The no-udfs flag should be parsed correctly")
@@ -92,7 +94,7 @@ func TestCommon_NewFlagSet_DefaultValues(t *testing.T) {
 	assert.Equal(t, "", result.SetList, "The default value for set-list should be nil")
 	assert.Equal(t, 0, result.RecordsPerSecond, "The default value for records-per-second should be 0")
 	assert.Equal(t, "", result.BinList, "The default value for bin-list should be nil")
-	assert.Equal(t, 0, result.Parallel, "The default value for parallel should be 0")
+	assert.Equal(t, 0, result.ParallelRead, "The default value for parallel should be 0")
 	assert.False(t, result.NoRecords, "The default value for no-records should be false")
 	assert.False(t, result.NoIndexes, "The default value for no-indexes should be false")
 	assert.False(t, result.NoUDFs, "The default value for no-udfs should be false")

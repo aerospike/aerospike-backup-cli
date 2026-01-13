@@ -106,12 +106,18 @@ Backup Flags:
   -R, --no-records                    Don't back up any records.
   -I, --no-indexes                    Don't back up any indexes.
       --no-udfs                       Don't back up any UDFs.
-  -w, --parallel int                  Maximum number of scan calls to run in parallel.
-                                      The scan operation will be launched on all corresponding nodes in parallel, simultaneously.
+  -w, --parallel-read int             Maximum number of scan calls to run in parallel.
                                       If only one partition range is given, or the entire namespace is being backed up, the range
                                       of partitions will be evenly divided by this number to be processed in parallel. Otherwise, each
                                       filter cannot be parallelized individually, so you may only achieve as much parallelism as there are
                                       partition filters. Accepts values from 1-1024 inclusive. (default 1)
+      --parallel-write int            Number of concurrent backup files writers.
+                                       (default 1)
+  -L, --records-per-second int        Limit total returned records per second (rps).
+                                      Do not apply rps limit if records-per-second is zero.
+      --max-retries int               Maximum number of retries before aborting the current transaction. (default 5)
+      --total-timeout int             Total transaction timeout in milliseconds. 0 - no timeout.
+      --socket-timeout int            Socket timeout in milliseconds. If this value is 0, it's set to --total-timeout.
   -L, --records-per-second int        Limit total returned records per second (RPS). If 0, no limit is applied.
       --total-timeout int             Total transaction timeout (in ms). If 0, no timeout is applied. 
       --socket-timeout int            Socket timeout (in ms). If 0, the value for --total-timeout is used.
@@ -465,7 +471,9 @@ backup:
   # of partitions will be evenly divided by this number to be processed in parallel. Otherwise, each
   # filter cannot be parallelized individually, so you may only achieve as much parallelism as there are
   # partition filters. Accepts values from 1-1024 inclusive.
-  parallel: 1
+  parallel-read: 1
+  # Number of concurrent backup files writers.
+  parallel-write: 1
   # Don't back up any records.
   no-records: false
   # Don't back up any indexes.

@@ -83,8 +83,8 @@ func NewRestoreConfig(serviceConfig *RestoreServiceConfig, logger *slog.Logger) 
 	logger.Info("initializing restore config")
 
 	parallel := runtime.NumCPU()
-	if serviceConfig.Restore.Parallel > 0 {
-		parallel = serviceConfig.Restore.Parallel
+	if serviceConfig.Restore.ParallelRead > 0 {
+		parallel = serviceConfig.Restore.ParallelRead
 	}
 
 	c := backup.NewDefaultRestoreConfig()

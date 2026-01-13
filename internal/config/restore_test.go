@@ -155,7 +155,7 @@ func TestNewRestoreConfig_CustomParallel(t *testing.T) {
 	serviceConfig := &RestoreServiceConfig{
 		Restore: &models.Restore{
 			Common: models.Common{
-				Parallel: customParallel,
+				ParallelRead: customParallel,
 			},
 		},
 		Compression: &models.Compression{},
@@ -237,7 +237,7 @@ func TestNewRestoreConfig_AllFlags(t *testing.T) {
 				NoIndexes:        true,
 				NoUDFs:           true,
 				RecordsPerSecond: 1000,
-				Parallel:         4,
+				ParallelRead:     4,
 				Bandwidth:        50,
 			},
 			ExtraTTL:           3600,
