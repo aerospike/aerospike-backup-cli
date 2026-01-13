@@ -4,10 +4,13 @@ before:
   hooks:
     - go mod tidy
 
+snapshot:
+  version_template: "{{.Branch}}"
+
 builds:
-  - id: "asbackup"
-    main: cmd/asbackup/main.go
-    binary: "asbackup"
+  - id: "abs-backup-cli"
+    main: cmd/backup/main.go
+    binary: "abs-backup-cli"
     goos:
       - linux
       - darwin
@@ -19,9 +22,9 @@ builds:
       - CGO_ENABLED=0
     ldflags:
       - -s -w -X 'main.appVersion={{.Version}}' -X 'main.commitHash={{.Commit}}' -X 'main.buildTime={{.Date}}'
-  - id: "asrestore"
-    main: cmd/asrestore/main.go
-    binary: "asrestore"
+  - id: "abs-restore-cli"
+    main: cmd/restore/main.go
+    binary: "abs-restore-cli"
     goos:
       - linux
       - darwin
@@ -35,7 +38,7 @@ builds:
       - -s -w -X 'main.appVersion={{.Version}}' -X 'main.commitHash={{.Commit}}' -X 'main.buildTime={{.Date}}'
 
 archives:
-  - id: "asbackup"
+  - id: "abs-backup-cli"
     formats:  [ 'tar.gz' ]
     name_template: >-
       {{ .Binary }}-{{ .Version }}-
@@ -50,8 +53,8 @@ archives:
     files:
       - LICENSE
     ids:
-      - "asbackup"
-  - id: "asrestore"
+      - "abs-backup-cli"
+  - id: "abs-restore-cli"
     formats:  [ 'tar.gz' ]
     name_template: >-
       {{ .Binary }}-{{ .Version }}-
@@ -66,7 +69,7 @@ archives:
     files:
       - LICENSE
     ids:
-      - "asrestore"
+      - "abs-restore-cli"
 
 release:
   prerelease: true
@@ -75,9 +78,8 @@ release:
   mode: prepend
   header: |
     ## Release {{ .Version }} ({{ .Date }})
-    - asbackup (CLI tool)
-    - asrestore (CLI tool)
-    - backup-go (library)
+    - abs-backup-cli (CLI tool)
+    - abs-restore-cli (CLI tool)
 
 changelog:
   disable: true

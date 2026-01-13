@@ -74,31 +74,6 @@ func TestNewBackupServiceConfig_WithoutConfigFile(t *testing.T) {
 	assert.Equal(t, azureBlob, config.AzureBlob)
 }
 
-func TestNewBackupServiceConfig_WithInvalidConfigFile(t *testing.T) {
-	t.Parallel()
-
-	app := &models.App{ConfigFilePath: "/non/existent/path.yml"}
-
-	config, err := NewBackupServiceConfig(
-		app,
-		nil,
-		nil,
-		nil,
-		nil,
-		nil,
-		nil,
-		nil,
-		nil,
-		nil,
-		nil,
-		nil,
-	)
-
-	assert.Error(t, err)
-	assert.Nil(t, config)
-	assert.Contains(t, err.Error(), "failed to load config file")
-}
-
 func TestBackupServiceConfig_IsXDR(t *testing.T) {
 	t.Parallel()
 
@@ -797,7 +772,7 @@ func TestNewBackupConfigs_XDRTimeouts(t *testing.T) {
 	assert.NotNil(t, xdrConfig)
 	assert.Equal(t, 5000*time.Millisecond, xdrConfig.ReadTimeout)
 	assert.Equal(t, 3000*time.Millisecond, xdrConfig.WriteTimeout)
-	assert.Equal(t, 1000*time.Millisecond, xdrConfig.InfoPolingPeriod)
+	assert.Equal(t, 1000*time.Millisecond, xdrConfig.InfoPollingPeriod)
 	assert.Equal(t, 10000*time.Millisecond, xdrConfig.StartTimeout)
 }
 

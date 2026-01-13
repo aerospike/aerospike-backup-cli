@@ -84,12 +84,6 @@ func Test_BackupRestore(t *testing.T) {
 		Compression: &models.Compression{
 			Mode: backup.CompressNone,
 		},
-		Encryption:  &models.Encryption{},
-		SecretAgent: &models.SecretAgent{},
-		AwsS3:       &models.AwsS3{},
-		GcpStorage:  &models.GcpStorage{},
-		AzureBlob:   &models.AzureBlob{},
-		Local:       &models.Local{},
 	}
 
 	err := createRecords(asbParams.ClientConfig, asbParams.ClientPolicy, testNamespace, testSet)
@@ -133,12 +127,9 @@ func Test_BackupRestore(t *testing.T) {
 		Compression: &models.Compression{
 			Mode: backup.CompressNone,
 		},
-		Encryption:  &models.Encryption{},
-		SecretAgent: &models.SecretAgent{},
 		AwsS3: &models.AwsS3{
 			RestorePollDuration: 1000,
 		},
-		GcpStorage: &models.GcpStorage{},
 		AzureBlob: &models.AzureBlob{
 			RestorePollDuration: 1000,
 		},
@@ -152,7 +143,7 @@ func Test_BackupRestore(t *testing.T) {
 }
 
 func createRecords(cfg *client.AerospikeConfig, cp *models.ClientPolicy, namespace, set string) error {
-	client, err := storage.NewAerospikeClient(cfg, cp, "", 0, slog.Default())
+	client, err := storage.NewAerospikeClient(cfg, cp, "", 0, slog.Default(), nil)
 	if err != nil {
 		return fmt.Errorf("failed to create aerospike client: %w", err)
 	}

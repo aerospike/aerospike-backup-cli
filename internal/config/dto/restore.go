@@ -22,20 +22,20 @@ import (
 
 // Restore is used to map yaml config.
 type Restore struct {
-	App         *App           `yaml:"app"`
-	Cluster     *Cluster       `yaml:"cluster"`
-	Restore     *RestoreConfig `yaml:"restore"`
-	Compression *Compression   `yaml:"compression"`
-	Encryption  *Encryption    `yaml:"encryption"`
-	SecretAgent *SecretAgent   `yaml:"secret-agent"`
+	App         App           `yaml:"app"`
+	Cluster     Cluster       `yaml:"cluster"`
+	Restore     RestoreConfig `yaml:"restore"`
+	Compression Compression   `yaml:"compression"`
+	Encryption  Encryption    `yaml:"encryption"`
+	SecretAgent SecretAgent   `yaml:"secret-agent"`
 	Aws         struct {
-		S3 *AwsS3 `yaml:"s3"`
+		S3 AwsS3 `yaml:"s3"`
 	} `yaml:"aws"`
 	Gcp struct {
-		Storage *GcpStorage `yaml:"storage"`
+		Storage GcpStorage `yaml:"storage"`
 	} `yaml:"gcp"`
 	Azure struct {
-		Blob *AzureBlob `yaml:"blob"`
+		Blob AzureBlob `yaml:"blob"`
 	} `yaml:"azure"`
 }
 
@@ -49,19 +49,19 @@ func DefaultRestore() *Restore {
 		Encryption:  defaultEncryption(),
 		SecretAgent: defaultSecretAgent(),
 		Aws: struct {
-			S3 *AwsS3 `yaml:"s3"`
+			S3 AwsS3 `yaml:"s3"`
 		}{S3: defaultAwsS3()},
 		Gcp: struct {
-			Storage *GcpStorage `yaml:"storage"`
+			Storage GcpStorage `yaml:"storage"`
 		}{Storage: defaultGcpStorage()},
 		Azure: struct {
-			Blob *AzureBlob `yaml:"blob"`
+			Blob AzureBlob `yaml:"blob"`
 		}{Blob: defaultAzureBlob()},
 	}
 }
 
 func (r *Restore) ToModelRestore() *models.Restore {
-	if r == nil || r.Restore == nil {
+	if r == nil {
 		return nil
 	}
 
@@ -76,7 +76,6 @@ func (r *Restore) ToModelRestore() *models.Restore {
 			NoIndexes:                     derefBool(r.Restore.NoIndexes),
 			NoUDFs:                        derefBool(r.Restore.NoUDFs),
 			RecordsPerSecond:              derefInt(r.Restore.RecordsPerSecond),
-			MaxRetries:                    derefInt(r.Restore.MaxRetries),
 			TotalTimeout:                  derefInt64(r.Restore.TotalTimeout),
 			SocketTimeout:                 derefInt64(r.Restore.SocketTimeout),
 			Bandwidth:                     derefInt64(r.Restore.Bandwidth),
@@ -116,7 +115,6 @@ type RestoreConfig struct {
 	NoIndexes                     *bool    `yaml:"no-indexes"`
 	NoUDFs                        *bool    `yaml:"no-udfs"`
 	RecordsPerSecond              *int     `yaml:"records-per-second"`
-	MaxRetries                    *int     `yaml:"max-retries"`
 	TotalTimeout                  *int64   `yaml:"total-timeout"`
 	SocketTimeout                 *int64   `yaml:"socket-timeout"`
 	Bandwidth                     *int64   `yaml:"bandwidth"`
@@ -141,11 +139,11 @@ type RestoreConfig struct {
 	InfoRetriesMultiplier         *float64 `yaml:"info-retry-multiplier"`
 	InfoRetryIntervalMilliseconds *int64   `yaml:"info-retry-interval"`
 	ApplyMetadataLast             *bool    `yaml:"apply-metadata-last"`
-	StdBufferSize                 *int     `yaml:"std-buffer-size"`
+	StdBufferSize                 *int     `yaml:"std-buffer"`
 }
 
-func defaultRestoreConfig() *RestoreConfig {
-	return &RestoreConfig{
+func defaultRestoreConfig() RestoreConfig {
+	return RestoreConfig{
 		Directory:                     stringPtr(models.DefaultCommonDirectory),
 		Namespace:                     stringPtr(models.DefaultCommonNamespace),
 		SetList:                       []string{},
@@ -154,12 +152,11 @@ func defaultRestoreConfig() *RestoreConfig {
 		NoIndexes:                     boolPtr(models.DefaultCommonNoIndexes),
 		NoUDFs:                        boolPtr(models.DefaultCommonNoUDFs),
 		RecordsPerSecond:              intPtr(models.DefaultCommonRecordsPerSecond),
-		MaxRetries:                    intPtr(models.DefaultCommonMaxRetries),
 		SocketTimeout:                 int64Ptr(models.DefaultCommonSocketTimeout),
 		InfoTimeout:                   int64Ptr(models.DefaultCommonInfoTimeout),
 		InfoMaxRetries:                uintPtr(models.DefaultCommonInfoMaxRetries),
 		InfoRetriesMultiplier:         float64Ptr(models.DefaultCommonInfoRetriesMultiplier),
-		InfoRetryIntervalMilliseconds: int64Ptr(models.DefaultCommonInfoRetryIntervalMilliseconds),
+		InfoRetryIntervalMilliseconds: int64Ptr(models.DefaultCommonInfoRetryInterval),
 		Bandwidth:                     int64Ptr(models.DefaultCommonBandwidth),
 		StdBufferSize:                 intPtr(models.DefaultCommonStdBufferSize),
 		TotalTimeout:                  int64Ptr(models.DefaultRestoreTotalTimeout),

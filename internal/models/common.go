@@ -28,7 +28,6 @@ type Common struct {
 	NoIndexes        bool
 	NoUDFs           bool
 	RecordsPerSecond int
-	MaxRetries       int
 	TotalTimeout     int64
 	SocketTimeout    int64
 	InfoTimeout      int64

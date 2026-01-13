@@ -67,16 +67,6 @@ func NewBackupServiceConfig(
 	azureBlob *models.AzureBlob,
 	local *models.Local,
 ) (*BackupServiceConfig, error) {
-	// If we have a config file, load serviceConfig from it.
-	if app.ConfigFilePath != "" {
-		serviceConfig, err := decodeBackupServiceConfig(app.ConfigFilePath)
-		if err != nil {
-			return nil, fmt.Errorf("failed to load config file %s: %w", app.ConfigFilePath, err)
-		}
-
-		return serviceConfig, nil
-	}
-
 	return &BackupServiceConfig{
 		App:          app,
 		ClientConfig: clientConfig,
@@ -297,7 +287,7 @@ func newBackupXDRConfig(params *BackupServiceConfig) *backup.ConfigBackupXDR {
 		ResultQueueSize:   params.BackupXDR.ResultQueueSize,
 		AckQueueSize:      params.BackupXDR.AckQueueSize,
 		MaxConnections:    params.BackupXDR.MaxConnections,
-		InfoPolingPeriod:  time.Duration(params.BackupXDR.InfoPolingPeriodMilliseconds) * time.Millisecond,
+		InfoPollingPeriod: time.Duration(params.BackupXDR.InfoPolingPeriodMilliseconds) * time.Millisecond,
 		StartTimeout:      time.Duration(params.BackupXDR.StartTimeoutMilliseconds) * time.Millisecond,
 		MaxThroughput:     params.BackupXDR.MaxThroughput,
 		Forward:           params.BackupXDR.Forward,

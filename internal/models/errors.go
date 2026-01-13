@@ -14,19 +14,12 @@
 
 package models
 
-import "fmt"
+import "errors"
 
-// Local represents local storage.
-type Local struct {
-	BufferSize int
-}
+const (
+	ErrNodeNotFoundText = "namespace not found on node"
+)
 
-func (l *Local) Validate(isBackup bool) error {
-	if isBackup {
-		if l.BufferSize < 1 {
-			return fmt.Errorf("buffer size can't be less than 1")
-		}
-	}
-
-	return nil
-}
+var (
+	ErrNodeNotFound = errors.New(ErrNodeNotFoundText)
+)

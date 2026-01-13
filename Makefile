@@ -1,5 +1,5 @@
 SHELL = bash
-NAME = aerospike-backup-tools
+NAME = aerospike-backup-cli
 WORKSPACE = $(shell pwd)
 VERSION ?= $(shell git describe --tags --exact-match 2>/dev/null || git rev-parse --abbrev-ref HEAD)
 MAINTAINER = "Aerospike <info@aerospike.com>"
@@ -21,16 +21,17 @@ NPROC := $(shell nproc 2>/dev/null || getconf _NPROCESSORS_ONLN)
 ARCHS ?= linux/amd64 linux/arm64
 PACKAGERS ?= deb rpm
 IMAGE_TAG ?= test
-IMAGE_REPO ?= aerospike/aerospike-backup-tools
+IMAGE_REPO ?= aerospike/aerospike-backup-cli
 IMAGE_CACHE_FROM ?=
 IMAGE_CACHE_TO ?=
 IMAGE_OUTPUT ?= type=image,push=true
-BACKUP_BINARY_NAME = asbackup
-RESTORE_BINARY_NAME = asrestore
-TARGET_DIR = $(WORKSPACE)/target
+BACKUP_BINARY_NAME = abs-backup-cli
+RESTORE_BINARY_NAME = abs-restore-cli
+TARGET_DIR = $(WORKSPACE)/dist
+BIN_DIR = $(WORKSPACE)/bin
 PACKAGE_DIR= $(WORKSPACE)/scripts/package
-CMD_BACKUP_DIR = $(WORKSPACE)/cmd/$(BACKUP_BINARY_NAME)
-CMD_RESTORE_DIR = $(WORKSPACE)/cmd/$(RESTORE_BINARY_NAME)
+CMD_BACKUP_DIR = $(WORKSPACE)/cmd/backup
+CMD_RESTORE_DIR = $(WORKSPACE)/cmd/restore
 
 PREFIX ?= /usr
 BINDIR ?= $(PREFIX)/bin
@@ -50,6 +51,7 @@ coverage:
 
 .PHONY: clean
 clean:
+	rm -Rf $(BIN_DIR)
 	rm -Rf $(TARGET_DIR)
 	@find . -type f -name 'nfpm-linux-*.yaml' -exec rm -v {} +
 
@@ -86,6 +88,15 @@ build:
 	$(GOBUILD) -o $(TARGET_DIR)/$(BACKUP_BINARY_NAME)_$(OS)_$(ARCH) $(CMD_BACKUP_DIR)
 	@echo "Building $(RESTORE_BINARY_NAME) with version $(VERSION)..."
 	$(GOBUILD) -o $(TARGET_DIR)/$(RESTORE_BINARY_NAME)_$(OS)_$(ARCH) $(CMD_RESTORE_DIR)
+
+# Build for aerospike-tools
+.PHONY: tools-build
+tools-build:
+	mkdir -p "$(BIN_DIR)"
+	@echo "Building $(BACKUP_BINARY_NAME) for tools with version $(VERSION)..."
+	$(GOBUILD) -o $(BIN_DIR)/$(BACKUP_BINARY_NAME) $(CMD_BACKUP_DIR)
+	@echo "Building $(RESTORE_BINARY_NAME) for tools with version $(VERSION)..."
+	$(GOBUILD) -o $(BIN_DIR)/$(RESTORE_BINARY_NAME) $(CMD_RESTORE_DIR)
 
 .PHONY: buildx
 buildx:

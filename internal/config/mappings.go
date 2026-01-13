@@ -153,7 +153,8 @@ func newSecretAgentConfig(s *models.SecretAgent) *backup.SecretAgentConfig {
 	c.Address = &s.Address
 
 	if s.ConnectionType != "" {
-		c.ConnectionType = &s.ConnectionType
+		ct := strings.ToLower(s.ConnectionType)
+		c.ConnectionType = &ct
 	}
 
 	if s.Port != 0 {
@@ -166,6 +167,26 @@ func newSecretAgentConfig(s *models.SecretAgent) *backup.SecretAgentConfig {
 
 	if s.CaFile != "" {
 		c.CaFile = &s.CaFile
+	}
+
+	if s.TLSName != "" {
+		c.TLSName = &s.TLSName
+	}
+
+	if s.CertFile != "" {
+		c.CertFile = &s.CertFile
+	}
+
+	if s.KeyFile != "" {
+		c.KeyFile = &s.KeyFile
+	}
+
+	if s.CertFile != "" {
+		c.CertFile = &s.CertFile
+	}
+
+	if s.KeyFile != "" {
+		c.KeyFile = &s.KeyFile
 	}
 
 	if s.IsBase64 {
@@ -211,7 +232,6 @@ func newWritePolicy(r *models.Restore) *aerospike.WritePolicy {
 	p := aerospike.NewWritePolicy(0, 0)
 
 	p.SendKey = true
-	p.MaxRetries = r.MaxRetries
 	p.TotalTimeout = time.Duration(r.TotalTimeout) * time.Millisecond
 	p.SocketTimeout = time.Duration(r.SocketTimeout) * time.Millisecond
 	p.RecordExistsAction = recordExistsAction(r.Replace, r.Uniq)

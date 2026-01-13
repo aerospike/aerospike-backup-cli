@@ -67,29 +67,6 @@ func TestNewRestoreServiceConfig_WithoutConfigFile(t *testing.T) {
 	assert.Equal(t, azureBlob, config.AzureBlob)
 }
 
-func TestNewRestoreServiceConfig_WithInvalidConfigFile(t *testing.T) {
-	t.Parallel()
-
-	app := &models.App{ConfigFilePath: "/non/existent/path.yml"}
-
-	config, err := NewRestoreServiceConfig(
-		app,
-		nil,
-		nil,
-		nil,
-		nil,
-		nil,
-		nil,
-		nil,
-		nil,
-		nil,
-	)
-
-	assert.Error(t, err)
-	assert.Nil(t, config)
-	assert.Contains(t, err.Error(), "failed to load config file")
-}
-
 func TestRestoreServiceConfig_IsStdin(t *testing.T) {
 	t.Parallel()
 

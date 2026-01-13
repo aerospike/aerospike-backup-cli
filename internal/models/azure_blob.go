@@ -37,10 +37,9 @@ type AzureBlob struct {
 	AccessTier          string
 	RestorePollDuration int64
 
-	RetryMaxAttempts     int
-	RetryTimeoutSeconds  int
-	RetryDelaySeconds    int
-	RetryMaxDelaySeconds int
+	RetryMaxAttempts int
+	RetryDelay       int
+	RetryMaxDelay    int
 
 	BlockSize         int
 	UploadConcurrency int
@@ -101,28 +100,28 @@ func (a *AzureBlob) Validate(isBackup bool) error {
 		return fmt.Errorf("container name is required")
 	}
 
+	if a.Endpoint == "" {
+		return fmt.Errorf("endpoint is required")
+	}
+
 	if a.RetryMaxAttempts < 0 {
 		return fmt.Errorf("retry maximum attempts must be non-negative")
 	}
 
-	if a.RetryTimeoutSeconds < 0 {
-		return fmt.Errorf("retry try timeout must be non-negative")
-	}
-
-	if a.RetryDelaySeconds < 0 {
+	if a.RetryDelay < 0 {
 		return fmt.Errorf("retry delay must be non-negative")
 	}
 
-	if a.RetryMaxDelaySeconds < 0 {
+	if a.RetryMaxDelay < 0 {
 		return fmt.Errorf("retry max delay must be non-negative")
-	}
-
-	if a.BlockSize < 0 {
-		return fmt.Errorf("block size must be non-negative")
 	}
 
 	switch isBackup {
 	case true:
+		if a.BlockSize < 1 {
+			return fmt.Errorf("block size can't be less than 1")
+		}
+
 		if a.UploadConcurrency < 1 {
 			return fmt.Errorf("upload concurrency can't be less than 1")
 		}

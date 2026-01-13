@@ -163,7 +163,7 @@ func newHelpFunction(backupXDRFlagSet *pflag.FlagSet) func() {
 		fmt.Println(welcomeMessage)
 		fmt.Println(strings.Repeat("-", len(welcomeMessage)))
 		fmt.Println("\nUsage:")
-		fmt.Println("  asbackup xdr [flags]")
+		fmt.Println("  abs-backup-cli xdr [flags]")
 		// Print section: XDR Flags
 		fmt.Println("\nXDR Backup Flags:")
 		fmt.Println("This sections replace Backup Flags section in main documentation." +

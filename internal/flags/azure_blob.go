@@ -20,8 +20,20 @@ import (
 )
 
 const (
-	descAccessTierBackup  = "Azure access tier is applied to created backup files."
-	descAccessTierRestore = "If is set, tool will try to rehydrate archived files to the specified tier."
+	descAccessTierBackup = "Azure access tier is applied to created backup files.\n" +
+		"If not set, tier will be determined by the Azure storage account settings and rules."
+	descAccessTierRestore = "If is set, tool will try to rehydrate archived files to the specified tier.\n" +
+		"Attention! This triggers an asynchronous process that cannot be terminated."
+	descAzureMaxConnsPerHostBackup = "Max connections per host optionally" +
+		" limits the total number of connections per host,\n" +
+		"including connections in the dialing, active, and idle states. On limit violation, dials will block.\n" +
+		"Should be greater than --parallel * --azure-upload-concurrency to avoid upload speed degradation.\n" +
+		"0 means no limit."
+	descAzureMaxConnsPerHostRestore = "Max connections per host optionally" +
+		" limits the total number of connections per host,\n" +
+		"including connections in the dialing, active, and idle states. On limit violation, dials will block.\n" +
+		"Should be greater than --parallel to avoid download speed degradation.\n" +
+		"0 means no limit."
 )
 
 type AzureBlob struct {
@@ -38,13 +50,15 @@ func NewAzureBlob(operation int) *AzureBlob {
 func (f *AzureBlob) NewFlagSet() *pflag.FlagSet {
 	flagSet := &pflag.FlagSet{}
 
-	var descAccessTier string
+	var descAccessTier, descMaxConnsPerHost string
 
 	switch f.operation {
 	case OperationBackup:
 		descAccessTier = descAccessTierBackup
+		descMaxConnsPerHost = descAzureMaxConnsPerHostBackup
 	case OperationRestore:
 		descAccessTier = descAccessTierRestore
+		descMaxConnsPerHost = descAzureMaxConnsPerHostRestore
 	}
 
 	flagSet.StringVar(&f.AccountName, "azure-account-name",
@@ -78,7 +92,7 @@ func (f *AzureBlob) NewFlagSet() *pflag.FlagSet {
 	flagSet.StringVar(&f.AccessTier, "azure-access-tier",
 		models.DefaultAzureAccessTier,
 		descAccessTier+
-			"\nTiers are: Archive, Cold, Cool, Hot, P10, P15, P20, P30, P4, P40, P50, P6, P60, P70, P80, Premium.")
+			"\nTiers are: Cold, Cool, Hot.")
 
 	switch f.operation {
 	case OperationBackup:
@@ -97,11 +111,11 @@ func (f *AzureBlob) NewFlagSet() *pflag.FlagSet {
 	case OperationRestore:
 		flagSet.Int64Var(&f.RestorePollDuration, "azure-rehydrate-poll-duration",
 			models.DefaultAzureRestorePollDuration,
-			"How often (in milliseconds) a backup client checks object status when restoring an archived object.")
+			"How often ((in ms)) a backup client checks object status when restoring an archived object.")
 
-		flagSet.IntVar(&f.RetryReadBackoffSeconds, "azure-retry-read-backoff",
-			models.DefaultCloudRetryReadBackoffSeconds,
-			"The initial delay in seconds between retry attempts. In case of connection errors\n"+
+		flagSet.IntVar(&f.RetryReadBackoff, "azure-retry-read-backoff",
+			models.DefaultCloudRetryReadBackoff,
+			"The initial delay (in ms) between retry attempts. In case of connection errors\n"+
 				"tool will retry reading the object from the last known position.")
 
 		flagSet.Float64Var(&f.RetryReadMultiplier, "azure-retry-read-multiplier",
@@ -119,34 +133,26 @@ func (f *AzureBlob) NewFlagSet() *pflag.FlagSet {
 		"Max retries specifies the maximum number of attempts a failed operation will be retried\n"+
 			"before producing an error.")
 
-	flagSet.IntVar(&f.RetryMaxDelaySeconds, "azure-retry-max-delay",
-		models.DefaultAzureRetryMaxDelaySeconds,
-		"Max retry delay specifies the maximum delay in seconds allowed before retrying an operation.\n"+
+	flagSet.IntVar(&f.RetryMaxDelay, "azure-retry-max-delay",
+		models.DefaultAzureRetryMaxDelay,
+		"Max retry delay specifies the maximum delay (in ms) allowed before retrying an operation.\n"+
 			"Typically the value is greater than or equal to the value specified in azure-retry-delay.")
 
-	flagSet.IntVar(&f.RetryDelaySeconds, "azure-retry-delay",
-		models.DefaultAzureRetryDelaySeconds,
-		"Retry delay specifies the initial amount of delay in seconds to use before retrying an operation.\n"+
+	flagSet.IntVar(&f.RetryDelay, "azure-retry-delay",
+		models.DefaultAzureRetryDelay,
+		"Retry delay specifies the initial amount of delay (in ms) to use before retrying an operation.\n"+
 			"The value is used only if the HTTP response does not contain a Retry-After header.\n"+
 			"The delay increases exponentially with each retry up to the maximum specified by azure-retry-max-delay.")
 
-	flagSet.IntVar(&f.RetryTimeoutSeconds, "azure-retry-timeout",
-		models.DefaultAzureRetryTimeoutSeconds,
-		"Retry timeout in seconds indicates the maximum time allowed for any single try of an HTTP request.\n"+
-			"This is disabled by default. Specify a value greater than zero to enable.\n"+
-			"NOTE: Setting this to a small value might cause premature HTTP request time-outs.")
-
 	flagSet.IntVar(&f.MaxConnsPerHost, "azure-max-conns-per-host",
 		models.DefaultCloudMaxConnsPerHost,
-		"MaxConnsPerHost optionally limits the total number of connections per host,\n"+
-			"including connections in the dialing, active, and idle states. On limit violation, dials will block.\n"+
-			"Zero means no limit.")
+		descMaxConnsPerHost)
 
-	flagSet.IntVar(&f.RequestTimeoutSeconds, "azure-request-timeout",
-		models.DefaultCloudRequestTimeoutSeconds,
-		"Timeout in seconds specifies a time limit for requests made by this Client.\n"+
+	flagSet.IntVar(&f.RequestTimeout, "azure-request-timeout",
+		models.DefaultCloudRequestTimeout,
+		"Timeout (in ms) specifies a time limit for requests made by this Client.\n"+
 			"The timeout includes connection time, any redirects, and reading the response body.\n"+
-			"Zero means no limit.")
+			"0 means no limit.")
 
 	return flagSet
 }

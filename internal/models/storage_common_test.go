@@ -176,12 +176,12 @@ func TestStorageCommon_Validate(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			s := &StorageCommon{
-				MaxConnsPerHost:         tt.maxConnsPerHost,
-				RequestTimeoutSeconds:   tt.requestTimeoutSeconds,
-				CalculateChecksum:       tt.calculateChecksum,
-				RetryReadBackoffSeconds: tt.RetryReadBackoffSeconds,
-				RetryReadMultiplier:     tt.retryReadMultiplier,
-				RetryReadMaxAttempts:    tt.retryReadMaxAttempts,
+				MaxConnsPerHost:      tt.maxConnsPerHost,
+				RequestTimeout:       tt.requestTimeoutSeconds,
+				CalculateChecksum:    tt.calculateChecksum,
+				RetryReadBackoff:     tt.RetryReadBackoffSeconds,
+				RetryReadMultiplier:  tt.retryReadMultiplier,
+				RetryReadMaxAttempts: tt.retryReadMaxAttempts,
 			}
 
 			err := s.Validate(tt.isBackup)

@@ -31,8 +31,8 @@ type App struct {
 }
 
 // defaultApp creates a new App with default values.
-func defaultApp() *App {
-	return &App{
+func defaultApp() App {
+	return App{
 		Verbose:  boolPtr(models.DefaultAppVerbose),
 		LogLevel: stringPtr(models.DefaultAppLogLevel),
 		LogJSON:  boolPtr(models.DefaultAppLogJSON),
@@ -57,7 +57,7 @@ type Cluster struct {
 	ClientTimeout      *int64        `yaml:"client-timeout"`
 	ClientIdleTimeout  *int64        `yaml:"client-idle-timeout"`
 	ClientLoginTimeout *int64        `yaml:"client-login-timeout"`
-	ServiceAlternate   *bool         `yaml:"service-alternate"`
+	ServiceAlternate   *bool         `yaml:"services-alternate"`
 	TLS                *ClusterTLS   `yaml:"tls"`
 }
 
@@ -76,20 +76,20 @@ func defaultClusterSeed() *ClusterSeed {
 }
 
 type ClusterTLS struct {
-	Name            *string `yaml:"name"`
+	Enable          *bool   `yaml:"enable"`
 	Protocols       *string `yaml:"protocols"`
-	CaFile          *string `yaml:"ca-file"`
-	CaPath          *string `yaml:"ca-path"`
-	CertFile        *string `yaml:"cert-file"`
-	KeyFile         *string `yaml:"key-file"`
-	KeyFilePassword *string `yaml:"key-file-password"`
+	CaFile          *string `yaml:"cafile"`
+	CaPath          *string `yaml:"capath"`
+	CertFile        *string `yaml:"certfile"`
+	KeyFile         *string `yaml:"keyfile"`
+	KeyFilePassword *string `yaml:"keyfile-password"`
 }
 
 func defaultClusterTLS() *ClusterTLS {
 	flag := flags.NewDefaultTLSProtocolsFlag()
 
 	return &ClusterTLS{
-		Name:            stringPtr(""),
+		Enable:          boolPtr(false),
 		Protocols:       stringPtr(flag.String()),
 		CaFile:          stringPtr(""),
 		CaPath:          stringPtr(""),
@@ -99,8 +99,8 @@ func defaultClusterTLS() *ClusterTLS {
 	}
 }
 
-func defaultCluster() *Cluster {
-	return &Cluster{
+func defaultCluster() Cluster {
+	return Cluster{
 		Seeds:              []ClusterSeed{*defaultClusterSeed()},
 		TLS:                defaultClusterTLS(),
 		User:               stringPtr(""),
@@ -165,12 +165,9 @@ func (c *Cluster) applySeeds(f *flags.AerospikeFlags) error {
 		return nil
 	}
 
-	var seeds flags.HostTLSPortSliceFlag
-	if err := seeds.Set(hostPorts); err != nil {
+	if err := f.Seeds.Set(hostPorts); err != nil {
 		return fmt.Errorf("failed to set seeds: %w", err)
 	}
-
-	f.Seeds = seeds
 
 	return nil
 }
@@ -181,101 +178,71 @@ func (c *Cluster) applyAuthAndUser(f *flags.AerospikeFlags) error {
 	}
 
 	if c.Password != nil && *c.Password != "" {
-		var psw flags.PasswordFlag
-		if err := psw.Set(*c.Password); err != nil {
+		if err := f.Password.Set(*c.Password); err != nil {
 			return fmt.Errorf("failed to set password: %w", err)
 		}
-
-		f.Password = psw
 	}
 
 	if c.Auth != nil && *c.Auth != "" {
-		var authMode flags.AuthModeFlag
-		if err := authMode.Set(*c.Auth); err != nil {
+		if err := f.AuthMode.Set(*c.Auth); err != nil {
 			return fmt.Errorf("failed to set auth mode: %w", err)
 		}
-
-		f.AuthMode = authMode
 	}
 
 	return nil
 }
 
-//nolint:gocyclo // Long mapping function.
 func (c *Cluster) applyTLS(f *flags.AerospikeFlags) error {
 	if c.TLS == nil {
 		return nil
 	}
 
-	// Name (also toggles enable if non-empty)
-	if c.TLS.Name != nil && *c.TLS.Name != "" {
-		f.TLSEnable = true
-	}
+	f.TLSEnable = derefBool(c.TLS.Enable)
 
-	f.TLSName = derefString(c.TLS.Name)
+	if !f.TLSEnable {
+		return nil
+	}
 
 	// Protocols
 	if c.TLS.Protocols != nil && *c.TLS.Protocols != "" {
-		var tlsProtocols flags.TLSProtocolsFlag
-		if err := tlsProtocols.Set(*c.TLS.Protocols); err != nil {
+		if err := f.TLSProtocols.Set(*c.TLS.Protocols); err != nil {
 			return fmt.Errorf("failed to set tls protocols: %w", err)
 		}
-
-		f.TLSEnable = true
-		f.TLSProtocols = tlsProtocols
 	}
 
 	// CA file
 	if c.TLS.CaFile != nil && *c.TLS.CaFile != "" {
-		var tlsRootCaFile flags.CertFlag
-		if err := tlsRootCaFile.Set(*c.TLS.CaFile); err != nil {
+		if err := f.TLSRootCAFile.Set(*c.TLS.CaFile); err != nil {
 			return fmt.Errorf("failed to set tls root ca file: %w", err)
 		}
-
-		f.TLSEnable = true
-		f.TLSRootCAFile = tlsRootCaFile
 	}
 
 	// CA path
 	if c.TLS.CaPath != nil && *c.TLS.CaPath != "" {
-		var tlsRootCaPath flags.CertPathFlag
-		if err := tlsRootCaPath.Set(*c.TLS.CaPath); err != nil {
+		if err := f.TLSRootCAPath.Set(*c.TLS.CaPath); err != nil {
 			return fmt.Errorf("failed to set tls root ca path: %w", err)
 		}
-
-		f.TLSEnable = true
-		f.TLSRootCAPath = tlsRootCaPath
 	}
 
 	// Cert file
 	if c.TLS.CertFile != nil && *c.TLS.CertFile != "" {
-		var tlsCertFile flags.CertFlag
-		if err := tlsCertFile.Set(*c.TLS.CertFile); err != nil {
+		if err := f.TLSCertFile.Set(*c.TLS.CertFile); err != nil {
 			return fmt.Errorf("failed to set tls cert file: %w", err)
 		}
-
-		f.TLSEnable = true
-		f.TLSCertFile = tlsCertFile
 	}
 
 	// Key file
 	if c.TLS.KeyFile != nil && *c.TLS.KeyFile != "" {
-		var tlsKeyFile flags.CertFlag
-		if err := tlsKeyFile.Set(*c.TLS.KeyFile); err != nil {
+		if err := f.TLSKeyFile.Set(*c.TLS.KeyFile); err != nil {
 			return fmt.Errorf("failed to set tls key file: %w", err)
 		}
-
-		f.TLSEnable = true
 	}
 
 	// Key password
 	if c.TLS.KeyFilePassword != nil && *c.TLS.KeyFilePassword != "" {
-		var tlsKeyFilePass flags.PasswordFlag
-		if err := tlsKeyFilePass.Set(*c.TLS.KeyFilePassword); err != nil {
+		if err := f.TLSKeyFilePass.Set(*c.TLS.KeyFilePassword); err != nil {
 			return fmt.Errorf("failed to set tls key file password: %w", err)
 		}
-
-		f.TLSEnable = true
 	}
 
 	return nil
@@ -296,12 +263,12 @@ func (c *Cluster) ToModelClientPolicy() *models.ClientPolicy {
 // Compression represents the configuration for data compression, including the mode and compression level
 // parsed from a YAML file.
 type Compression struct {
-	Mode  *string `yaml:"mode"`
+	Mode  *string `yaml:"compress"`
 	Level *int    `yaml:"level"`
 }
 
-func defaultCompression() *Compression {
-	return &Compression{
+func defaultCompression() Compression {
+	return Compression{
 		Mode:  stringPtr(models.DefaultCompressionMode),
 		Level: intPtr(models.DefaultCompressionLevel),
 	}
@@ -322,14 +289,14 @@ func (c *Compression) ToModelCompression() *models.Compression {
 // It includes fields for mode, key file, key environment variable, and key secret
 // parsed from a YAML file.
 type Encryption struct {
-	Mode      *string `yaml:"mode"`
+	Mode      *string `yaml:"encrypt"`
 	KeyFile   *string `yaml:"key-file"`
 	KeyEnv    *string `yaml:"key-env"`
 	KeySecret *string `yaml:"key-secret"`
 }
 
-func defaultEncryption() *Encryption {
-	return &Encryption{
+func defaultEncryption() Encryption {
+	return Encryption{
 		Mode:      stringPtr(models.DefaultEncryptionMode),
 		KeyFile:   stringPtr(models.DefaultEncryptionKeyFile),
 		KeyEnv:    stringPtr(models.DefaultEncryptionKeyEnv),
@@ -358,16 +325,22 @@ type SecretAgent struct {
 	Port               *int    `yaml:"port"`
 	TimeoutMillisecond *int    `yaml:"timeout"`
 	CaFile             *string `yaml:"ca-file"`
+	CertFile           *string `yaml:"cert-file"`
+	KeyFile            *string `yaml:"key-file"`
+	TLSName            *string `yaml:"tls-name"`
 	IsBase64           *bool   `yaml:"is-base64"`
 }
 
-func defaultSecretAgent() *SecretAgent {
-	return &SecretAgent{
+func defaultSecretAgent() SecretAgent {
+	return SecretAgent{
 		ConnectionType:     stringPtr(models.DefaultSecretAgentConnectionType),
 		Address:            stringPtr(models.DefaultSecretAgentAddress),
 		Port:               intPtr(models.DefaultSecretAgentPort),
 		TimeoutMillisecond: intPtr(models.DefaultSecretAgentTimeoutMillisecond),
 		CaFile:             stringPtr(models.DefaultSecretAgentCaFile),
+		CertFile:           stringPtr(models.DefaultSecretAgentCertFile),
+		KeyFile:            stringPtr(models.DefaultSecretAgentKeyFile),
+		TLSName:            stringPtr(models.DefaultSecretAgentTLSName),
 		IsBase64:           boolPtr(models.DefaultSecretAgentIsBase64),
 	}
 }
@@ -383,6 +356,9 @@ func (s *SecretAgent) ToModelSecretAgent() *models.SecretAgent {
 		Port:               derefInt(s.Port),
 		TimeoutMillisecond: derefInt(s.TimeoutMillisecond),
 		CaFile:             derefString(s.CaFile),
+		CertFile:           derefString(s.CertFile),
+		KeyFile:            derefString(s.KeyFile),
+		TLSName:            derefString(s.TLSName),
 		IsBase64:           derefBool(s.IsBase64),
 	}
 }
@@ -390,50 +366,48 @@ func (s *SecretAgent) ToModelSecretAgent() *models.SecretAgent {
 // AwsS3 defines configuration for AWS S3 storage including bucket details and retry mechanisms
 // parsed from a YAML file.
 type AwsS3 struct {
-	BucketName              *string  `yaml:"bucket-name"`
-	Region                  *string  `yaml:"region"`
-	Profile                 *string  `yaml:"profile"`
-	EndpointOverride        *string  `yaml:"endpoint-override"`
-	AccessKeyID             *string  `yaml:"access-key-id"`
-	SecretAccessKey         *string  `yaml:"secret-access-key"`
-	RestorePollDuration     *int64   `yaml:"restore-poll-duration"`
-	StorageClass            *string  `yaml:"storage-class"`
-	AccessTier              *string  `yaml:"access-tier"`
-	RetryMaxAttempts        *int     `yaml:"retry-max-attempts"`
-	RetryMaxBackoff         *int     `yaml:"retry-max-backoff"`
-	RetryBackoff            *int     `yaml:"retry-backoff"`
-	ChunkSize               *int     `yaml:"chunk-size"`
-	UploadConcurrency       *int     `yaml:"upload-concurrency"`
-	CalculateChecksum       *bool    `yaml:"calculate-checksum"`
-	RetryReadBackoffSeconds *int     `yaml:"retry-read-backoff"`
-	RetryReadMultiplier     *float64 `yaml:"retry-read-multiplier"`
-	RetryReadMaxAttempts    *uint    `yaml:"retry-read-max-attempts"`
-	MaxConnsPerHost         *int     `yaml:"max-conns-per-host"`
-	RequestTimeoutSeconds   *int     `yaml:"request-timeout"`
+	BucketName           *string  `yaml:"bucket-name"`
+	Region               *string  `yaml:"region"`
+	Profile              *string  `yaml:"profile"`
+	EndpointOverride     *string  `yaml:"endpoint-override"`
+	AccessKeyID          *string  `yaml:"access-key-id"`
+	SecretAccessKey      *string  `yaml:"secret-access-key"`
+	RestorePollDuration  *int64   `yaml:"restore-poll-duration"`
+	StorageClass         *string  `yaml:"storage-class"`
+	AccessTier           *string  `yaml:"tier"`
+	RetryMaxAttempts     *int     `yaml:"retry-max-attempts"`
+	RetryMaxBackoff      *int     `yaml:"retry-max-backoff"`
+	ChunkSize            *int     `yaml:"chunk-size"`
+	UploadConcurrency    *int     `yaml:"upload-concurrency"`
+	CalculateChecksum    *bool    `yaml:"calculate-checksum"`
+	RetryReadBackoff     *int     `yaml:"retry-read-backoff"`
+	RetryReadMultiplier  *float64 `yaml:"retry-read-multiplier"`
+	RetryReadMaxAttempts *uint    `yaml:"retry-read-max-attempts"`
+	MaxConnsPerHost      *int     `yaml:"max-conns-per-host"`
+	RequestTimeout       *int     `yaml:"request-timeout"`
 }
 
-func defaultAwsS3() *AwsS3 {
-	return &AwsS3{
-		BucketName:              stringPtr(models.DefaultS3BucketName),
-		Region:                  stringPtr(models.DefaultS3Region),
-		Profile:                 stringPtr(models.DefaultS3Profile),
-		EndpointOverride:        stringPtr(models.DefaultS3Endpoint),
-		AccessKeyID:             stringPtr(models.DefaultS3AccessKeyID),
-		SecretAccessKey:         stringPtr(models.DefaultS3SecretAccessKey),
-		RestorePollDuration:     int64Ptr(models.DefaultS3RestorePollDuration),
-		StorageClass:            stringPtr(models.DefaultS3StorageClass),
-		AccessTier:              stringPtr(models.DefaultS3AccessTier),
-		RetryMaxAttempts:        intPtr(models.DefaultS3RetryMaxAttempts),
-		RetryMaxBackoff:         intPtr(models.DefaultS3RetryMaxBackoffSeconds),
-		RetryBackoff:            intPtr(models.DefaultS3RetryBackoffSeconds),
-		ChunkSize:               intPtr(models.DefaultS3ChunkSize),
-		UploadConcurrency:       intPtr(models.DefaultS3UploadConcurrency),
-		CalculateChecksum:       boolPtr(models.DefaultCloudCalculateChecksum),
-		RetryReadBackoffSeconds: intPtr(models.DefaultCloudRetryReadBackoffSeconds),
-		RetryReadMultiplier:     float64Ptr(models.DefaultCloudRetryReadMultiplier),
-		RetryReadMaxAttempts:    uintPtr(models.DefaultCloudRetryReadMaxAttempts),
-		MaxConnsPerHost:         intPtr(models.DefaultCloudMaxConnsPerHost),
-		RequestTimeoutSeconds:   intPtr(models.DefaultCloudRequestTimeoutSeconds),
+func defaultAwsS3() AwsS3 {
+	return AwsS3{
+		BucketName:           stringPtr(models.DefaultS3BucketName),
+		Region:               stringPtr(models.DefaultS3Region),
+		Profile:              stringPtr(models.DefaultS3Profile),
+		EndpointOverride:     stringPtr(models.DefaultS3Endpoint),
+		AccessKeyID:          stringPtr(models.DefaultS3AccessKeyID),
+		SecretAccessKey:      stringPtr(models.DefaultS3SecretAccessKey),
+		RestorePollDuration:  int64Ptr(models.DefaultS3RestorePollDuration),
+		StorageClass:         stringPtr(models.DefaultS3StorageClass),
+		AccessTier:           stringPtr(models.DefaultS3AccessTier),
+		RetryMaxAttempts:     intPtr(models.DefaultS3RetryMaxAttempts),
+		RetryMaxBackoff:      intPtr(models.DefaultS3RetryMaxBackoff),
+		ChunkSize:            intPtr(models.DefaultS3ChunkSize),
+		UploadConcurrency:    intPtr(models.DefaultS3UploadConcurrency),
+		CalculateChecksum:    boolPtr(models.DefaultCloudCalculateChecksum),
+		RetryReadBackoff:     intPtr(models.DefaultCloudRetryReadBackoff),
+		RetryReadMultiplier:  float64Ptr(models.DefaultCloudRetryReadMultiplier),
+		RetryReadMaxAttempts: uintPtr(models.DefaultCloudRetryReadMaxAttempts),
+		MaxConnsPerHost:      intPtr(models.DefaultCloudMaxConnsPerHost),
+		RequestTimeout:       intPtr(models.DefaultCloudRequestTimeout),
 	}
 }
 
@@ -443,64 +417,63 @@ func (a *AwsS3) ToModelAwsS3() *models.AwsS3 {
 	}
 
 	return &models.AwsS3{
-		BucketName:             derefString(a.BucketName),
-		Region:                 derefString(a.Region),
-		Profile:                derefString(a.Profile),
-		Endpoint:               derefString(a.EndpointOverride),
-		AccessKeyID:            derefString(a.AccessKeyID),
-		SecretAccessKey:        derefString(a.SecretAccessKey),
-		StorageClass:           derefString(a.StorageClass),
-		AccessTier:             derefString(a.AccessTier),
-		RetryMaxAttempts:       derefInt(a.RetryMaxAttempts),
-		RetryMaxBackoffSeconds: derefInt(a.RetryMaxBackoff),
-		RetryBackoffSeconds:    derefInt(a.RetryBackoff),
-		ChunkSize:              derefInt(a.ChunkSize),
-		UploadConcurrency:      derefInt(a.UploadConcurrency),
-		RestorePollDuration:    derefInt64(a.RestorePollDuration),
+		BucketName:          derefString(a.BucketName),
+		Region:              derefString(a.Region),
+		Profile:             derefString(a.Profile),
+		Endpoint:            derefString(a.EndpointOverride),
+		AccessKeyID:         derefString(a.AccessKeyID),
+		SecretAccessKey:     derefString(a.SecretAccessKey),
+		StorageClass:        derefString(a.StorageClass),
+		AccessTier:          derefString(a.AccessTier),
+		RetryMaxAttempts:    derefInt(a.RetryMaxAttempts),
+		RetryMaxBackoff:     derefInt(a.RetryMaxBackoff),
+		ChunkSize:           derefInt(a.ChunkSize),
+		UploadConcurrency:   derefInt(a.UploadConcurrency),
+		RestorePollDuration: derefInt64(a.RestorePollDuration),
 		StorageCommon: models.StorageCommon{
-			CalculateChecksum:       derefBool(a.CalculateChecksum),
-			RetryReadBackoffSeconds: derefInt(a.RetryReadBackoffSeconds),
-			RetryReadMultiplier:     derefFloat64(a.RetryReadMultiplier),
-			RetryReadMaxAttempts:    derefUint(a.RetryReadMaxAttempts),
-			MaxConnsPerHost:         derefInt(a.MaxConnsPerHost),
-			RequestTimeoutSeconds:   derefInt(a.RequestTimeoutSeconds),
+			CalculateChecksum:    derefBool(a.CalculateChecksum),
+			RetryReadBackoff:     derefInt(a.RetryReadBackoff),
+			RetryReadMultiplier:  derefFloat64(a.RetryReadMultiplier),
+			RetryReadMaxAttempts: derefUint(a.RetryReadMaxAttempts),
+			MaxConnsPerHost:      derefInt(a.MaxConnsPerHost),
+			RequestTimeout:       derefInt(a.RequestTimeout),
 		},
 	}
 }
 
 type GcpStorage struct {
-	KeyFile                 *string  `yaml:"key-file"`
-	BucketName              *string  `yaml:"bucket-name"`
-	EndpointOverride        *string  `yaml:"endpoint-override"`
-	RetryMaxAttempts        *int     `yaml:"retry-max-attempts"`
-	RetryMaxBackoff         *int     `yaml:"retry-max-backoff"`
-	RetryInitBackoff        *int     `yaml:"retry-init-backoff"`
-	RetryBackoffMultiplier  *float64 `yaml:"retry-backoff-multiplier"`
-	ChunkSize               *int     `yaml:"chunk-size"`
-	CalculateChecksum       *bool    `yaml:"calculate-checksum"`
-	RetryReadBackoffSeconds *int     `yaml:"retry-read-backoff"`
-	RetryReadMultiplier     *float64 `yaml:"retry-read-multiplier"`
-	RetryReadMaxAttempts    *uint    `yaml:"retry-read-max-attempts"`
-	MaxConnsPerHost         *int     `yaml:"max-conns-per-host"`
-	RequestTimeoutSeconds   *int     `yaml:"request-timeout"`
+	KeyFile                *string  `yaml:"key-path"`
+	BucketName             *string  `yaml:"bucket-name"`
+	EndpointOverride       *string  `yaml:"endpoint-override"`
+	RetryMaxAttempts       *int     `yaml:"retry-max-attempts"`
+	RetryMaxBackoff        *int     `yaml:"retry-max-backoff"`
+	RetryInitBackoff       *int     `yaml:"retry-init-backoff"`
+	RetryBackoffMultiplier *float64 `yaml:"retry-backoff-multiplier"`
+	ChunkSize              *int     `yaml:"chunk-size"`
+	CalculateChecksum      *bool    `yaml:"calculate-checksum"`
+	RetryReadBackoff       *int     `yaml:"retry-read-backoff"`
+	RetryReadMultiplier    *float64 `yaml:"retry-read-multiplier"`
+	RetryReadMaxAttempts   *uint    `yaml:"retry-read-max-attempts"`
+	MaxConnsPerHost        *int     `yaml:"max-conns-per-host"`
+	RequestTimeout         *int     `yaml:"request-timeout"`
 }
 
-func defaultGcpStorage() *GcpStorage {
-	return &GcpStorage{
-		KeyFile:                 stringPtr(models.DefaultGcpKeyFile),
-		BucketName:              stringPtr(models.DefaultGcpBucketName),
-		EndpointOverride:        stringPtr(models.DefaultGcpEndpoint),
-		RetryMaxAttempts:        intPtr(models.DefaultGcpRetryMaxAttempts),
-		RetryMaxBackoff:         intPtr(models.DefaultGcpRetryBackoffMaxSeconds),
-		RetryInitBackoff:        intPtr(models.DefaultGcpRetryBackoffInitSeconds),
-		RetryBackoffMultiplier:  float64Ptr(models.DefaultGcpRetryBackoffMultiplier),
-		ChunkSize:               intPtr(models.DefaultGcpChunkSize),
-		CalculateChecksum:       boolPtr(models.DefaultCloudCalculateChecksum),
-		RetryReadBackoffSeconds: intPtr(models.DefaultCloudRetryReadBackoffSeconds),
-		RetryReadMultiplier:     float64Ptr(models.DefaultCloudRetryReadMultiplier),
-		RetryReadMaxAttempts:    uintPtr(models.DefaultCloudRetryReadMaxAttempts),
-		MaxConnsPerHost:         intPtr(models.DefaultCloudMaxConnsPerHost),
-		RequestTimeoutSeconds:   intPtr(models.DefaultCloudRequestTimeoutSeconds),
+func defaultGcpStorage() GcpStorage {
+	return GcpStorage{
+		KeyFile:                stringPtr(models.DefaultGcpKeyFile),
+		BucketName:             stringPtr(models.DefaultGcpBucketName),
+		EndpointOverride:       stringPtr(models.DefaultGcpEndpoint),
+		RetryMaxAttempts:       intPtr(models.DefaultGcpRetryMaxAttempts),
+		RetryMaxBackoff:        intPtr(models.DefaultGcpRetryBackoffMax),
+		RetryInitBackoff:       intPtr(models.DefaultGcpRetryBackoffInit),
+		RetryBackoffMultiplier: float64Ptr(models.DefaultGcpRetryBackoffMultiplier),
+		ChunkSize:              intPtr(models.DefaultGcpChunkSize),
+		CalculateChecksum:      boolPtr(models.DefaultCloudCalculateChecksum),
+		RetryReadBackoff:       intPtr(models.DefaultCloudRetryReadBackoff),
+		RetryReadMultiplier:    float64Ptr(models.DefaultCloudRetryReadMultiplier),
+		RetryReadMaxAttempts:   uintPtr(models.DefaultCloudRetryReadMaxAttempts),
+		MaxConnsPerHost:        intPtr(models.DefaultCloudMaxConnsPerHost),
+		RequestTimeout:         intPtr(models.DefaultCloudRequestTimeout),
 	}
 }
 
@@ -510,72 +483,70 @@ func (g *GcpStorage) ToModelGcpStorage() *models.GcpStorage {
 	}
 
 	return &models.GcpStorage{
-		KeyFile:                 derefString(g.KeyFile),
-		BucketName:              derefString(g.BucketName),
-		Endpoint:                derefString(g.EndpointOverride),
-		RetryMaxAttempts:        derefInt(g.RetryMaxAttempts),
-		RetryBackoffMaxSeconds:  derefInt(g.RetryMaxBackoff),
-		RetryBackoffInitSeconds: derefInt(g.RetryInitBackoff),
-		RetryBackoffMultiplier:  derefFloat64(g.RetryBackoffMultiplier),
-		ChunkSize:               derefInt(g.ChunkSize),
+		KeyFile:                derefString(g.KeyFile),
+		BucketName:             derefString(g.BucketName),
+		Endpoint:               derefString(g.EndpointOverride),
+		RetryMaxAttempts:       derefInt(g.RetryMaxAttempts),
+		RetryBackoffMax:        derefInt(g.RetryMaxBackoff),
+		RetryBackoffInit:       derefInt(g.RetryInitBackoff),
+		RetryBackoffMultiplier: derefFloat64(g.RetryBackoffMultiplier),
+		ChunkSize:              derefInt(g.ChunkSize),
 		StorageCommon: models.StorageCommon{
-			CalculateChecksum:       derefBool(g.CalculateChecksum),
-			RetryReadBackoffSeconds: derefInt(g.RetryReadBackoffSeconds),
-			RetryReadMultiplier:     derefFloat64(g.RetryReadMultiplier),
-			RetryReadMaxAttempts:    derefUint(g.RetryReadMaxAttempts),
-			MaxConnsPerHost:         derefInt(g.MaxConnsPerHost),
-			RequestTimeoutSeconds:   derefInt(g.RequestTimeoutSeconds),
+			CalculateChecksum:    derefBool(g.CalculateChecksum),
+			RetryReadBackoff:     derefInt(g.RetryReadBackoff),
+			RetryReadMultiplier:  derefFloat64(g.RetryReadMultiplier),
+			RetryReadMaxAttempts: derefUint(g.RetryReadMaxAttempts),
+			MaxConnsPerHost:      derefInt(g.MaxConnsPerHost),
+			RequestTimeout:       derefInt(g.RequestTimeout),
 		},
 	}
 }
 
 type AzureBlob struct {
-	AccountName             *string  `yaml:"account-name"`
-	AccountKey              *string  `yaml:"account-key"`
-	TenantID                *string  `yaml:"tenant-id"`
-	ClientID                *string  `yaml:"client-id"`
-	ClientSecret            *string  `yaml:"client-secret"`
-	EndpointOverride        *string  `yaml:"endpoint-override"`
-	ContainerName           *string  `yaml:"container-name"`
-	AccessTier              *string  `yaml:"access-tier"`
-	RestorePollDuration     *int64   `yaml:"rehydrate-poll-duration"`
-	RetryMaxAttempts        *int     `yaml:"retry-max-attempts"`
-	RetryTimeout            *int     `yaml:"retry-timeout"`
-	RetryDelay              *int     `yaml:"retry-delay"`
-	RetryMaxDelay           *int     `yaml:"retry-max-delay"`
-	UploadConcurrency       *int     `yaml:"upload-concurrency"`
-	CalculateChecksum       *bool    `yaml:"calculate-checksum"`
-	RetryReadBackoffSeconds *int     `yaml:"retry-read-backoff"`
-	RetryReadMultiplier     *float64 `yaml:"retry-read-multiplier"`
-	RetryReadMaxAttempts    *uint    `yaml:"retry-read-max-attempts"`
-	MaxConnsPerHost         *int     `yaml:"max-conns-per-host"`
-	RequestTimeoutSeconds   *int     `yaml:"request-timeout"`
-	BlockSize               *int     `yaml:"block-size"`
+	AccountName          *string  `yaml:"account-name"`
+	AccountKey           *string  `yaml:"account-key"`
+	TenantID             *string  `yaml:"tenant-id"`
+	ClientID             *string  `yaml:"client-id"`
+	ClientSecret         *string  `yaml:"client-secret"`
+	EndpointOverride     *string  `yaml:"endpoint"`
+	ContainerName        *string  `yaml:"container-name"`
+	AccessTier           *string  `yaml:"access-tier"`
+	RestorePollDuration  *int64   `yaml:"rehydrate-poll-duration"`
+	RetryMaxAttempts     *int     `yaml:"retry-max-attempts"`
+	RetryDelay           *int     `yaml:"retry-delay"`
+	RetryMaxDelay        *int     `yaml:"retry-max-delay"`
+	UploadConcurrency    *int     `yaml:"upload-concurrency"`
+	CalculateChecksum    *bool    `yaml:"calculate-checksum"`
+	RetryReadBackoff     *int     `yaml:"retry-read-backoff"`
+	RetryReadMultiplier  *float64 `yaml:"retry-read-multiplier"`
+	RetryReadMaxAttempts *uint    `yaml:"retry-read-max-attempts"`
+	MaxConnsPerHost      *int     `yaml:"max-conns-per-host"`
+	RequestTimeout       *int     `yaml:"request-timeout"`
+	BlockSize            *int     `yaml:"block-size"`
 }
 
-func defaultAzureBlob() *AzureBlob {
-	return &AzureBlob{
-		AccountName:             stringPtr(models.DefaultAzureAccountName),
-		AccountKey:              stringPtr(models.DefaultAzureAccountKey),
-		TenantID:                stringPtr(models.DefaultAzureTenantID),
-		ClientID:                stringPtr(models.DefaultAzureClientID),
-		ClientSecret:            stringPtr(models.DefaultAzureClientSecret),
-		EndpointOverride:        stringPtr(models.DefaultAzureEndpoint),
-		ContainerName:           stringPtr(models.DefaultAzureContainerName),
-		AccessTier:              stringPtr(models.DefaultAzureAccessTier),
-		RestorePollDuration:     int64Ptr(models.DefaultAzureRestorePollDuration),
-		RetryMaxAttempts:        intPtr(models.DefaultAzureRetryMaxAttempts),
-		RetryTimeout:            intPtr(models.DefaultAzureRetryTimeoutSeconds),
-		RetryDelay:              intPtr(models.DefaultAzureRetryDelaySeconds),
-		RetryMaxDelay:           intPtr(models.DefaultAzureRetryMaxDelaySeconds),
-		UploadConcurrency:       intPtr(models.DefaultAzureUploadConcurrency),
-		BlockSize:               intPtr(models.DefaultAzureBlockSize),
-		CalculateChecksum:       boolPtr(models.DefaultCloudCalculateChecksum),
-		RetryReadBackoffSeconds: intPtr(models.DefaultCloudRetryReadBackoffSeconds),
-		RetryReadMultiplier:     float64Ptr(models.DefaultCloudRetryReadMultiplier),
-		RetryReadMaxAttempts:    uintPtr(models.DefaultCloudRetryReadMaxAttempts),
-		MaxConnsPerHost:         intPtr(models.DefaultCloudMaxConnsPerHost),
-		RequestTimeoutSeconds:   intPtr(models.DefaultCloudRequestTimeoutSeconds),
+func defaultAzureBlob() AzureBlob {
+	return AzureBlob{
+		AccountName:          stringPtr(models.DefaultAzureAccountName),
+		AccountKey:           stringPtr(models.DefaultAzureAccountKey),
+		TenantID:             stringPtr(models.DefaultAzureTenantID),
+		ClientID:             stringPtr(models.DefaultAzureClientID),
+		ClientSecret:         stringPtr(models.DefaultAzureClientSecret),
+		EndpointOverride:     stringPtr(models.DefaultAzureEndpoint),
+		ContainerName:        stringPtr(models.DefaultAzureContainerName),
+		AccessTier:           stringPtr(models.DefaultAzureAccessTier),
+		RestorePollDuration:  int64Ptr(models.DefaultAzureRestorePollDuration),
+		RetryMaxAttempts:     intPtr(models.DefaultAzureRetryMaxAttempts),
+		RetryDelay:           intPtr(models.DefaultAzureRetryDelay),
+		RetryMaxDelay:        intPtr(models.DefaultAzureRetryMaxDelay),
+		UploadConcurrency:    intPtr(models.DefaultAzureUploadConcurrency),
+		BlockSize:            intPtr(models.DefaultAzureBlockSize),
+		CalculateChecksum:    boolPtr(models.DefaultCloudCalculateChecksum),
+		RetryReadBackoff:     intPtr(models.DefaultCloudRetryReadBackoff),
+		RetryReadMultiplier:  float64Ptr(models.DefaultCloudRetryReadMultiplier),
+		RetryReadMaxAttempts: uintPtr(models.DefaultCloudRetryReadMaxAttempts),
+		MaxConnsPerHost:      intPtr(models.DefaultCloudMaxConnsPerHost),
+		RequestTimeout:       intPtr(models.DefaultCloudRequestTimeout),
 	}
 }
 
@@ -585,28 +556,27 @@ func (a *AzureBlob) ToModelAzureBlob() *models.AzureBlob {
 	}
 
 	return &models.AzureBlob{
-		AccountName:          derefString(a.AccountName),
-		AccountKey:           derefString(a.AccountKey),
-		TenantID:             derefString(a.TenantID),
-		ClientID:             derefString(a.ClientID),
-		ClientSecret:         derefString(a.ClientSecret),
-		Endpoint:             derefString(a.EndpointOverride),
-		ContainerName:        derefString(a.ContainerName),
-		AccessTier:           derefString(a.AccessTier),
-		RetryMaxAttempts:     derefInt(a.RetryMaxAttempts),
-		RetryTimeoutSeconds:  derefInt(a.RetryTimeout),
-		RetryDelaySeconds:    derefInt(a.RetryDelay),
-		RetryMaxDelaySeconds: derefInt(a.RetryMaxDelay),
-		UploadConcurrency:    derefInt(a.UploadConcurrency),
-		RestorePollDuration:  derefInt64(a.RestorePollDuration),
-		BlockSize:            derefInt(a.BlockSize),
+		AccountName:         derefString(a.AccountName),
+		AccountKey:          derefString(a.AccountKey),
+		TenantID:            derefString(a.TenantID),
+		ClientID:            derefString(a.ClientID),
+		ClientSecret:        derefString(a.ClientSecret),
+		Endpoint:            derefString(a.EndpointOverride),
+		ContainerName:       derefString(a.ContainerName),
+		AccessTier:          derefString(a.AccessTier),
+		RetryMaxAttempts:    derefInt(a.RetryMaxAttempts),
+		RetryDelay:          derefInt(a.RetryDelay),
+		RetryMaxDelay:       derefInt(a.RetryMaxDelay),
+		UploadConcurrency:   derefInt(a.UploadConcurrency),
+		RestorePollDuration: derefInt64(a.RestorePollDuration),
+		BlockSize:           derefInt(a.BlockSize),
 		StorageCommon: models.StorageCommon{
-			CalculateChecksum:       derefBool(a.CalculateChecksum),
-			RetryReadBackoffSeconds: derefInt(a.RetryReadBackoffSeconds),
-			RetryReadMultiplier:     derefFloat64(a.RetryReadMultiplier),
-			RetryReadMaxAttempts:    derefUint(a.RetryReadMaxAttempts),
-			MaxConnsPerHost:         derefInt(a.MaxConnsPerHost),
-			RequestTimeoutSeconds:   derefInt(a.RequestTimeoutSeconds),
+			CalculateChecksum:    derefBool(a.CalculateChecksum),
+			RetryReadBackoff:     derefInt(a.RetryReadBackoff),
+			RetryReadMultiplier:  derefFloat64(a.RetryReadMultiplier),
+			RetryReadMaxAttempts: derefUint(a.RetryReadMaxAttempts),
+			MaxConnsPerHost:      derefInt(a.MaxConnsPerHost),
+			RequestTimeout:       derefInt(a.RequestTimeout),
 		},
 	}
 }
@@ -615,8 +585,8 @@ type Local struct {
 	BufferSize int `yaml:"buffer-size"`
 }
 
-func defaultLocal() *Local {
-	return &Local{
+func defaultLocal() Local {
+	return Local{
 		BufferSize: models.DefaultLocalBufferSize,
 	}
 }

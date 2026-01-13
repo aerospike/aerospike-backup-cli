@@ -47,6 +47,9 @@ func testSecretAgent() *models.SecretAgent {
 		Port:               8080,
 		TimeoutMillisecond: 1000,
 		CaFile:             "/path/to/ca.pem",
+		CertFile:           "/path/to/cert.pem",
+		KeyFile:            "/path/to/key.pem",
+		TLSName:            "example.com",
 		IsBase64:           true,
 	}
 }
@@ -315,6 +318,9 @@ func TestMapSecretAgentConfig_Success(t *testing.T) {
 	assert.Equal(t, 8080, *secretAgentConfig.Port)
 	assert.Equal(t, 1000, *secretAgentConfig.TimeoutMillisecond)
 	assert.Equal(t, "/path/to/ca.pem", *secretAgentConfig.CaFile)
+	assert.Equal(t, "/path/to/cert.pem", *secretAgentConfig.CertFile)
+	assert.Equal(t, "/path/to/key.pem", *secretAgentConfig.KeyFile)
+	assert.Equal(t, "example.com", *secretAgentConfig.TLSName)
 	assert.True(t, *secretAgentConfig.IsBase64)
 }
 
@@ -457,8 +463,8 @@ func TestMapScanPolicy_Success(t *testing.T) {
 		FilterExpression:    "k1EDpHRlc3Q=",
 		PreferRacks:         "rack1",
 		NoBins:              true,
+		MaxRetries:          3,
 		Common: models.Common{
-			MaxRetries:    3,
 			TotalTimeout:  10000,
 			SocketTimeout: 3000,
 		},
@@ -481,7 +487,6 @@ func TestMapWritePolicy_Success(t *testing.T) {
 		Replace: true,
 		Uniq:    false,
 		Common: models.Common{
-			MaxRetries:    3,
 			TotalTimeout:  5000,
 			SocketTimeout: 1500,
 		},
@@ -489,7 +494,6 @@ func TestMapWritePolicy_Success(t *testing.T) {
 
 	writePolicy := newWritePolicy(restoreModel)
 	assert.Equal(t, aerospike.REPLACE, writePolicy.RecordExistsAction)
-	assert.Equal(t, 3, writePolicy.MaxRetries)
 	assert.Equal(t, 5000*time.Millisecond, writePolicy.TotalTimeout)
 	assert.Equal(t, 1500*time.Millisecond, writePolicy.SocketTimeout)
 }
@@ -668,7 +672,7 @@ func TestMapBackupXDRConfig(t *testing.T) {
 				assert.Equal(t, 1000, cfg.ResultQueueSize)
 				assert.Equal(t, 1000, cfg.AckQueueSize)
 				assert.Equal(t, 100, cfg.MaxConnections)
-				assert.Equal(t, time.Duration(1000)*time.Millisecond, cfg.InfoPolingPeriod)
+				assert.Equal(t, time.Duration(1000)*time.Millisecond, cfg.InfoPollingPeriod)
 			},
 		},
 		{
@@ -734,7 +738,7 @@ func TestMapBackupXDRConfig(t *testing.T) {
 				assert.Equal(t, 0, cfg.ResultQueueSize)
 				assert.Equal(t, 0, cfg.AckQueueSize)
 				assert.Equal(t, 0, cfg.MaxConnections)
-				assert.Equal(t, time.Duration(0), cfg.InfoPolingPeriod)
+				assert.Equal(t, time.Duration(0), cfg.InfoPollingPeriod)
 			},
 		},
 	}

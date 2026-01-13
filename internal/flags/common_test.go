@@ -33,7 +33,7 @@ func TestCommon_NewFlagSet(t *testing.T) {
 	args := []string{
 		"--directory", "/path/to/backup",
 		"--namespace", "test-namespace",
-		"--set", "set1,set2",
+		"--set-list", "set1,set2",
 		"--records-per-second", "5000",
 		"--bin-list", "bin1,bin2",
 		"--parallel-read", "10",
@@ -41,7 +41,6 @@ func TestCommon_NewFlagSet(t *testing.T) {
 		"--no-records",
 		"--no-indexes",
 		"--no-udfs",
-		"--max-retries", "3",
 		"--total-timeout", "30000",
 		"--socket-timeout", "15000",
 		"--info-timeout", "1000",
@@ -66,7 +65,6 @@ func TestCommon_NewFlagSet(t *testing.T) {
 	assert.True(t, result.NoRecords, "The no-records flag should be parsed correctly")
 	assert.True(t, result.NoIndexes, "The no-indexes flag should be parsed correctly")
 	assert.True(t, result.NoUDFs, "The no-udfs flag should be parsed correctly")
-	assert.Equal(t, 3, result.MaxRetries, "The max-retries flag should be parsed correctly")
 	assert.Equal(t, int64(30000), result.TotalTimeout, "The total-timeout flag should be parsed correctly")
 	assert.Equal(t, int64(15000), result.SocketTimeout, "The socket-timeout flag should be parsed correctly")
 	assert.Equal(t, int64(1000), result.InfoTimeout, "The info-timeout flag should be parsed correctly")
@@ -100,7 +98,6 @@ func TestCommon_NewFlagSet_DefaultValues(t *testing.T) {
 	assert.False(t, result.NoRecords, "The default value for no-records should be false")
 	assert.False(t, result.NoIndexes, "The default value for no-indexes should be false")
 	assert.False(t, result.NoUDFs, "The default value for no-udfs should be false")
-	assert.Equal(t, 5, result.MaxRetries, "The default value for max-retries should be 5")
 	assert.Equal(t, int64(10000), result.TotalTimeout, "The default value for total-timeout should be 0")
 	assert.Equal(t, int64(10000), result.SocketTimeout, "The default value for socket-timeout should be 10000")
 	assert.Equal(t, int64(10000), result.InfoTimeout, "The default value for info-timeout should be 10000")

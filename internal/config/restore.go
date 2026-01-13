@@ -15,7 +15,6 @@
 package config
 
 import (
-	"fmt"
 	"log/slog"
 	"runtime"
 	"strings"
@@ -55,16 +54,6 @@ func NewRestoreServiceConfig(
 	gcpStorage *models.GcpStorage,
 	azureBlob *models.AzureBlob,
 ) (*RestoreServiceConfig, error) {
-	// If we have a config file, load serviceConfig from it.
-	if app.ConfigFilePath != "" {
-		serviceConfig, err := decodeRestoreServiceConfig(app.ConfigFilePath)
-		if err != nil {
-			return nil, fmt.Errorf("failed to load config file %s: %w", app.ConfigFilePath, err)
-		}
-
-		return serviceConfig, nil
-	}
-
 	return &RestoreServiceConfig{
 		App:          app,
 		ClientConfig: clientConfig,

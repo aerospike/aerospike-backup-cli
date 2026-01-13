@@ -36,7 +36,7 @@ import (
 )
 
 const (
-	testS3Bucket     = "asbackup"
+	testS3Bucket     = "aerospike-backup"
 	testFileNameASBX = "0_test_1.asbx"
 	testStdinType    = "stdin"
 )

@@ -49,12 +49,11 @@ func TestDefaultRestoreConfig(t *testing.T) {
 	assert.Equal(t, models.DefaultCommonNoIndexes, derefBool(config.NoIndexes))
 	assert.Equal(t, models.DefaultCommonNoUDFs, derefBool(config.NoUDFs))
 	assert.Equal(t, models.DefaultCommonRecordsPerSecond, derefInt(config.RecordsPerSecond))
-	assert.Equal(t, models.DefaultCommonMaxRetries, derefInt(config.MaxRetries))
 	assert.Equal(t, int64(models.DefaultCommonSocketTimeout), derefInt64(config.SocketTimeout))
 	assert.Equal(t, int64(models.DefaultCommonInfoTimeout), derefInt64(config.InfoTimeout))
 	assert.Equal(t, uint(models.DefaultCommonInfoMaxRetries), derefUint(config.InfoMaxRetries))
 	assert.Equal(t, models.DefaultCommonInfoRetriesMultiplier, derefFloat64(config.InfoRetriesMultiplier))
-	assert.Equal(t, int64(models.DefaultCommonInfoRetryIntervalMilliseconds), derefInt64(config.InfoRetryIntervalMilliseconds))
+	assert.Equal(t, int64(models.DefaultCommonInfoRetryInterval), derefInt64(config.InfoRetryIntervalMilliseconds))
 	assert.Equal(t, int64(models.DefaultCommonBandwidth), derefInt64(config.Bandwidth))
 	assert.Equal(t, models.DefaultCommonStdBufferSize, derefInt(config.StdBufferSize))
 	assert.Equal(t, int64(models.DefaultRestoreTotalTimeout), derefInt64(config.TotalTimeout))
@@ -78,7 +77,7 @@ func TestDefaultRestoreConfig(t *testing.T) {
 }
 
 func TestRestoreConfig_ToModelRestore(t *testing.T) {
-	config := &RestoreConfig{
+	config := RestoreConfig{
 		Directory:                     stringPtr("/restore"),
 		Namespace:                     stringPtr("test"),
 		SetList:                       []string{"set1", "set2"},
@@ -88,7 +87,6 @@ func TestRestoreConfig_ToModelRestore(t *testing.T) {
 		NoIndexes:                     boolPtr(true),
 		NoUDFs:                        boolPtr(false),
 		RecordsPerSecond:              intPtr(1000),
-		MaxRetries:                    intPtr(5),
 		TotalTimeout:                  int64Ptr(30000),
 		SocketTimeout:                 int64Ptr(10000),
 		Bandwidth:                     int64Ptr(50000000),
@@ -130,7 +128,6 @@ func TestRestoreConfig_ToModelRestore(t *testing.T) {
 	assert.True(t, model.NoIndexes)
 	assert.False(t, model.NoUDFs)
 	assert.Equal(t, 1000, model.RecordsPerSecond)
-	assert.Equal(t, 5, model.MaxRetries)
 	assert.Equal(t, int64(30000), model.TotalTimeout)
 	assert.Equal(t, int64(10000), model.SocketTimeout)
 	assert.Equal(t, int64(50000000), model.Bandwidth)
@@ -163,15 +160,10 @@ func TestRestore_ToModelRestore_NilHandling(t *testing.T) {
 		var r *Restore
 		assert.Nil(t, r.ToModelRestore())
 	})
-
-	t.Run("nil restore config", func(t *testing.T) {
-		r := &Restore{Restore: nil}
-		assert.Nil(t, r.ToModelRestore())
-	})
 }
 
 func TestRestore_ToModelRestore_EmptyLists(t *testing.T) {
-	config := &RestoreConfig{
+	config := RestoreConfig{
 		SetList:       []string{},
 		BinList:       []string{},
 		DirectoryList: []string{},
@@ -199,14 +191,13 @@ func TestRestore_ToModelRestore_DefaultToModel(t *testing.T) {
 	assert.Equal(t, models.DefaultCommonNoIndexes, model.NoIndexes)
 	assert.Equal(t, models.DefaultCommonNoUDFs, model.NoUDFs)
 	assert.Equal(t, models.DefaultCommonRecordsPerSecond, model.RecordsPerSecond)
-	assert.Equal(t, models.DefaultCommonMaxRetries, model.MaxRetries)
 	assert.Equal(t, int64(models.DefaultRestoreTotalTimeout), model.TotalTimeout)
 	assert.Equal(t, int64(models.DefaultCommonSocketTimeout), model.SocketTimeout)
 	assert.Equal(t, int64(models.DefaultCommonBandwidth), model.Bandwidth)
 	assert.Equal(t, int64(models.DefaultCommonInfoTimeout), model.InfoTimeout)
 	assert.Equal(t, uint(models.DefaultCommonInfoMaxRetries), model.InfoMaxRetries)
 	assert.Equal(t, models.DefaultCommonInfoRetriesMultiplier, model.InfoRetriesMultiplier)
-	assert.Equal(t, int64(models.DefaultCommonInfoRetryIntervalMilliseconds), model.InfoRetryIntervalMilliseconds)
+	assert.Equal(t, int64(models.DefaultCommonInfoRetryInterval), model.InfoRetryIntervalMilliseconds)
 	assert.Equal(t, models.DefaultCommonStdBufferSize, model.StdBufferSize)
 	assert.Equal(t, models.DefaultRestoreInputFile, model.InputFile)
 	assert.Equal(t, models.DefaultRestoreParentDirectory, model.ParentDirectory)

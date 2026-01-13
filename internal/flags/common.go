@@ -53,12 +53,19 @@ const (
 	descNoUDFsRestore = "Don't restore any UDFs."
 
 	descParallelReadBackup = "Maximum number of scan calls to run in parallel.\n" +
+		"The scan operation will be launched on all corresponding nodes in parallel, simultaneously.\n" +
 		"If only one partition range is given, or the entire namespace is being backed up, the range\n" +
 		"of partitions will be evenly divided by this number to be processed in parallel. Otherwise, each\n" +
 		"filter cannot be parallelized individually, so you may only achieve as much parallelism as there are\n" +
 		"partition filters. Accepts values from 1-1024 inclusive."
 	descParallelRestore = "The number of restore threads. Accepts values from 1-1024 inclusive.\n" +
 		"If not set, the default value is automatically calculated and appears as the number of CPUs on your machine."
+
+	descInfoTimeoutBackup = "Set the timeout (in ms) for asinfo commands sent from abs-backup-cli to the database.\n" +
+		"The info commands are to check version, get indexes, get udfs, count records, and check batch write support."
+
+	descInfoTimeoutRestore = "Set the timeout (in ms) for asinfo commands sent from abs-restore-cli to the database.\n" +
+		"The info commands are to check version, get indexes, get udfs, count records, and check batch write support."
 )
 
 type Common struct {
@@ -79,7 +86,7 @@ func (f *Common) NewFlagSet() *pflag.FlagSet {
 
 	var (
 		descNamespace, descSetList, descBinList, descNoRecords,
-		descNoIndexes, descNoUDFs, descParallel, descDirectory string
+		descNoIndexes, descNoUDFs, descParallel, descDirectory, descInfoTimeout string
 		defaultTotalTimeout int64
 		defaultParallel     int
 	)
@@ -96,6 +103,7 @@ func (f *Common) NewFlagSet() *pflag.FlagSet {
 		descParallel = descParallelReadBackup
 		defaultTotalTimeout = models.DefaultBackupTotalTimeout
 		defaultParallel = models.DefaultBackupParallel
+		descInfoTimeout = descInfoTimeoutBackup
 	case OperationRestore:
 		descNamespace = descNamespaceRestore
 		descDirectory = descDirectoryRestore
@@ -107,6 +115,7 @@ func (f *Common) NewFlagSet() *pflag.FlagSet {
 		descParallel = descParallelRestore
 		defaultTotalTimeout = models.DefaultRestoreTotalTimeout
 		defaultParallel = models.DefaultRestoreParallel
+		descInfoTimeout = descInfoTimeoutRestore
 	}
 
 	flagSet.StringVarP(&f.fields.Directory, "directory", "d",
@@ -117,7 +126,7 @@ func (f *Common) NewFlagSet() *pflag.FlagSet {
 		models.DefaultCommonNamespace,
 		descNamespace)
 
-	flagSet.StringVarP(&f.fields.SetList, "set", "s",
+	flagSet.StringVarP(&f.fields.SetList, "set-list", "s",
 		models.DefaultCommonSetList,
 		descSetList)
 
@@ -153,20 +162,15 @@ func (f *Common) NewFlagSet() *pflag.FlagSet {
 
 	flagSet.IntVarP(&f.fields.RecordsPerSecond, "records-per-second", "L",
 		models.DefaultCommonRecordsPerSecond,
-		"Limit total returned records per second (rps).\n"+
-			"Do not apply rps limit if records-per-second is zero.")
-
-	flagSet.IntVar(&f.fields.MaxRetries, "max-retries",
-		models.DefaultCommonMaxRetries,
-		"Maximum number of retries before aborting the current transaction.")
+		"Limit total returned records per second (RPS). If 0, no limit is applied.")
 
 	flagSet.Int64Var(&f.fields.TotalTimeout, "total-timeout",
 		defaultTotalTimeout,
-		"Total transaction timeout in milliseconds. 0 - no timeout.")
+		"Total transaction timeout (in ms). If 0, no timeout is applied. ")
 
 	flagSet.Int64Var(&f.fields.SocketTimeout, "socket-timeout",
 		models.DefaultCommonSocketTimeout,
-		"Socket timeout in milliseconds. If this value is 0, it's set to --total-timeout.\n"+
+		"Socket timeout (in ms). If 0, the value for --total-timeout is used.\n"+
 			"If both this and --total-timeout are 0, there is no socket idle time limit.")
 
 	flagSet.Int64Var(&f.fields.Bandwidth, "nice",
@@ -181,12 +185,12 @@ func (f *Common) NewFlagSet() *pflag.FlagSet {
 
 	flagSet.Int64VarP(&f.fields.InfoTimeout, "info-timeout", "T",
 		models.DefaultCommonInfoTimeout,
-		"Set the timeout (ms) for asinfo commands sent from asrestore to the database.\n"+
-			"The info commands are to check version, get indexes, get udfs, count records, and check batch write support.")
+		descInfoTimeout,
+	)
 
 	flagSet.Int64Var(&f.fields.InfoRetryIntervalMilliseconds, "info-retry-interval",
-		models.DefaultCommonInfoRetryIntervalMilliseconds,
-		"Set the initial interval for a retry in milliseconds when info commands are sent.")
+		models.DefaultCommonInfoRetryInterval,
+		"Set the initial interval for a retry (in ms) when info commands are sent.")
 
 	flagSet.Float64Var(&f.fields.InfoRetriesMultiplier, "info-retry-multiplier",
 		models.DefaultCommonInfoRetriesMultiplier,
@@ -195,11 +199,11 @@ func (f *Common) NewFlagSet() *pflag.FlagSet {
 
 	flagSet.UintVar(&f.fields.InfoMaxRetries, "info-max-retries",
 		models.DefaultCommonInfoMaxRetries,
-		"How many times to retry to send info commands before failing. ")
+		"Number of retries to send info commands before failing.")
 
 	flagSet.IntVar(&f.fields.StdBufferSize, "std-buffer",
 		models.DefaultCommonStdBufferSize,
-		"Buffer size in MiB for stdin and stdout operations. Is used for pipelining.")
+		"Buffer size in MiB for stdin and stdout operations. Used for pipelining.")
 
 	return flagSet
 }

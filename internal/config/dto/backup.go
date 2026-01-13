@@ -22,23 +22,23 @@ import (
 
 // Backup is used to map yaml config.
 type Backup struct {
-	App         *App          `yaml:"app"`
-	Cluster     *Cluster      `yaml:"cluster"`
-	Backup      *BackupConfig `yaml:"backup"`
-	Compression *Compression  `yaml:"compression"`
-	Encryption  *Encryption   `yaml:"encryption"`
-	SecretAgent *SecretAgent  `yaml:"secret-agent"`
+	App         App          `yaml:"app"`
+	Cluster     Cluster      `yaml:"cluster"`
+	Backup      BackupConfig `yaml:"backup"`
+	Compression Compression  `yaml:"compression"`
+	Encryption  Encryption   `yaml:"encryption"`
+	SecretAgent SecretAgent  `yaml:"secret-agent"`
 	Aws         struct {
-		S3 *AwsS3 `yaml:"s3"`
+		S3 AwsS3 `yaml:"s3"`
 	} `yaml:"aws"`
 	Gcp struct {
-		Storage *GcpStorage `yaml:"storage"`
+		Storage GcpStorage `yaml:"storage"`
 	} `yaml:"gcp"`
 	Azure struct {
-		Blob *AzureBlob `yaml:"blob"`
+		Blob AzureBlob `yaml:"blob"`
 	} `yaml:"azure"`
 	Local struct {
-		Disk *Local `yaml:"disk"`
+		Disk Local `yaml:"disk"`
 	} `yaml:"local"`
 }
 
@@ -52,22 +52,22 @@ func DefaultBackup() *Backup {
 		Encryption:  defaultEncryption(),
 		SecretAgent: defaultSecretAgent(),
 		Aws: struct {
-			S3 *AwsS3 `yaml:"s3"`
+			S3 AwsS3 `yaml:"s3"`
 		}{S3: defaultAwsS3()},
 		Gcp: struct {
-			Storage *GcpStorage `yaml:"storage"`
+			Storage GcpStorage `yaml:"storage"`
 		}{Storage: defaultGcpStorage()},
 		Azure: struct {
-			Blob *AzureBlob `yaml:"blob"`
+			Blob AzureBlob `yaml:"blob"`
 		}{Blob: defaultAzureBlob()},
 		Local: struct {
-			Disk *Local `yaml:"disk"`
+			Disk Local `yaml:"disk"`
 		}{Disk: defaultLocal()},
 	}
 }
 
 func (b *Backup) ToModelBackup() *models.Backup {
-	if b == nil || b.Backup == nil {
+	if b == nil {
 		return nil
 	}
 
@@ -83,7 +83,6 @@ func (b *Backup) ToModelBackup() *models.Backup {
 			NoIndexes:                     derefBool(b.Backup.NoIndexes),
 			NoUDFs:                        derefBool(b.Backup.NoUDFs),
 			RecordsPerSecond:              derefInt(b.Backup.RecordsPerSecond),
-			MaxRetries:                    derefInt(b.Backup.MaxRetries),
 			TotalTimeout:                  derefInt64(b.Backup.TotalTimeout),
 			SocketTimeout:                 derefInt64(b.Backup.SocketTimeout),
 			Bandwidth:                     derefInt64(b.Backup.Bandwidth),
@@ -93,6 +92,7 @@ func (b *Backup) ToModelBackup() *models.Backup {
 			InfoRetryIntervalMilliseconds: derefInt64(b.Backup.InfoRetryIntervalMilliseconds),
 			StdBufferSize:                 derefInt(b.Backup.StdBufferSize),
 		},
+		MaxRetries:          derefInt(b.Backup.MaxRetries),
 		OutputFile:          derefString(b.Backup.OutputFile),
 		RemoveFiles:         derefBool(b.Backup.RemoveFiles),
 		ModifiedBefore:      derefString(b.Backup.ModifiedBefore),
@@ -161,11 +161,11 @@ type BackupConfig struct {
 	InfoMaxRetries                *uint    `yaml:"info-max-retries"`
 	InfoRetriesMultiplier         *float64 `yaml:"info-retry-multiplier"`
 	InfoRetryIntervalMilliseconds *int64   `yaml:"info-retry-interval"`
-	StdBufferSize                 *int     `yaml:"std-buffer-size"`
+	StdBufferSize                 *int     `yaml:"std-buffer"`
 }
 
-func defaultBackupConfig() *BackupConfig {
-	return &BackupConfig{
+func defaultBackupConfig() BackupConfig {
+	return BackupConfig{
 		Directory:                     stringPtr(models.DefaultCommonDirectory),
 		Namespace:                     stringPtr(models.DefaultCommonNamespace),
 		SetList:                       []string{},
@@ -174,12 +174,12 @@ func defaultBackupConfig() *BackupConfig {
 		NoIndexes:                     boolPtr(models.DefaultCommonNoIndexes),
 		NoUDFs:                        boolPtr(models.DefaultCommonNoUDFs),
 		RecordsPerSecond:              intPtr(models.DefaultCommonRecordsPerSecond),
-		MaxRetries:                    intPtr(models.DefaultCommonMaxRetries),
+		MaxRetries:                    intPtr(models.DefaultBackupMaxRetries),
 		SocketTimeout:                 int64Ptr(models.DefaultCommonSocketTimeout),
 		InfoTimeout:                   int64Ptr(models.DefaultCommonInfoTimeout),
 		InfoMaxRetries:                uintPtr(models.DefaultCommonInfoMaxRetries),
 		InfoRetriesMultiplier:         float64Ptr(models.DefaultCommonInfoRetriesMultiplier),
-		InfoRetryIntervalMilliseconds: int64Ptr(models.DefaultCommonInfoRetryIntervalMilliseconds),
+		InfoRetryIntervalMilliseconds: int64Ptr(models.DefaultCommonInfoRetryInterval),
 		Bandwidth:                     int64Ptr(models.DefaultCommonBandwidth),
 		StdBufferSize:                 intPtr(models.DefaultCommonStdBufferSize),
 		OutputFile:                    stringPtr(models.DefaultBackupOutputFile),

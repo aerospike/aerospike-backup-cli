@@ -26,51 +26,49 @@ const (
 
 // Aws S3 Storage.
 const (
-	DefaultS3BucketName             = ""
-	DefaultS3Region                 = ""
-	DefaultS3Profile                = ""
-	DefaultS3Endpoint               = ""
-	DefaultS3AccessKeyID            = ""
-	DefaultS3SecretAccessKey        = ""
-	DefaultS3StorageClass           = ""
-	DefaultS3AccessTier             = ""
-	DefaultS3RestorePollDuration    = int64(60000)
-	DefaultS3RetryMaxAttempts       = 10
-	DefaultS3RetryMaxBackoffSeconds = 90
-	DefaultS3RetryBackoffSeconds    = 60
-	DefaultS3ChunkSize              = 5
-	DefaultS3UploadConcurrency      = 0
+	DefaultS3BucketName          = ""
+	DefaultS3Region              = ""
+	DefaultS3Profile             = ""
+	DefaultS3Endpoint            = ""
+	DefaultS3AccessKeyID         = ""
+	DefaultS3SecretAccessKey     = ""
+	DefaultS3StorageClass        = ""
+	DefaultS3AccessTier          = ""
+	DefaultS3RestorePollDuration = int64(60000)
+	DefaultS3RetryMaxAttempts    = 10
+	DefaultS3RetryMaxBackoff     = 90000
+	DefaultS3ChunkSize           = 5
+	DefaultS3UploadConcurrency   = 0
 )
 
 // Azure Blob Storage
 const (
-	DefaultAzureAccountName          = ""
-	DefaultAzureAccountKey           = ""
-	DefaultAzureTenantID             = ""
-	DefaultAzureClientID             = ""
-	DefaultAzureClientSecret         = ""
-	DefaultAzureEndpoint             = ""
-	DefaultAzureContainerName        = ""
-	DefaultAzureAccessTier           = ""
-	DefaultAzureRestorePollDuration  = int64(60000)
-	DefaultAzureRetryMaxAttempts     = 10
-	DefaultAzureRetryTimeoutSeconds  = 0
-	DefaultAzureRetryDelaySeconds    = 60
-	DefaultAzureRetryMaxDelaySeconds = 90
-	DefaultAzureBlockSize            = 5
-	DefaultAzureUploadConcurrency    = 1
+	DefaultAzureAccountName         = ""
+	DefaultAzureAccountKey          = ""
+	DefaultAzureTenantID            = ""
+	DefaultAzureClientID            = ""
+	DefaultAzureClientSecret        = ""
+	DefaultAzureEndpoint            = ""
+	DefaultAzureContainerName       = ""
+	DefaultAzureAccessTier          = ""
+	DefaultAzureRestorePollDuration = int64(60000)
+	DefaultAzureRetryMaxAttempts    = 10
+	DefaultAzureRetryDelay          = 60000
+	DefaultAzureRetryMaxDelay       = 90000
+	DefaultAzureBlockSize           = 5
+	DefaultAzureUploadConcurrency   = 1
 )
 
 // Gpc Storage.
 const (
-	DefaultGcpKeyFile                 = ""
-	DefaultGcpBucketName              = ""
-	DefaultGcpEndpoint                = ""
-	DefaultGcpRetryMaxAttempts        = 10
-	DefaultGcpRetryBackoffMaxSeconds  = 90
-	DefaultGcpRetryBackoffInitSeconds = 60
-	DefaultGcpRetryBackoffMultiplier  = 2.0
-	DefaultGcpChunkSize               = 5
+	DefaultGcpKeyFile                = ""
+	DefaultGcpBucketName             = ""
+	DefaultGcpEndpoint               = ""
+	DefaultGcpRetryMaxAttempts       = 10
+	DefaultGcpRetryBackoffMax        = 90000
+	DefaultGcpRetryBackoffInit       = 60000
+	DefaultGcpRetryBackoffMultiplier = 2.0
+	DefaultGcpChunkSize              = 5
 )
 
 // Local Storage.
@@ -80,12 +78,12 @@ const (
 
 // Cloud common.
 const (
-	DefaultCloudMaxConnsPerHost         = 0
-	DefaultCloudRequestTimeoutSeconds   = 600
-	DefaultCloudCalculateChecksum       = false
-	DefaultCloudRetryReadBackoffSeconds = 1
-	DefaultCloudRetryReadMultiplier     = float64(2.0)
-	DefaultCloudRetryReadMaxAttempts    = uint(3)
+	DefaultCloudMaxConnsPerHost      = 0
+	DefaultCloudRequestTimeout       = 600000
+	DefaultCloudCalculateChecksum    = false
+	DefaultCloudRetryReadBackoff     = 1000
+	DefaultCloudRetryReadMultiplier  = float64(2.0)
+	DefaultCloudRetryReadMaxAttempts = uint(3)
 )
 
 // Client Policy.
@@ -111,32 +109,34 @@ const (
 
 // Secret Agent.
 const (
-	DefaultSecretAgentConnectionType     = "tcp"
+	DefaultSecretAgentConnectionType     = "TCP"
 	DefaultSecretAgentAddress            = ""
 	DefaultSecretAgentPort               = 0
-	DefaultSecretAgentTimeoutMillisecond = 0
+	DefaultSecretAgentTimeoutMillisecond = 10000
 	DefaultSecretAgentCaFile             = ""
+	DefaultSecretAgentTLSName            = ""
+	DefaultSecretAgentCertFile           = ""
+	DefaultSecretAgentKeyFile            = ""
 	DefaultSecretAgentIsBase64           = false
 )
 
 // Common for backup and restore.
 const (
-	DefaultCommonDirectory                     = ""
-	DefaultCommonNamespace                     = ""
-	DefaultCommonSetList                       = ""
-	DefaultCommonBinList                       = ""
-	DefaultCommonNoRecords                     = false
-	DefaultCommonNoIndexes                     = false
-	DefaultCommonNoUDFs                        = false
-	DefaultCommonRecordsPerSecond              = 0
-	DefaultCommonMaxRetries                    = 5
-	DefaultCommonSocketTimeout                 = 10000
-	DefaultCommonInfoTimeout                   = 10000
-	DefaultCommonInfoMaxRetries                = 3
-	DefaultCommonInfoRetriesMultiplier         = 1.0
-	DefaultCommonInfoRetryIntervalMilliseconds = 1000
-	DefaultCommonBandwidth                     = 0
-	DefaultCommonStdBufferSize                 = 4
+	DefaultCommonDirectory             = ""
+	DefaultCommonNamespace             = ""
+	DefaultCommonSetList               = ""
+	DefaultCommonBinList               = ""
+	DefaultCommonNoRecords             = false
+	DefaultCommonNoIndexes             = false
+	DefaultCommonNoUDFs                = false
+	DefaultCommonRecordsPerSecond      = 0
+	DefaultCommonSocketTimeout         = 10000
+	DefaultCommonInfoTimeout           = 10000
+	DefaultCommonInfoMaxRetries        = 3
+	DefaultCommonInfoRetriesMultiplier = 1.0
+	DefaultCommonInfoRetryInterval     = 1000
+	DefaultCommonBandwidth             = 0
+	DefaultCommonStdBufferSize         = 4
 )
 
 // Backup.
@@ -166,6 +166,7 @@ const (
 	DefaultBackupRackList            = ""
 	DefaultBackupTotalTimeout        = 0
 	DefaultBackupParallel            = 1
+	DefaultBackupMaxRetries          = 5
 )
 
 // Restore.
@@ -193,28 +194,28 @@ const (
 )
 
 const (
-	DefaultBackupXDRDirectory                     = ""
-	DefaultBackupXDRFileLimit                     = 250
-	DefaultBackupXDRRemoveFiles                   = false
-	DefaultBackupXDRParallelWrite                 = 0
-	DefaultBackupXDRDC                            = "dc"
-	DefaultBackupXDRLocalAddress                  = "127.0.0.1"
-	DefaultBackupXDRLocalPort                     = 8080
-	DefaultBackupXDRNamespace                     = ""
-	DefaultBackupXDRRewind                        = "all"
-	DefaultBackupXDRMaxThroughput                 = 0
-	DefaultBackupXDRReadTimeoutMilliseconds       = 1000
-	DefaultBackupXDRWriteTimeoutMilliseconds      = 1000
-	DefaultBackupXDRResultQueueSize               = 256
-	DefaultBackupXDRAckQueueSize                  = 256
-	DefaultBackupXDRMaxConnections                = 4096
-	DefaultBackupXDRInfoPolingPeriodMilliseconds  = 1000
-	DefaultBackupXDRStartTimeoutMilliseconds      = 30000
-	DefaultBackupXDRInfoTimeout                   = 10000
-	DefaultBackupXDRStopXDR                       = false
-	DefaultBackupXDRUnblockMRT                    = false
-	DefaultBackupXDRInfoMaxRetries                = 3
-	DefaultBackupXDRInfoRetriesMultiplier         = 1.0
-	DefaultBackupXDRInfoRetryIntervalMilliseconds = 1000
-	DefaultBackupXDRForward                       = false
+	DefaultBackupXDRDirectory             = ""
+	DefaultBackupXDRFileLimit             = 250
+	DefaultBackupXDRRemoveFiles           = false
+	DefaultBackupXDRParallelWrite         = 0
+	DefaultBackupXDRDC                    = "dc"
+	DefaultBackupXDRLocalAddress          = "127.0.0.1"
+	DefaultBackupXDRLocalPort             = 8080
+	DefaultBackupXDRNamespace             = ""
+	DefaultBackupXDRRewind                = "all"
+	DefaultBackupXDRMaxThroughput         = 0
+	DefaultBackupXDRReadTimeout           = 1000
+	DefaultBackupXDRWriteTimeout          = 1000
+	DefaultBackupXDRResultQueueSize       = 256
+	DefaultBackupXDRAckQueueSize          = 256
+	DefaultBackupXDRMaxConnections        = 4096
+	DefaultBackupXDRInfoPolingPeriod      = 1000
+	DefaultBackupXDRStartTimeout          = 30000
+	DefaultBackupXDRInfoTimeout           = 10000
+	DefaultBackupXDRStopXDR               = false
+	DefaultBackupXDRUnblockMRT            = false
+	DefaultBackupXDRInfoMaxRetries        = 3
+	DefaultBackupXDRInfoRetriesMultiplier = 1.0
+	DefaultBackupXDRInfoRetryInterval     = 1000
+	DefaultBackupXDRForward               = false
 )

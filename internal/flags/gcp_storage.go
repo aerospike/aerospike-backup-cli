@@ -57,9 +57,9 @@ func (f *GcpStorage) NewFlagSet() *pflag.FlagSet {
 			models.DefaultCloudCalculateChecksum,
 			"Calculate checksum for each uploaded object.")
 	case OperationRestore:
-		flagSet.IntVar(&f.RetryReadBackoffSeconds, "gcp-retry-read-backoff",
-			models.DefaultCloudRetryReadBackoffSeconds,
-			"The initial delay in seconds between retry attempts. In case of connection errors\n"+
+		flagSet.IntVar(&f.RetryReadBackoff, "gcp-retry-read-backoff",
+			models.DefaultCloudRetryReadBackoff,
+			"The initial delay (in ms) between retry attempts. In case of connection errors\n"+
 				"tool will retry reading the object from the last known position.")
 
 		flagSet.Float64Var(&f.RetryReadMultiplier, "gcp-retry-read-multiplier",
@@ -77,13 +77,13 @@ func (f *GcpStorage) NewFlagSet() *pflag.FlagSet {
 		"Max retries specifies the maximum number of attempts a failed operation will be retried\n"+
 			"before producing an error.")
 
-	flagSet.IntVar(&f.RetryBackoffMaxSeconds, "gcp-retry-max-backoff",
-		models.DefaultGcpRetryBackoffMaxSeconds,
-		"Max backoff is the maximum value in seconds of the retry period.")
+	flagSet.IntVar(&f.RetryBackoffMax, "gcp-retry-max-backoff",
+		models.DefaultGcpRetryBackoffMax,
+		"Max backoff is the maximum value (in ms) of the retry period.")
 
-	flagSet.IntVar(&f.RetryBackoffInitSeconds, "gcp-retry-init-backoff",
-		models.DefaultGcpRetryBackoffInitSeconds,
-		"Initial backoff is the initial value in seconds of the retry period.")
+	flagSet.IntVar(&f.RetryBackoffInit, "gcp-retry-init-backoff",
+		models.DefaultGcpRetryBackoffInit,
+		"Initial backoff is the initial value (in ms) of the retry period.")
 
 	flagSet.Float64Var(&f.RetryBackoffMultiplier, "gcp-retry-backoff-multiplier",
 		models.DefaultGcpRetryBackoffMultiplier,
@@ -92,15 +92,16 @@ func (f *GcpStorage) NewFlagSet() *pflag.FlagSet {
 
 	flagSet.IntVar(&f.MaxConnsPerHost, "gcp-max-conns-per-host",
 		models.DefaultCloudMaxConnsPerHost,
-		"MaxConnsPerHost optionally limits the total number of connections per host,\n"+
+		"Max connections per host optionally limits the total number of connections per host,\n"+
 			"including connections in the dialing, active, and idle states. On limit violation, dials will block.\n"+
-			"Zero means no limit.")
+			"Should be greater than --parallel to avoid speed degradation.\n"+
+			"0 means no limit.")
 
-	flagSet.IntVar(&f.RequestTimeoutSeconds, "gcp-request-timeout",
-		models.DefaultCloudRequestTimeoutSeconds,
-		"Timeout in seconds specifies a time limit for requests made by this Client.\n"+
+	flagSet.IntVar(&f.RequestTimeout, "gcp-request-timeout",
+		models.DefaultCloudRequestTimeout,
+		"Timeout (in ms) specifies a time limit for requests made by this Client.\n"+
 			"The timeout includes connection time, any redirects, and reading the response body.\n"+
-			"Zero means no limit.")
+			"0 means no limit.")
 
 	return flagSet
 }

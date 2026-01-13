@@ -50,12 +50,12 @@ func TestDefaultBackupConfig(t *testing.T) {
 	assert.Equal(t, models.DefaultCommonNoIndexes, derefBool(config.NoIndexes))
 	assert.Equal(t, models.DefaultCommonNoUDFs, derefBool(config.NoUDFs))
 	assert.Equal(t, models.DefaultCommonRecordsPerSecond, derefInt(config.RecordsPerSecond))
-	assert.Equal(t, models.DefaultCommonMaxRetries, derefInt(config.MaxRetries))
+	assert.Equal(t, models.DefaultBackupMaxRetries, derefInt(config.MaxRetries))
 	assert.Equal(t, int64(models.DefaultCommonSocketTimeout), derefInt64(config.SocketTimeout))
 	assert.Equal(t, int64(models.DefaultCommonInfoTimeout), derefInt64(config.InfoTimeout))
 	assert.Equal(t, uint(models.DefaultCommonInfoMaxRetries), derefUint(config.InfoMaxRetries))
 	assert.Equal(t, models.DefaultCommonInfoRetriesMultiplier, derefFloat64(config.InfoRetriesMultiplier))
-	assert.Equal(t, int64(models.DefaultCommonInfoRetryIntervalMilliseconds), derefInt64(config.InfoRetryIntervalMilliseconds))
+	assert.Equal(t, int64(models.DefaultCommonInfoRetryInterval), derefInt64(config.InfoRetryIntervalMilliseconds))
 	assert.Equal(t, int64(models.DefaultCommonBandwidth), derefInt64(config.Bandwidth))
 	assert.Equal(t, models.DefaultCommonStdBufferSize, derefInt(config.StdBufferSize))
 	assert.Equal(t, models.DefaultBackupOutputFile, derefString(config.OutputFile))
@@ -85,7 +85,7 @@ func TestDefaultBackupConfig(t *testing.T) {
 }
 
 func TestBackupConfig_ToModelBackup(t *testing.T) {
-	config := &BackupConfig{
+	config := BackupConfig{
 		Directory:                     stringPtr("/backup"),
 		Namespace:                     stringPtr("test"),
 		SetList:                       []string{"set1", "set2"},
@@ -182,15 +182,10 @@ func TestBackup_ToModelBackup_NilHandling(t *testing.T) {
 		var b *Backup
 		assert.Nil(t, b.ToModelBackup())
 	})
-
-	t.Run("nil backup config", func(t *testing.T) {
-		b := &Backup{Backup: nil}
-		assert.Nil(t, b.ToModelBackup())
-	})
 }
 
 func TestBackup_ToModelBackup_EmptyLists(t *testing.T) {
-	config := &BackupConfig{
+	config := BackupConfig{
 		SetList:       []string{},
 		BinList:       []string{},
 		NodeList:      []string{},
@@ -224,14 +219,14 @@ func TestBackup_ToModelBackup_DefaultToModel(t *testing.T) {
 	assert.Equal(t, models.DefaultCommonNoIndexes, model.NoIndexes)
 	assert.Equal(t, models.DefaultCommonNoUDFs, model.NoUDFs)
 	assert.Equal(t, models.DefaultCommonRecordsPerSecond, model.RecordsPerSecond)
-	assert.Equal(t, models.DefaultCommonMaxRetries, model.MaxRetries)
+	assert.Equal(t, models.DefaultBackupMaxRetries, model.MaxRetries)
 	assert.Equal(t, int64(models.DefaultBackupTotalTimeout), model.TotalTimeout)
 	assert.Equal(t, int64(models.DefaultCommonSocketTimeout), model.SocketTimeout)
 	assert.Equal(t, int64(models.DefaultCommonBandwidth), model.Bandwidth)
 	assert.Equal(t, int64(models.DefaultCommonInfoTimeout), model.InfoTimeout)
 	assert.Equal(t, uint(models.DefaultCommonInfoMaxRetries), model.InfoMaxRetries)
 	assert.Equal(t, models.DefaultCommonInfoRetriesMultiplier, model.InfoRetriesMultiplier)
-	assert.Equal(t, int64(models.DefaultCommonInfoRetryIntervalMilliseconds), model.InfoRetryIntervalMilliseconds)
+	assert.Equal(t, int64(models.DefaultCommonInfoRetryInterval), model.InfoRetryIntervalMilliseconds)
 	assert.Equal(t, models.DefaultCommonStdBufferSize, model.StdBufferSize)
 	assert.Equal(t, models.DefaultBackupOutputFile, model.OutputFile)
 	assert.Equal(t, models.DefaultBackupRemoveFiles, model.RemoveFiles)

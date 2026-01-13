@@ -31,10 +31,10 @@ type GcpStorage struct {
 	// It is not recommended to use an alternate URL in a production environment.
 	Endpoint string
 
-	RetryMaxAttempts        int
-	RetryBackoffMaxSeconds  int
-	RetryBackoffInitSeconds int
-	RetryBackoffMultiplier  float64
+	RetryMaxAttempts       int
+	RetryBackoffMax        int
+	RetryBackoffInit       int
+	RetryBackoffMultiplier float64
 
 	ChunkSize int
 
@@ -73,11 +73,11 @@ func (g *GcpStorage) Validate(isBackup bool) error {
 		return fmt.Errorf("retry maximum attempts must be non-negative")
 	}
 
-	if g.RetryBackoffMaxSeconds < 0 {
+	if g.RetryBackoffMax < 0 {
 		return fmt.Errorf("retry max backoff must be non-negative")
 	}
 
-	if g.RetryBackoffInitSeconds < 0 {
+	if g.RetryBackoffInit < 0 {
 		return fmt.Errorf("retry backoff must be non-negative")
 	}
 
@@ -85,15 +85,17 @@ func (g *GcpStorage) Validate(isBackup bool) error {
 		return fmt.Errorf("retry backoff multiplier must be positive")
 	}
 
-	if g.ChunkSize < 0 {
-		return fmt.Errorf("chunk size must be non-negative")
+	if isBackup {
+		if g.ChunkSize < 1 {
+			return fmt.Errorf("chunk size can't be less than 1")
+		}
 	}
 
 	if g.MaxConnsPerHost < 0 {
 		return fmt.Errorf("max connections per host must be non-negative")
 	}
 
-	if g.RequestTimeoutSeconds < 0 {
+	if g.RequestTimeout < 0 {
 		return fmt.Errorf("request timeout must be non-negative")
 	}
 

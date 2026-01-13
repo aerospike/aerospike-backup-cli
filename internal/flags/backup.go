@@ -30,6 +30,10 @@ func NewBackup() *Backup {
 func (f *Backup) NewFlagSet() *pflag.FlagSet {
 	flagSet := &pflag.FlagSet{}
 
+	flagSet.IntVar(&f.MaxRetries, "max-retries",
+		models.DefaultBackupMaxRetries,
+		"Maximum number of retries before aborting the current transaction.")
+
 	flagSet.BoolVarP(&f.RemoveFiles, "remove-files", "r",
 		models.DefaultBackupRemoveFiles,
 		"Remove an existing backup file (-o) or entire directory (-d) and replace with the new backup.")
@@ -54,11 +58,11 @@ func (f *Backup) NewFlagSet() *pflag.FlagSet {
 	flagSet.BoolVarP(&f.NoBins, "no-bins", "x",
 		models.DefaultBackupNoBins,
 		"Do not include bin data in the backup. Use this flag for data sampling or troubleshooting.\n"+
-			"On restore all records, that don't contain bin data will be skipped.")
+			"On restore, all records not containing bin data will be skipped.")
 
 	flagSet.BoolVar(&f.NoTTLOnly, "no-ttl-only",
 		models.DefaultBackupNoTTLOnly,
-		"Only include records that have no ttl set (persistent records).")
+		"Only include records that have no TTL set (persistent records).")
 
 	flagSet.StringVarP(&f.AfterDigest, "after-digest", "D",
 		models.DefaultBackupAfterDigest,
@@ -86,7 +90,7 @@ func (f *Backup) NewFlagSet() *pflag.FlagSet {
 
 	flagSet.StringVarP(&f.FilterExpression, "filter-exp", "f",
 		models.DefaultBackupFilterExpression,
-		"Base64 encoded expression. Use the encoded filter expression in each scan call,\n"+
+		"Base64 encoded filter expression. Use the encoded filter expression in each scan call,\n"+
 			"which can be used to do a partial backup. The expression to be used can be Base64 \n"+
 			"encoded through any client. This argument is mutually exclusive with multi-set backup.\n")
 
@@ -94,20 +98,20 @@ func (f *Backup) NewFlagSet() *pflag.FlagSet {
 		models.DefaultBackupNodeList,
 		"<addr 1>:<port 1>[,<addr 2>:<port 2>[,...]]\n"+
 			"<node name 1>[,<node name 2>[,...]]\n"+
-			"To get the correct node address, use 'service-tls-std' if a database configured to use TLS\n"+
-			"and 'service-clear-std' info command if no TLS is configured.\n"+
+			"To get the correct node address, use the info command 'service-tls-std' if the database is configured to use TLS\n"+
+			"or 'service-clear-std' if no TLS is configured.\n"+
 			"To get the node name, use the 'node:' info command.\n"+
 			"Back up the given cluster nodes only.\n"+
-			"The job is parallelized by number of nodes unless --parallel is set less than nodes number.\n"+
 			"This argument is mutually exclusive with --partition-list, --after-digest, --rack-list, --prefer-racks"+
 			" arguments.\n"+
-			"Default: backup all nodes in the cluster")
+			"Default: back up all nodes in the cluster")
 
 	flagSet.StringVarP(&f.PartitionList, "partition-list", "X",
 		models.DefaultBackupPartitionList,
 		"List of partitions <filter[,<filter>[...]]> to back up. Partition filters can be ranges,\n"+
 			"individual partitions, or records after a specific digest within a single partition.\n"+
-			"To use this argument --parallel value must be set to the number of elements in partition list or greater\n"+
+			"To use this argument, --parallel must be set equal to or greater\n"+
+			"than the number of elements in the partition list\n"+
 			"This argument is mutually exclusive with after-digest.\n"+
 			"Filter: <begin partition>[-<partition count>]|<digest>\n"+
 			"begin partition: 0-4095\n"+
@@ -140,9 +144,8 @@ func (f *Backup) NewFlagSet() *pflag.FlagSet {
 
 	flagSet.BoolVarP(&f.Compact, "compact", "C",
 		models.DefaultBackupCompact,
-		"If true, do not apply base-64 encoding to BLOBs and instead write raw binary data,\n"+
-			"resulting in smaller backup files.\n"+
-			"Deprecated.")
+		"If true, do not apply Base64 encoding to BLOBs and instead write raw binary data,\n"+
+			"resulting in smaller backup files.")
 
 	flagSet.BoolVarP(&f.Estimate, "estimate", "e",
 		models.DefaultBackupEstimate,

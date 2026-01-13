@@ -82,7 +82,7 @@ func NewCmd(appVersion, commitHash, buildTime string) (*cobra.Command, *Cmd) {
 	c.flagsCommon = flags.NewCommon(&c.flagsRestore.Common, flags.OperationRestore)
 
 	rootCmd := &cobra.Command{
-		Use:   "asrestore",
+		Use:   "abs-restore-cli",
 		Short: "Aerospike restore CLI tool",
 		Long:  welcomeMessage,
 		RunE:  c.run,
@@ -174,30 +174,19 @@ func (c *Cmd) run(cmd *cobra.Command, _ []string) error {
 		return nil
 	}
 
+	// Init app.
+	serviceConfig, err := c.newServiceConfig()
+	if err != nil {
+		return fmt.Errorf("failed to initialize app: %w", err)
+	}
+
 	// Init logger.
-	logger, err := logging.NewLogger(c.flagsApp.LogLevel, c.flagsApp.Verbose, c.flagsApp.LogJSON)
+	logger, err := logging.NewLogger(serviceConfig.App.LogLevel, serviceConfig.App.Verbose, serviceConfig.App.LogJSON)
 	if err != nil {
 		return fmt.Errorf("failed to initialize logger: %w", err)
 	}
 	// After initialization replace logger.
 	c.Logger = logger
-
-	// Init app.
-	serviceConfig, err := config.NewRestoreServiceConfig(
-		c.flagsApp.GetApp(),
-		c.flagsAerospike.NewAerospikeConfig(),
-		c.flagsClientPolicy.GetClientPolicy(),
-		c.flagsRestore.GetRestore(),
-		c.flagsCompression.GetCompression(),
-		c.flagsEncryption.GetEncryption(),
-		c.flagsSecretAgent.GetSecretAgent(),
-		c.flagsAws.GetAwsS3(),
-		c.flagsGcp.GetGcpStorage(),
-		c.flagsAzure.GetAzureBlob(),
-	)
-	if err != nil {
-		return fmt.Errorf("failed to initialize app: %w", err)
-	}
 
 	logMsg := "restore"
 	if serviceConfig.Restore.ValidateOnly {
@@ -214,6 +203,38 @@ func (c *Cmd) run(cmd *cobra.Command, _ []string) error {
 	}
 
 	return nil
+}
+
+// newServiceConfig returns a new *config.RestoreServiceConfig based on the flags or config file.
+func (c *Cmd) newServiceConfig() (*config.RestoreServiceConfig, error) {
+	app := c.flagsApp.GetApp()
+	// If we have a config file, load serviceConfig from it.
+	if app != nil && app.ConfigFilePath != "" {
+		serviceConfig, err := config.DecodeRestoreServiceConfig(app.ConfigFilePath)
+		if err != nil {
+			return nil, fmt.Errorf("failed to load config file %s: %w", app.ConfigFilePath, err)
+		}
+
+		return serviceConfig, nil
+	}
+
+	serviceConfig, err := config.NewRestoreServiceConfig(
+		c.flagsApp.GetApp(),
+		c.flagsAerospike.NewAerospikeConfig(),
+		c.flagsClientPolicy.GetClientPolicy(),
+		c.flagsRestore.GetRestore(),
+		c.flagsCompression.GetCompression(),
+		c.flagsEncryption.GetEncryption(),
+		c.flagsSecretAgent.GetSecretAgent(),
+		c.flagsAws.GetAwsS3(),
+		c.flagsGcp.GetGcpStorage(),
+		c.flagsAzure.GetAzureBlob(),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return serviceConfig, nil
 }
 
 func (c *Cmd) printVersion() {
@@ -245,7 +266,7 @@ func newHelpFunction(
 		// fmt.Println("are also incompatible in automatic mode (when mode is not set).")
 
 		fmt.Println("\nUsage:")
-		fmt.Println("  asrestore [flags]")
+		fmt.Println("  abs-restore-cli [flags]")
 
 		// Print section: App Flags
 		fmt.Println("\nGeneral Flags:")
@@ -273,34 +294,35 @@ func newHelpFunction(
 		fmt.Println("\nSecret Agent Flags:\n" +
 			"Options pertaining to the Aerospike Secret Agent.\n" +
 			"See documentation here: https://aerospike.com/docs/tools/secret-agent.\n" +
-			"Both asbackup and asrestore support getting all the cloud config parameters from the Aerospike Secret Agent.\n" +
+			"Both abs-backup-cli and abs-restore-cli support getting all the cloud configuration parameters\n" +
+			"from the Aerospike Secret Agent.\n" +
 			"To use a secret as an option, use this format: 'secrets:<resource_name>:<secret_name>' \n" +
-			"Example: asbackup --azure-account-name secret:resource1:azaccount")
+			"Example: abs-backup-cli --azure-account-name secret:resource1:azaccount")
 		secretAgentFlagSet.PrintDefaults()
 
 		// Print section: AWS Flags
 		fmt.Println("\nAWS Storage Flags:\n" +
-			"For S3 storage bucket name is mandatory, and is set with --s3-bucket-name flag.\n" +
-			"So --directory path will only contain folder name.\n" +
-			"--s3-endpoint-override is used in case you want to use minio, instead of AWS.\n" +
+			"For S3, the storage bucket name must be set with the --s3-bucket-name flag.\n" +
+			"--directory path will only contain the folder name.\n" +
+			"--s3-endpoint-override is used for MinIO storage instead of AWS.\n" +
 			"Any AWS parameter can be retrieved from Secret Agent.")
 		awsFlagSet.PrintDefaults()
 
 		// Print section: GCP Flags
 		fmt.Println("\nGCP Storage Flags:\n" +
-			"For GCP storage bucket name is mandatory, and is set with --gcp-bucket-name flag.\n" +
-			"So --directory path will only contain folder name.\n" +
-			"Flag --gcp-endpoint-override is mandatory, as each storage account has different service address.\n" +
+			"For GCP storage, the bucket name must be set with --gcp-bucket-name flag.\n" +
+			"--directory path will only contain the folder name.\n" +
+			"The flag --gcp-endpoint-override  is optional, and is used for tests or any other GCP emulator.\n" +
 			"Any GCP parameter can be retrieved from Secret Agent.")
 		gcpFlagSet.PrintDefaults()
 
 		// Print section: Azure Flags
 		fmt.Println("\nAzure Storage Flags:\n" +
-			"For Azure storage container name is mandatory, and is set with --azure-storage-container-name flag.\n" +
-			"So --directory path will only contain folder name.\n" +
-			"Flag --azure-endpoint is optional, and is used for tests with Azurit or any other Azure emulator.\n" +
-			"For authentication you can use --azure-account-name and --azure-account-key, or \n" +
-			"--azure-tenant-id, --azure-client-id and azure-client-secret.\n" +
+			"For Azure storage, the container name must be set with --azure-container-name flag.\n" +
+			"--directory path will only contain folder name.\n" +
+			"The flag --azure-endpoint is also mandatory, as each storage account has different service address.\n" +
+			"For authentication, use --azure-account-name and --azure-account-key, or \n" +
+			"--azure-tenant-id, --azure-client-id and --azure-client-secret.\n" +
 			"Any Azure parameter can be retrieved from Secret Agent.")
 		azureFlagSet.PrintDefaults()
 	}
